@@ -1,0 +1,58 @@
+{% extends "base_generic.html" %}
+{% block content %}	
+	{% load static %}
+	<script src="{% static 'scripts/project.js'%}"></script>
+	<!-- Bootstrap Container -->
+	<div  class="container-fluid" id="formCreator">
+	<div>
+	<!-- Heading -->
+	<h1>Form Creator</h1>
+	</div>
+	
+	<div id="testing">
+	<!-- Name of Card Package Heading -->
+	<label class="fb-text-label">Name of Card Package</label>
+	<!-- Name of Card Package -->
+	<input type="text" class="form-control" id="nameOfCardPackage">
+	</div></br>
+	
+	<!-- Bootstrap Row -->
+	<div  class="row" id="pageRows">
+	</div>
+	<div  class="row" id="buttons">
+	</div>
+	<!-- Number of Groups and Cards Form-->
+	<div class="form-group" id ="create">
+	<!-- Number of Groups Heading -->
+	<label class="fb-text-label">Number of Groups</label>
+	<!-- Number of Groups Input -->
+	<input type="number" class="form-control" id="numberOfGroups">
+	<!-- Number of Card Heading -->
+	<label class="fb-text-label">Number of Cards</label>
+	<!-- Number of Card Input -->
+	<input type="number" class="form-control" id="numberOfCards">
+	<!-- Create Groups and Cards Button -->
+	<button type="button" id="createElements">Create</button>
+	</div>
+	
+	<!-- Grouping Tables -->
+	<form class="form-signin" method="post" action="{% url 'cards' %} ">
+	{% csrf_token %}
+	<div id="listOfCards">
+	<!-- Name of Card Package -->
+	<input id ="cardPackageName" type="hidden" name="name">
+	<div class="cards" id="cards" style="display: none">
+	<!-- Initially hide sortable cards -->
+	<ul class="list-group">
+	<!-- Heading of Cards -->
+	<input type="hidden" name="title" value="Cards">
+	<li class="list-group-item active">Cards</li>
+	<!-- Sortable Cards -->
+	<li id="sortable" class="connection"></li>
+	<input type="submit" value="Save" />
+	</ul>
+	</div>
+	</div>
+	</form>
+	</div>
+{% endblock %}

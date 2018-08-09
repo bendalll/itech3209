@@ -1,0 +1,45 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<!-- Bootstrap Container -->
+	<div class="container">
+	<!-- Register Form -->
+	<!-- Form Heading -->
+	<h2 class="form-signin-heading">Create Account</h2>
+	<form class="form-signin" method="post" action="{% url 'register' %} ">
+	{% csrf_token %}
+	{{ field.errors }}
+		<!-- Username Label -->
+		<label for="usr">Username</label>
+		<!-- Username Input -->
+		<input name="username" type="text" id="usr" class="form-control" placeholder="Username" required autofocus>
+		<!-- Username Label -->
+		<label for="first_name">First Name</label>
+		<!-- Username Input -->
+		<input name="first_name" type="text" id="first_name" class="form-control" placeholder="First Name" required autofocus>
+		<!-- Username Label -->
+		<label for="last_name">Last Name</label>
+		<!-- Username Input -->
+		<input name="last_name" type="text" id="last_name" class="form-control" placeholder="Last Name" required autofocus>
+		<!-- Password Label -->
+		<label for="password1">Password</label>
+		<!-- Password Input -->
+		<input name="password1" type="password" id="password1" class="form-control" placeholder="Password" required>		
+		<!-- Confirm Password Label -->
+		<label for="password2">Confirm Password</label>
+		<!-- Confirm Password Input -->
+		<input name="password2" type="password" id="password2" class="form-control" placeholder="Confirm Password" required>							
+		<!-- Email Label -->
+		<label for="email">Email</label>
+		<!-- Email Input -->
+		<input name="email" type="text" id="email" class="form-control" placeholder="Email" required>	
+		            {% if messages %}
+                {% for message in messages %}
+                    alert(message);
+                {% endfor %}
+            {% endif %}
+		<!-- Register Button -->
+		</br><input class="btn btn-lg btn-primary btn-block" type="submit" value="Register" />
+	</form>
+	</div>
+{% endblock %}

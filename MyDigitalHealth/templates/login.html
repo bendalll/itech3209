@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<!-- Bootstrap Container -->
+	<div class="container">
+	<!-- Login Form -->
+	<!-- Form Heading -->
+	<h2 class="form-signin-heading">Please Sign In</h2>
+	<form class="form-signin" method="post" action="{% url 'login' %}">
+	{% csrf_token %}
+		<!-- Screen Reader Label -->
+		<label for="usr" class="sr-only">Username</label>
+		<!-- Username Input -->
+		<input name="username" type="text" id="usr" class="form-control" placeholder="Username" required autofocus>
+		<!-- Screen Reader Label -->
+		<label for="inputPassword" class="sr-only">Password</label>
+		<!-- Password Input -->
+		<input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+		<!-- Remember Me Checkbox -->
+		<div class="checkbox">
+		<label>
+			<input type="checkbox" value="remember-me"> Remember me
+		</label>
+		</div>
+		{% if form.errors %}
+		<p>Your username and password didn't match. Please try again.</p>
+		{% endif %}
+		<!-- Login Button -->
+		<input class="btn btn-lg btn-primary btn-block" type="submit" value="Login" />
+		
+	</form>
+	</div>
+{% endblock %}
