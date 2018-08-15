@@ -3,11 +3,10 @@
 {% block content %}
 	{% load static %}
 	<script src="{% static 'scripts/view.js'%}"></script>
-		<script src="{% static 'scripts/project.js'%}"></script>
+	<script src="{% static 'scripts/project.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
-	<form >
-	<h2 class="form-signin-heading">Card Package: {{ package.name}}</h2>
+			<h2 class="form-signin-heading">Card Package: {{ package.name}}</h2>
 			<div class="cards">
 			<li class="list-group-item active">Cards</li>
 			<ul id="sortable" class="list-group connection">
@@ -18,7 +17,6 @@
 			{% endfor %}
 			</ul>			
 			</div>	
-			
 			{% for cardGroups in cardGroups %}		
 					{% if cardGroups.card_package.id == package.pk %}
 					<div class="cards">
@@ -27,7 +25,9 @@
 					</ul>
 					</div>
 					{% endif %}
-			{% endfor %}		
-	</form>
+			{% endfor %}
+			<div class="form-group">
+				<textarea class="form-control" rows="5" id="comment" placeholder="Feel free to add any comments"></textarea>
+			</div>
 	</div>	
 {% endblock %}
