@@ -17,6 +17,7 @@ class Card_Groups(models.Model):
 
 class Cards(models.Model):
 	card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
+	card_group = models.ForeignKey(Card_Groups, on_delete=models.PROTECT)
 	text = models.CharField(max_length=200)	
 	def __str__(self):
 		return self.text

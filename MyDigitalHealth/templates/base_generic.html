@@ -39,9 +39,10 @@
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 			{% for cardPackages in cardPackages %}
-				<li><a href="{% url 'view' %}">{{ cardPackages.name }}</a></li>
+				<li value="{{ cardPackages.id }}"><a href="{% url 'view' %}">{{ cardPackages.name }}</a></li>
 			{% endfor %}	
 			</ul>
+			<li><a href="{% url 'package' %} " style="color:#969696"></span> Packages</a></li>
 		</ul>
 		<!-- Right Aligned Navigation Bar -->
 		<ul class="nav navbar-nav navbar-right">

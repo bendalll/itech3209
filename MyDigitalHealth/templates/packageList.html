@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% load static %}
+	<script src="{% static 'scripts/view.js'%}"></script>
+		<script src="{% static 'scripts/project.js'%}"></script>
+	<!-- Bootstrap Container -->
+	<div class="container">
+	<form >
+	<h2 class="form-signin-heading">Card Package: {{ package.name}}</h2>
+			<div class="cards">
+			<li class="list-group-item active">Cards</li>
+			<ul id="sortable" class="list-group connection">
+			{% for cardList in cardList %}
+					{% if cardList.card_package.id == package.pk  %}
+					<li class="list-group-item">{{ cardList.text}}</li>
+					{% endif %}
+			{% endfor %}
+			</ul>			
+			</div>	
+			
+			{% for cardGroups in cardGroups %}		
+					{% if cardGroups.card_package.id == package.pk %}
+					<div class="cards">
+					<li class="list-group-item active">{{ cardGroups }}</li>
+					<ul class="list-group connection">
+					</ul>
+					</div>
+					{% endif %}
+			{% endfor %}		
+	</form>
+	</div>	
+{% endblock %}
