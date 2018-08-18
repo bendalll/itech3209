@@ -3,9 +3,8 @@
 {% block content %}
 	{% load static %}
 	<script src="{% static 'scripts/view.js'%}"></script>
-	<script src="{% static 'scripts/project.js'%}"></script>
 	<!-- Bootstrap Container -->
-	<div class="container">
+	<div>
 			<h2 class="form-signin-heading">Card Package: {{ package.name}}</h2>
 			<div class="cards">
 			<li class="list-group-item active">Cards</li>
@@ -27,7 +26,12 @@
 					{% endif %}
 			{% endfor %}
 			<div class="form-group">
-				<textarea class="form-control" rows="5" id="comment" placeholder="Feel free to add any comments"></textarea>
+				<form class="form-signin" method="post" action="{% url 'comments' %}" >
+				{% csrf_token %}
+				<input id ="cardPackageName" type="hidden" name="name" value="{{ package.name}}">
+				<textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
+				<input type="submit" value="Save" />
+				<form>
 			</div>
 	</div>	
 {% endblock %}
