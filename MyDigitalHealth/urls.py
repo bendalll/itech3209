@@ -13,4 +13,6 @@ urlpatterns = [
 	path('view', views.view, name='view'),
 	path('package', views.package, name='package'),
 	path('packageList/<packagePK>/', views.packageList, name='packageList'),
+	path('comments', views.comments, name='comments'),
+	path('admin', views.admin, name='admin'),
 ]

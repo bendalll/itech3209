@@ -1,9 +1,9 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, CreateCardPackage, CreateCardGroup, CreateCards
+from .forms import RegistrationForm, CreateCardPackage, CreateCardGroup, CreateCards, CreateComments
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from .models import Card_Packages, Card_Groups, Cards
+from .models import Card_Packages, Card_Groups, Cards, Comments
 from django.template.response import TemplateResponse
 from django.contrib import messages 
 
@@ -27,10 +27,6 @@ def create(request):
         'project.html',
     )
 	
-def getCards(request):
-    cards = Cards.objects.all() 
-    return TemplateResponse(request, views.index, {'cards': cards})
-	
 def cards(request):
     if request.method =='POST':
         form = CreateCardPackage(request.POST, instance=Card_Packages())
@@ -39,8 +35,9 @@ def cards(request):
             texts = request.POST.getlist('text')
             groups = request.POST.getlist('group')
             names = request.POST.getlist('name')
+            user = request.user
             for name in names:
-                cardPackage = Card_Packages(name = name)
+                cardPackage = Card_Packages(name = name, user = user)
                 cardPackage.save()
             for title in titles:
                 group = Card_Groups(card_package = cardPackage, title = title)
@@ -114,7 +111,7 @@ def package(request):
 		'package.html',
 		context
     )
-	
+
 def packageList(request, packagePK):
 	package = Card_Packages.objects.get(id__exact=packagePK)
 	context = {'package': package}
@@ -122,7 +119,39 @@ def packageList(request, packagePK):
 		request,
 		'packageList.html',
 		context
-    )	
+    )
+
+def admin(request):
+	cardPackages = Card_Packages.objects.all()
+	context = {'cardPackages': cardPackages}
+	return render(
+		request,
+		'admin.html',
+		context
+    )
+	
+def comments(request):
+	if request.method =='POST':
+		form = CreateComments(request.POST, instance=Comments())
+		name = request.POST.get('name')
+		cardPackage = Card_Packages.objects.get(name = name)
+		user = request.user
+		comment = request.POST.get('comment')
+		comments = Comments(card_package = cardPackage, user = user, comment = comment)
+		comments.save()
+		return render(
+		request,
+			'index.html',
+			
+		)
+	else:
+		form = CreateCardPackage(instance=Comments())
+		args = {'form': form}
+		return render(
+		request,
+		'packageList.html',
+		{'form': form}
+	)	
 	
 def cardPackages(request):
     cardPackages = Card_Packages.objects.all() 
