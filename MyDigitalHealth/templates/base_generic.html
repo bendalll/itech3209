@@ -33,10 +33,10 @@
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-		{% if user.is_authenticated %}{% if request.user|has_group:"Staff" %}
+		{% if request.user|has_group:"Staff" %}
 		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
 		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
-		{% endif %}{% endif %}
+		{% endif %}
 		<!-- Card Package Dropdown -->
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
