@@ -112,8 +112,8 @@ def package(request):
 		context
     )
 
-def packageList(request, packagePK):
-	package = Card_Packages.objects.get(id__exact=packagePK)
+def packageList(request, package):
+	package = Card_Packages.objects.get(id__exact=package)
 	context = {'package': package}
 	return render(
 		request,
@@ -129,6 +129,15 @@ def admin(request):
 		'admin.html',
 		context
     )
+
+def edit(request, package):
+	package = Card_Packages.objects.get(id__exact=package)
+	context = {'package': package}
+	return render(
+		request,
+		'edit.html',
+		context
+    )	
 	
 def comments(request):
 	if request.method =='POST':
@@ -141,8 +150,7 @@ def comments(request):
 		comments.save()
 		return render(
 		request,
-			'index.html',
-			
+			'index.html',	
 		)
 	else:
 		form = CreateCardPackage(instance=Comments())
@@ -150,6 +158,53 @@ def comments(request):
 		return render(
 		request,
 		'packageList.html',
+		{'form': form}
+	)	
+	
+def editPackage(request, package):
+	if request.method =='POST':
+		form = CreateCardPackage(request.POST, instance=Card_Packages())
+		if form.is_valid():
+			cardPackage = Card_Packages.objects.get(id__exact=package)
+			titles = request.POST.getlist('title')
+			texts = request.POST.getlist('text')
+			cardGroupIDs = request.POST.getlist('cardGroupID')
+			cardListIDs = request.POST.getlist('cardListID')
+			name = request.POST.get('name')
+			user = request.user
+			cardPackage.name = name
+			cardPackage.save()
+			group = Card_Groups()
+			card = Cards()
+			for cardGroupID, title in zip(cardGroupIDs, titles):
+				group.id = cardGroupID
+				group.card_package = cardPackage
+				group.title = title
+				group.save()
+			for cardListID, text in zip(cardListIDs, texts):
+				card.id = cardListID
+				card.card_package = cardPackage
+				card.card_group = group
+				card.text = text
+				card.save()
+			return render(
+			request,
+			'admin.html',
+			)       
+		else:
+			form = CreateCardPackage(instance=Card_Packages())
+			args = {'form': form}
+			return render(
+			request,
+			'admin.html',
+		{'form': form}
+		)
+	else:
+		form = CreateCardPackage(instance=Card_Packages())
+		args = {'form': form}
+		return render(
+		request,
+		'admin.html',
 		{'form': form}
 	)	
 	
