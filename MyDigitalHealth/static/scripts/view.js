@@ -10,9 +10,15 @@
 	//Allow content to be reordered in a list.
 	$( function() 
 	{
+		$( "#sortable" ).sortable();
+
+	});
+	
+	$( function() 
+	{
 		$( ".connection" ).sortable(
 			{
-				connectWith: ".connection"
+				connectWith: ".connection",
 			});
 
 	});

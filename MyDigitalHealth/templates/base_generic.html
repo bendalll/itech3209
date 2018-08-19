@@ -33,15 +33,19 @@
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-		{% if user.is_authenticated %}{% if request.user|has_group:"Staff" %}<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>{% endif %}{% endif %}
+		{% if request.user|has_group:"Staff" %}
+		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
+		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
+		{% endif %}
 		<!-- Card Package Dropdown -->
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 			{% for cardPackages in cardPackages %}
-				<li><a href="{% url 'view' %}">{{ cardPackages.name }}</a></li>
+				<li><a href="{% url 'packageList' cardPackages.pk %}">{{ cardPackages.name }}</a></li>
 			{% endfor %}	
 			</ul>
+			<!-- <li><a href="{% url 'package' %} " style="color:#969696"></span> Packages</a></li>-->
 		</ul>
 		<!-- Right Aligned Navigation Bar -->
 		<ul class="nav navbar-nav navbar-right">
