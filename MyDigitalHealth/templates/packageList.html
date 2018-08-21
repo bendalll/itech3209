@@ -2,19 +2,13 @@
 
 {% block content %}
 	{% load static %}
-	 {% load templatetags %}
 	<script src="{% static 'scripts/view.js'%}"></script>
+		<script src="{% static 'scripts/project.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
-			<div class="row align-items-start">
-			<div class="col">
-			<h2>Card Package: {{ package.name}} {% if request.user|has_group:"Staff" %}
-
-			{% endif %}</h2>
-			</div>
-			</div>
-			
-			<div class="cards row align-items-center">
+	<form >
+	<h2 class="form-signin-heading">Card Package: {{ package.name}}</h2>
+			<div class="cards">
 			<li class="list-group-item active">Cards</li>
 			<ul id="sortable" class="list-group connection">
 			{% for cardList in cardList %}
@@ -22,9 +16,10 @@
 					<li class="list-group-item">{{ cardList.text}}</li>
 					{% endif %}
 			{% endfor %}
-			</ul>			
-			</div>	
-			{% for cardGroups in cardGroups %}		
+			</ul>
+			</div>
+
+			{% for cardGroups in cardGroups %}
 					{% if cardGroups.card_package.id == package.pk %}
 					<div class="cards">
 					<li class="list-group-item active">{{ cardGroups }}</li>
@@ -33,15 +28,6 @@
 					</div>
 					{% endif %}
 			{% endfor %}
-			{% if user.is_authenticated %}
-			<div class="row form-group">
-				<form class="form-signin" method="post" action="{% url 'comments' %}" >
-				{% csrf_token %}
-				<input id ="cardPackageName" type="hidden" name="name" value="{{ package.name}}">
-				<textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
-				<input type="submit" value="Save" />
-				<form>
-			</div>
-			{% endif %}
+	</form>
 	</div>	
 {% endblock %}
