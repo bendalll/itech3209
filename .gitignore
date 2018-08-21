@@ -5,6 +5,7 @@
 .coveragerc
 /__pycache__/
 .idea/
-MyDigitalHealth/__pycache__/
-MyProject/__pycache__/
+MyDigitalHealth/__pycache__
+MyProject/__pycache__
 manage.py
+MyDigitalHealth/migrations
