@@ -1,4 +1,5 @@
 import pytest
+from MyDigitalHealth.models import Card_Packages
 
 
 def create_basic_data():
