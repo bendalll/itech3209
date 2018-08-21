@@ -28,7 +28,7 @@
 	<!-- Dark Bootstrap Theme -->
 
 	<!-- Bootstrap Container -->
-	<div class="container-fluid" style='background-color: #313131'>
+	<div class="container-fluid" style='background-color: #313131'">
 		<!-- Navigation Bar Text -->
 		<ul class="nav navbar-nav">
 		<!-- Home -->
@@ -40,7 +40,7 @@
 			<ul class="dropdown-menu">
 			{% for cardPackages in cardPackages %}
 				<li value="{{ cardPackages.id }}"><a href="{% url 'view' %}">{{ cardPackages.name }}</a></li>
-			{% endfor %}
+			{% endfor %}	
 			</ul>
 			<li><a href="{% url 'package' %} " style="color:#969696"></span> Packages</a></li>
 		</ul>

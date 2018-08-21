@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Card_Packages, Card_Groups, Cards, Comments
+from .models import Card_Packages, Card_Groups, Cards
 
 
 class RegistrationForm(UserCreationForm):
@@ -10,55 +10,42 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password1',
-            'password2'
-        )
+			'username', 
+			'first_name',
+			'last_name',
+			'email', 
+			'password1', 
+			'password2'
+			)
 
     def save(self, commit=True):
-        user = super(RegistrationForm, self).save(commit=False)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-            return user
-
-
+	    user = super(RegistrationForm, self).save(commit=False)
+	    user.first_name = self.cleaned_data['first_name']
+	    user.last_name = self.cleaned_data['last_name']
+	    user.email = self.cleaned_data['email']
+	    if commit:
+		    user.save()	
+	    return user
+		
 class CreateCardPackage(forms.ModelForm):
     class Meta:
         model = Card_Packages
         fields = (
-            'name',
-        )
-
-
+			'name', 
+			)		
+			
 class CreateCardGroup(forms.ModelForm):
     class Meta:
         model = Card_Groups
         fields = (
-            'card_package',
-            'title',
-        )
-
+			'card_package', 
+			'title', 
+			)
 
 class CreateCards(forms.ModelForm):
     class Meta:
         model = Cards
         fields = (
-            'card_package',
-            'text',
-        )
-
-
-class CreateComments(forms.ModelForm):
-    class Meta:
-        model = Comments
-        fields = (
-            'card_package',
-            'user',
-            'comment',
-        )
+			'card_package',
+			'text', 
+			)

@@ -12,9 +12,5 @@ urlpatterns = [
 	path('cards', views.cards, name='cards'),
 	path('view', views.view, name='view'),
 	path('package', views.package, name='package'),
-	path('packageList/<package>/', views.packageList, name='packageList'),
-	path('comments', views.comments, name='comments'),
-	path('admin', views.admin, name='admin'),
-	path('edit/<package>/', views.edit, name='edit'),
-	path('editPackage/<package>/', views.editPackage, name='editPackage'),
+	path('packageList/<packagePK>/', views.packageList, name='packageList'),
 ]

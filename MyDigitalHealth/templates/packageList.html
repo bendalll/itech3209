@@ -16,10 +16,10 @@
 					<li class="list-group-item">{{ cardList.text}}</li>
 					{% endif %}
 			{% endfor %}
-			</ul>
-			</div>
-
-			{% for cardGroups in cardGroups %}
+			</ul>			
+			</div>	
+			
+			{% for cardGroups in cardGroups %}		
 					{% if cardGroups.card_package.id == package.pk %}
 					<div class="cards">
 					<li class="list-group-item active">{{ cardGroups }}</li>
@@ -27,7 +27,7 @@
 					</ul>
 					</div>
 					{% endif %}
-			{% endfor %}
+			{% endfor %}		
 	</form>
 	</div>	
 {% endblock %}
