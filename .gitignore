@@ -10,3 +10,4 @@ manage.py
 MyDigitalHealth/migrations
 MyDigitalHealth/tests/__pycache__
 .pytest_cache
+*.pyc
