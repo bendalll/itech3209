@@ -28,24 +28,22 @@
 	<!-- Dark Bootstrap Theme -->
 
 	<!-- Bootstrap Container -->
-	<div class="container-fluid" style='background-color: #313131'">
+	<div class="container-fluid" style='background-color: #313131'>
 		<!-- Navigation Bar Text -->
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-		{% if request.user|has_group:"Staff" %}
-		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
-		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
-		{% endif %}
+		{% if user.is_authenticated %}{% if request.user.is_staff %}
+                <li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>{% endif %}{% endif %}
 		<!-- Card Package Dropdown -->
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 			{% for cardPackages in cardPackages %}
-				<li><a href="{% url 'packageList' cardPackages.pk %}">{{ cardPackages.name }}</a></li>
+				<li value="{{ cardPackages.id }}"><a href="{% url 'view' %}">{{ cardPackages.name }}</a></li>
 			{% endfor %}	
 			</ul>
-			<!-- <li><a href="{% url 'package' %} " style="color:#969696"></span> Packages</a></li>-->
+			<li><a href="{% url 'package' %} " style="color:#969696">Packages</a></li>
 		</ul>
 		<!-- Right Aligned Navigation Bar -->
 		<ul class="nav navbar-nav navbar-right">

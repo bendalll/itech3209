@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MydigitalhealthConfig(AppConfig):
+class MyDigitalHealthConfig(AppConfig):
     name = 'MyDigitalHealth'
