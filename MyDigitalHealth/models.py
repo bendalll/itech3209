@@ -1,14 +1,13 @@
 from django.db import models
-from django_mysql.models import ListCharField
 from django.contrib.auth.models import User
 
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
-    package_cards = ListCharField
-    package_categories = ListCharField
+    package_cards = False  # array
+    package_categories = False  # array
     package_owner = models.ForeignKey
-    assigned_users = ListCharField
+    assigned_users = False  # array
     user_editable_categories = False
 
     def __str__(self):
@@ -38,8 +37,8 @@ class Card(models.Model):
 class AssignedPkg(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.PROTECT)
     package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
-    categories = ListCharField
-    cards = ListCharField
+    categories = False  # array
+    cards = False  # array
     comment_text = models.TextField
 
 # Used to use Category table:

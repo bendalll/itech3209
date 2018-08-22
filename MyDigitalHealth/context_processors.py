@@ -1,9 +1,9 @@
 from .models import Package, Card
 
 
-def get_card_packages(request):
+def card_packages(request):
     return {
-        'cardPackages': Package.objects.all()
+        'card_packages': Package.objects.all()
     }
 
 
@@ -13,7 +13,7 @@ def get_card_packages(request):
 #     }
 
 
-def get_card_list(request):
+def card_list(request):
     return {
-        'cardList': Card.objects.all()
+        'card_list': Card.objects.all()
     }
