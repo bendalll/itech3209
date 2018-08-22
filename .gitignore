@@ -1,5 +1,4 @@
 **/htmlcov
-/htmlcov/
 .coverage
 .coveragerc
 /__pycache__/
@@ -10,6 +9,4 @@ manage.py
 MyDigitalHealth/migrations
 MyDigitalHealth/tests/__pycache__
 .pytest_cache
-*.pyc
-*.pyc
 *.pyc
