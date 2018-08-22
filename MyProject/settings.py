@@ -55,8 +55,8 @@ ROOT_URLCONF = 'MyProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./MyDigitalHealth/templates'],
-                 # './templates/registration'],  # TODO resolve this
+        'DIRS': ['./MyDigitalHealth/templates',
+                 './templates/registration'],  # TODO resolve this
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
