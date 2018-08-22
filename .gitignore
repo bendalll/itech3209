@@ -1,6 +1,5 @@
 **/htmlcov
 /htmlcov/
-/.gitignore
 .coverage
 .coveragerc
 /__pycache__/
