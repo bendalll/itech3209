@@ -33,6 +33,11 @@ class CreateCardPackage(forms.ModelForm):
         model = Package
         fields = (
             'package_name',
+            'package_cards',
+            'package_categories',
+            'package_owner',
+            'assigned_users',
+            'user_editable_categories',
         )
 
 
