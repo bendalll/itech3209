@@ -26,7 +26,7 @@ def index(request):
 def create(request):
     return render(
         request,
-        'project.html',
+        'create_package.html',
     )
 
 
@@ -37,7 +37,9 @@ def getCards(request):
 
 def cards(request):
     if request.method == 'POST':
+        print(request.POST)
         form = CreateCardPackage(request.POST, instance=Package())
+        print(form.is_valid())
         if form.is_valid():
             titles = request.POST.getlist('title')
             texts = request.POST.getlist('text')
@@ -61,7 +63,7 @@ def cards(request):
             args = {'form': form}
             return render(
                 request,
-                'project.html',
+                'create_package.html',
                 {'form': form}
             )
     else:
@@ -69,7 +71,7 @@ def cards(request):
         args = {'form': form}
         return render(
             request,
-            'project.html',
+            'create_package.html',
             {'form': form}
         )
 

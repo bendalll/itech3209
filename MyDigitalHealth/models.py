@@ -2,13 +2,24 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Card(models.Model):
+    card_text = models.CharField(max_length=200)
+    admin_id = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.card_text
+
+    class Meta:
+        verbose_name_plural = 'cards'
+
+
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
-    package_cards = False  # array
-    package_categories = False  # array
-    package_owner = models.ForeignKey
-    assigned_users = False  # array
-    user_editable_categories = False
+    package_cards = models.ManyToManyField(Card)
+    package_categories = models.TextField()
+    package_owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='owner')
+    assigned_users = models.ManyToManyField(User, related_name='assigned')
+    user_editable_categories = models.BooleanField()
 
     def __str__(self):
         return self.package_name
@@ -23,31 +34,9 @@ class Package(models.Model):
         return package
 
 
-class Card(models.Model):
-    card_text = models.CharField(max_length=200)
-    admin_id = models.ForeignKey(User, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return self.card_text
-
-    class Meta:
-        verbose_name_plural = 'cards'
-
-
 class AssignedPkg(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
-    categories = False  # array
-    cards = False  # array
+    categories = models.TextField
+    cards = models.ManyToManyField(Card)
     comment_text = models.TextField
-
-# Used to use Category table:
-# class Category(models.Model):
-#     card_package = models.ForeignKey(Package, on_delete=models.PROTECT)
-#     title = models.CharField(max_length=200)
-#
-#     def __str__(self):
-#         return self.title
-#
-#     class Meta:
-#         verbose_name_plural = 'category'
