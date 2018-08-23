@@ -2,47 +2,47 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Card_Packages(models.Model):
-    name = models.CharField(max_length=200)
+class Package(models.Model):
+    package_name = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.name
+        return self.package_name
 
     class Meta:
-        verbose_name_plural = 'Card_Packages'
+        verbose_name_plural = 'Packages'
 
 
-class Card_Groups(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    title = models.CharField(max_length=200)
+class Category(models.Model):
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
+    category_name = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.title
+        return self.category_name
 
     class Meta:
-        verbose_name_plural = 'Card_Groups'
+        verbose_name_plural = 'Categories'
 
 
-class Cards(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    card_group = models.ForeignKey(Card_Groups, on_delete=models.PROTECT, default='1')
-    text = models.CharField(max_length=200)
+class Card(models.Model):
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
+    category_id = models.ForeignKey(Category, on_delete=models.PROTECT, default='1')
+    card_text = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.text
+        return self.card_text
 
     class Meta:
         verbose_name_plural = 'Cards'
 
 
-class Comments(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    comment = models.CharField(max_length=200, default='Placeholder')
+class Comment(models.Model):
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
+    comment_text = models.TextField(default='Placeholder')
 
     def __str__(self):
-        return self.comment
+        return self.comment_text
 
     class Meta:
         verbose_name_plural = 'Comments'

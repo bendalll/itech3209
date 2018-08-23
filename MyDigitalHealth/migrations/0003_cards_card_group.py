@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='cards',
             name='card_group',
-            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Card_Groups'),
+            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Category'),
             preserve_default=False,
         ),
     ]

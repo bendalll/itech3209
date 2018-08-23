@@ -1,15 +1,15 @@
-from .models import Card_Packages, Card_Groups, Cards
+from .models import Package, Category, Card
 
 def cardPackages(request):
     return {
-        'cardPackages': Card_Packages.objects.all()
+        'cardPackages': Package.objects.all()
     }
 def cardGroups(request):
     return {
-        'cardGroups': Card_Groups.objects.all()
+        'cardGroups': Category.objects.all()
     }
 	
 def cardList(request):
     return {
-        'cardList': Cards.objects.all()
+        'cardList': Card.objects.all()
     }

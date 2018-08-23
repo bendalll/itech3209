@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('text', models.CharField(max_length=200)),
-                ('card_package', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Card_Packages')),
+                ('card_package', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Package')),
             ],
             options={
                 'verbose_name_plural': 'Cards',
@@ -46,6 +46,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='card_groups',
             name='card_package',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Card_Packages'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='MyDigitalHealth.Package'),
         ),
     ]
