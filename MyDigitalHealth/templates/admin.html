@@ -9,7 +9,7 @@
 	<h3 class="form-signin-heading">My Packages</h3>
 	<ul>
 		{% for package in own_packages %}
-			<li><a href="{% url 'package_list' package.pk %}">{{ package.package_name }}</a>
+			<li><a href="{% url 'package_preview' package.pk %}">{{ package.package_name }}</a>
 				<a href="{% url 'edit' package.pk %} " class="btn btn-default">Edit</a>
 			</li>
 		{% endfor %}
