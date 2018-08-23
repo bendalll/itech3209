@@ -22,6 +22,11 @@ def index(request):
 
 
 def create_package(request):
+    """
+    Administrator functionality to create new Packages with related Cards and Categories
+    If request is GET, displays the form to enter data for new Package
+    If request is POST, should submit data and create new Package, then redirect to Package list
+    """
     if request.method == 'GET':
         return render(
             request,
@@ -46,7 +51,7 @@ def create_package(request):
             # load the admin-view-all-the-packages page
             return render(
                 request,
-                'packages_list.html',
+                'admin.html',
             )
 # TODO else throw 404?
 
@@ -54,7 +59,7 @@ def create_package(request):
 def preview_package(request):
     return render(
         request,
-        'preview_package.html',
+        'package_preview.html',
     )
 
 
@@ -98,7 +103,7 @@ def view(request):
 
 
 def package(request):
-    cardPackages = Package.objects.all()
+    card_packages = Package.objects.all()
     context = {'cardPackages': cardPackages}
     return render(
         request,
@@ -107,19 +112,20 @@ def package(request):
     )
 
 
-def packageList(request, package):
-    package = Package.objects.get(id__exact=package)
+def package_list(request, package_id):
+    package = Package.objects.get(id__exact=package_id)
     context = {'package': package}
     return render(
         request,
-        'package_view.html',
+        'package_active.html',
         context
     )
 
 
 def admin(request):
-    cardPackages = Package.objects.all()
-    context = {'cardPackages': cardPackages}
+    owner = request.user
+    own_packages = Package.get_packages_by_owner(owner)
+    context = {'own_packages': own_packages}
     return render(
         request,
         'admin.html',
@@ -155,7 +161,7 @@ def comments(request):
         args = {'form': form}
         return render(
             request,
-            'package_view.html',
+            'package_active.html',
             {'form': form}
         )
 

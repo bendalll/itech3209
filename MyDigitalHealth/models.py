@@ -12,6 +12,16 @@ class Package(models.Model):
     class Meta:
         verbose_name_plural = 'Packages'
 
+    @classmethod
+    def get_package_by_id(cls, package_id):
+        package = Package.objects.get(id__exact=package_id)
+        return package
+
+    @classmethod
+    def get_packages_by_owner(cls, owner):
+        packages_list = Package.objects.filter(owner_id=owner.id)
+        return packages_list
+
 
 class Category(models.Model):
     package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
