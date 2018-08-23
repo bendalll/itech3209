@@ -9,7 +9,6 @@ urlpatterns = [
     path('register', views.register, name='register_user'),
     path('create_package', views.create_package, name='create_package'),
     path('preview', views.preview_package, name='preview'),
-    path('cards', views.cards, name='cards'),
     path('view', views.view, name='view'),
     path('package', views.package, name='package'),
     path('packageList/<package>/', views.packageList, name='packageList'),

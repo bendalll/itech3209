@@ -29,7 +29,21 @@ def create_package(request):
         )
     else:
         if request.method == 'POST':
-            print(request.POST)
+            # get data from request.POST and create cards and categories and new package as objects
+            # save new objects to the database
+            data = request.POST
+            new_package = Package(package_name=data['package_name'], owner=request.user)
+            new_package.save()
+
+            for category_name in data.getlist('category_name'):
+                new_category = Category(package_id=new_package, category_name=category_name, category_owner=request.user)
+                new_category.save()
+
+            for card_text in data.getlist('card_text'):
+                new_card = Card(package_id=new_package, card_text=card_text)
+                new_card.save()
+
+            # load the admin-view-all-the-packages page
             return render(
                 request,
                 'packages_list.html',
@@ -42,47 +56,6 @@ def preview_package(request):
         request,
         'preview_package.html',
     )
-
-
-def cards(request):
-    if request.method == 'POST':
-        print(request.POST)
-        form = CreateCardPackage(request.POST, instance=Package())
-        if form.is_valid():
-            titles = request.POST.getlist('title')
-            texts = request.POST.getlist('text')
-            groups = request.POST.getlist('group')
-            names = request.POST.getlist('name')
-            user = request.user
-            for name in names:
-                cardPackage = Package(name=name, user=user)
-                cardPackage.save()
-            for title in titles:
-                group = Category(card_package=cardPackage, title=title)
-                group.save()
-            for text in texts:
-                card = Card(card_package=cardPackage, card_group=group, text=text)
-                card.save()
-            return render(
-                request,
-                'index.html',
-            )
-        else:
-            form = CreateCardPackage(instance=Package())
-            args = {'form': form}
-            return render(
-                request,
-                'create_package.html',
-                {'form': form}
-            )
-    else:
-        form = CreateCardPackage(instance=Package())
-        args = {'form': form}
-        return render(
-            request,
-            'create_package.html',
-            {'form': form}
-        )
 
 
 def register(request):
