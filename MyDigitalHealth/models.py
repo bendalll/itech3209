@@ -2,52 +2,47 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Package(models.Model):
-    package_name = models.CharField(max_length=200)
-    package_cards = False  # array
-    package_categories = False  # array
-    package_owner = models.ForeignKey
-    assigned_users = False  # array
-    user_editable_categories = False
+class Card_Packages(models.Model):
+    name = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.package_name
+        return self.name
 
     class Meta:
-        verbose_name_plural = 'Card_Package'
-
-    @staticmethod
-    def create_package(package_name):
-        package = Package(package_name=package_name)
-        package.save()
-        return package
+        verbose_name_plural = 'Card_Packages'
 
 
-class Card(models.Model):
-    card_text = models.CharField(max_length=200)
-    admin_id = models.ForeignKey(User, on_delete=models.PROTECT)
+class Card_Groups(models.Model):
+    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
+    title = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.card_text
+        return self.title
 
     class Meta:
-        verbose_name_plural = 'cards'
+        verbose_name_plural = 'Card_Groups'
 
 
-class AssignedPkg(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
-    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
-    categories = False  # array
-    cards = False  # array
-    comment_text = models.TextField
+class Cards(models.Model):
+    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
+    card_group = models.ForeignKey(Card_Groups, on_delete=models.PROTECT, default='1')
+    text = models.CharField(max_length=200)
 
-# Used to use Category table:
-# class Category(models.Model):
-#     card_package = models.ForeignKey(Package, on_delete=models.PROTECT)
-#     title = models.CharField(max_length=200)
-#
-#     def __str__(self):
-#         return self.title
-#
-#     class Meta:
-#         verbose_name_plural = 'category'
+    def __str__(self):
+        return self.text
+
+    class Meta:
+        verbose_name_plural = 'Cards'
+
+
+class Comments(models.Model):
+    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    comment = models.CharField(max_length=200, default='Placeholder')
+
+    def __str__(self):
+        return self.comment
+
+    class Meta:
+        verbose_name_plural = 'Comments'

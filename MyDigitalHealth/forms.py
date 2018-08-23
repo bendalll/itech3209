@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Package, Card
+from .models import Card_Packages, Card_Groups, Cards, Comments
 
 
 class RegistrationForm(UserCreationForm):
@@ -30,25 +30,35 @@ class RegistrationForm(UserCreationForm):
 
 class CreateCardPackage(forms.ModelForm):
     class Meta:
-        model = Package
+        model = Card_Packages
         fields = (
-            'package_name',
+            'name',
         )
 
 
-# class CreateCardGroup(forms.ModelForm):
-#     class Meta:
-#         model = Category
-#         fields = (
-#             'card_package',
-#             'title',
-#         )
+class CreateCardGroup(forms.ModelForm):
+    class Meta:
+        model = Card_Groups
+        fields = (
+            'card_package',
+            'title',
+        )
 
 
 class CreateCards(forms.ModelForm):
     class Meta:
-        model = Card
+        model = Cards
         fields = (
-            'card_text',
-            'admin_id'
+            'card_package',
+            'text',
+        )
+
+
+class CreateComments(forms.ModelForm):
+    class Meta:
+        model = Comments
+        fields = (
+            'card_package',
+            'user',
+            'comment',
         )

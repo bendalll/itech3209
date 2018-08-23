@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'MyDigitalHealth.apps.MyDigitalHealthConfig',
+	'MyDigitalHealth.apps.MydigitalhealthConfig', 
 ]
 
 MIDDLEWARE = [
@@ -55,8 +55,8 @@ ROOT_URLCONF = 'MyProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./MyDigitalHealth/templates',
-                 './templates/registration'],  # TODO resolve this
+        'DIRS': ['./templates',
+				 './templates/registration'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,8 +64,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'MyDigitalHealth.context_processors.card_packages',
-                'MyDigitalHealth.context_processors.card_list',
+                'MyDigitalHealth.context_processors.cardPackages',
+				'MyDigitalHealth.context_processors.cardGroups',
+				'MyDigitalHealth.context_processors.cardList',
             ],
         },
     },
