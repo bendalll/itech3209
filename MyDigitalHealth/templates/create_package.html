@@ -4,58 +4,61 @@
 	<script src="{% static 'scripts/cardsort.js' %}"></script>
 	<!-- Bootstrap Container -->
 	<div  class="container-fluid" id="packageCreator">
-	<div>
-	    <!-- Heading -->
-	    <h1>New Package</h1>
-	</div>
-	
-	<div id="packageNaming">
-	    <!-- Package Name Heading -->
-	    <label class="fb-text-label">Package Name</label>
-	    <!-- Package Name Input-->
-	    <input type="text" class="form-control" id="nameOfCardPackage">
-	</div></br>
-	
-	<!-- Bootstrap Row -->
-	<div  class="row" id="pageRows">
-	</div>
-	<div  class="row" id="buttons">
-	</div>
-	<div id="admin_console">
-    <form action="{% url 'create' %}" method="post">
-        {% csrf_token %}
-		<div id="cardList">
-			<h2>Cards</h2>
-			<!-- Cards which can be dynamically added and removed -->
-			<div class="card" id="firstCard">
-				<textarea maxlength="200" placeholder="Card Text"></textarea>
-				<button type="button" onclick="addCard('cardList')">+</button>
-			</div>
-			<div class="card" id="2">
-				<textarea maxlength="200" placeholder="Card Text"></textarea>
-				<button type="button" onclick="addCard('cardList')">+</button>
-				<button type="button" onclick="removeCard(this)">-</button>
-			</div>
-		</div>
-		<div id="categoryList">
-			<!-- Categories which can be dynamically added and removed -->
-			<h2>Categories</h2>
-			<div class="category">
-				<p>Category Name:</p>
-				<input type="text" />
-				<button type="button" onclick="addCategory('categoryList')">+</button>
-			</div>
-			<div class="category">
-				<p>Category Name:</p>
-				<input type="text" />
-				<button type="button" onclick="addCategory('categoryList')">+</button>
-				<button type="button" onclick="removeCategory(this)">-</button>
-			</div>
-		</div>
-		<div>
-			<input type="submit" value="Preview" />
-		</div>
-    </form>
-	</div>
+        <div>
+            <!-- Heading -->
+            <h1>Create A New Package</h1>
+        </div>
+        <div id="admin_console">
+        <form action="{% url 'create_package' %}" method="post">
+            {% csrf_token %}
+            <div id="packageNaming">
+                <!-- Package Name Heading -->
+                <label class="fb-text-label">Package Name</label>
+                <!-- Package Name Input-->
+                <input type="text" class="form-control" id="nameOfCardPackage" placeholder="New package name" name="package_name">
+            </div></br>
+
+        <!-- Bootstrap Row -->
+    {#	<div  class="row" id="pageRows">#}
+    {#	</div>#}
+    {#	<div  class="row" id="buttons">#}
+    {#	</div>#}
+    {#        Unsure what the above code does at this time #}
+
+            <div id="cardList">
+                <h2>Cards</h2>
+                <!-- Cards which can be dynamically added and removed -->
+                <div class="card" id="firstCard">
+                    <input type="text" class="form-control" placeholder="Card text here" name="card_text">
+                    <button type="button" onclick="addCard('cardList')">+</button>
+                </div>
+                <div class="card" id="2">
+                    <input type="text" class="form-control" placeholder="Card text here" name="card_text">
+                    <button type="button" onclick="addCard('cardList')">+</button>
+                    <button type="button" onclick="removeCard(this)">-</button>
+                </div>
+            </div>
+            <div id="categoryList">
+                <!-- Categories which can be dynamically added and removed -->
+                <h2>Categories</h2>
+                <div class="category">
+                    <p>Category Name:</p>
+                    <input type="text" placeholder="Category" name="category_name"/>
+                    <button type="button" onclick="addCategory('categoryList')">+</button>
+                </div>
+                <div class="category">
+                    <p>Category Name:</p>
+                    <input type="text" placeholder="Category" name="category_name"/>
+                    <button type="button" onclick="addCategory('categoryList')">+</button>
+                    <button type="button" onclick="removeCategory(this)">-</button>
+                </div>
+            </div>
+            <div id="pageActionButtons">
+                <input type="button" value="Preview (TODO)" onclick="location.href='{%  url 'preview' %}'"/>
+                <br><br>
+                <input type="submit" value="Save and Close"/>
+            </div>
+        </form>
+        </div>
 	</div>
 {% endblock %}

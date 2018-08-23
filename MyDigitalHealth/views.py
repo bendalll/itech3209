@@ -1,16 +1,13 @@
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .forms import RegistrationForm, CreateCardPackage, CreateCardGroup, CreateCards, CreateComments
-from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import UserCreationForm
 from .models import Package, Category, Card, Comment
 from django.template.response import TemplateResponse
-from django.contrib import messages 
+from MyDigitalHealth import views
 
 
 def index(request):
     """
-    View function for home page of site.
     View function for home page of site.
     """
     # Number of visits to this view, as counted in the session variable.
@@ -25,10 +22,19 @@ def index(request):
 
 
 def create_package(request):
-    return render(
-        request,
-        'create_package.html',
-    )
+    if request.method == 'GET':
+        return render(
+            request,
+            'create_package.html',
+        )
+    else:
+        if request.method == 'POST':
+            print(request.POST)
+            return render(
+                request,
+                'packages_list.html',
+            )
+# TODO else throw 404?
 
 
 def preview_package(request):
@@ -123,7 +129,7 @@ def package(request):
     context = {'cardPackages': cardPackages}
     return render(
         request,
-        'package.html',
+        'packages_list.html',
         context
     )
 
@@ -133,7 +139,7 @@ def packageList(request, package):
     context = {'package': package}
     return render(
         request,
-        'packageList.html',
+        'package_view.html',
         context
     )
 
@@ -176,7 +182,7 @@ def comments(request):
         args = {'form': form}
         return render(
             request,
-            'packageList.html',
+            'package_view.html',
             {'form': form}
         )
 

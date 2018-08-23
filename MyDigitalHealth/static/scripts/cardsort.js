@@ -93,4 +93,3 @@ function removeCategory(buttonObject) {
 	let thisCategory = buttonObject.parentElement;
 	thisCategory.remove();
 }
-
