@@ -1,215 +1,96 @@
+// Javascript to control the dynamic creation of html Card and Category elements for the Admin Create Package
+// and user viewing and completing package activity functionality
 
-	//Allow content to be draggable and droppable. 
-	$( function() 
-	{
-		$( ".cards" ).draggable();
+//Allow content to be draggable and droppable.
+$( function()
+{
+    $( ".cards" ).draggable();
 
 
-	} );
-	
-	//Allow content to be reordered in a list.
-	$( function() 
-	{
-		$( ".connection" ).sortable(
-			{
-				connectWith: ".connection"
-			});
+} );
 
-	});
-	
-	//Create Cards on Screen
-	function appendCard()
-	{
-		//Find all Input values from the form and put them into an array
-		var groupInputValues = $("#groupForm").find('.form-control').map(function() 
-		{
-			//Remove whitespace from both sides of string
-			return $(this).val().trim();
-		}).toArray();
-		
-		for(i=0;i<groupInputValues.length;i++)
-		{
-			//Find value of each form input
-			groupText = groupInputValues[i];
-			//Ignore empty inputs
-			if(groupText != "")
-			{
-				//Create </div> for Group Headings
-				var tableDiv = document.createElement('div');
-				//Add class attributes to </div>
-				$(tableDiv).attr("class","cards");
-				//Allow content to be draggable and droppable. 
-				$(tableDiv).draggable();
-				//Create </ul> for Group Headings
-				var createUl = document.createElement('ul');
-				//Add class attributes to </ul>
-				$(createUl).attr("class","list-group");
-				//Create </input> for Group Headings
-				var createInputHeading = document.createElement('input');
-				//Add attributes to </input>
-				$(createInputHeading).attr("type","hidden");
-				$(createInputHeading).attr("name","title");
-				$(createInputHeading).attr("value",groupText);
-				//Create </li> for Group Headings
-				var createLiHeading = document.createElement('li');
-				//Add class attributes to </li>
-				$(createLiHeading).attr("class","list-group-item active").text(groupText);
-				//Create </li> to allow sorting between Group Headings
-				var createLi = document.createElement('li');
-				//Add class attributes to </li>
-				$(createLi).attr("class","connection");
-				//Allow content to be reordered in a list.
-				$(createLi).sortable(
-				{
-					connectWith: ".connection"
-				});
-				$(createLi).append(createInputHeading);
-				//Append elements to </ul>
-				$(createUl).append(createLiHeading, createLi);
-				//Append elements to </div>
-				$(tableDiv).append(createUl);
-				//Append elements to page
-				$("#listOfCards").append(tableDiv);
-				document.getElementById("cardPackageName").value = document.getElementById("nameOfCardPackage").value;
-			}
-		}
-	
-		//Find all Input values from the form and put them into an array
-		var cardInputValues = $("#cardForm").find('.form-control').map(function() 
-		{
-			//Remove whitespace from both sides of string
-			return $(this).val().trim();
-		}).toArray();
-		
-		//Create cards with input from the form
-		for(i=0;i<cardInputValues.length;i++)
-		{
-			//Find value of each form input
-			cardText = cardInputValues[i];
-			//Ignore empty inputs
-			if(cardText != "")
-			{
-				//Append form input into a list
-				//Create </input> for Group Headings
-				var createCardText = document.createElement('input');
-				//Add attributes to </input>
-				$(createCardText).attr("type","hidden");
-				$(createCardText).attr("name","text");
-				$(createCardText).attr("value",cardText);
-				//Create </li> for Cards
-				var cardLi = document.createElement('li');
-				//Add class attributes to </li>
-				$(cardLi).attr("class","list-group-item").text(cardText);
-				$(cardLi).append(createCardText);
-				$("#sortable").append(cardLi);
-			}
-		}
-		$("#cards").show();
-	};
-	
-	//Determine the number of Groups and Cards
-	$( function()
-	{
-		$("#createElements").click(function()
-		{
-			//Number of Groups to Create
-			var numberOfGroups = $("#numberOfGroups").val().trim();
-			//Number of Cards to Create
-			var numberOfCards = $("#numberOfCards").val().trim();
-			
-			//Create form for Group Headings
-			var groupForm = document.createElement('form');
-			//Create form for Cards
-			var cardForm = document.createElement('form');
-			
-			//Create new </div> for Group Headings
-			var group = document.createElement('div');
-			//Add bootstrap container to </div>
-			$(group).attr("class","col-sm-5");
-			$(group).attr("id","groupForm");
-			//Create new </div> for Cards
-			var card = document.createElement('div');
-			//Add bootstrap container to </div>
-			$(card).attr("class","col-sm-7");
-			$(card).attr("id","cardForm");
-		
-			//Create Group Headings
-			for(i=0;i<numberOfGroups;i++)
-			{
-				//Ignore empty inputs
-				if(numberOfGroups != "" && numberOfCards != "")
-				{
-					//Create new </div> for Group Headings
-					var groupDiv = document.createElement('div');
-					//Add class and id attributes to </div>
-					$(groupDiv).attr("class","form-group");
-					$(groupDiv).attr("id","group" + (i + 1));
-					//Create label attributes 
-					groupLabel = $("<label></label>");
-					$(groupLabel).attr("class","fb-text-label").text("Group " + (i + 1) + " Heading");
-					//Create input attributes 
-					groupInput = $("<input></input>");
-					$(groupInput).attr("class","form-control");	
-					groupInput.type = "text";
-					//Add label and input attributes to </div>
-					$(groupDiv).append(groupLabel, groupInput);
-					//Add </div> to webpage
-					$(groupForm).append(groupDiv);
-				}
-			}
-			//Create Cards
-			for(j=0;j<numberOfCards; j++)
-			{
-				//Ignore empty inputs
-				if(numberOfGroups != "" && numberOfCards != "")
-				{
-					//Create new </div> for Cards
-					var cardDiv = document.createElement('div');
-					//Add class and id attributes to </div>
-					$(cardDiv).attr("class","form-group");
-					$(cardDiv).attr("id","card" + (j + 1));
-					//Create label attributes 
-					cardLabel = $("<label></label>");
-					$(cardLabel).attr("class","fb-text-label").text("Card " + (j + 1));
-					//Create input attributes 
-					cardInput = $("<input></input>");
-					$(cardInput).attr("class","form-control");	
-					cardInput.type = "text";
-					//Add label and input attributes to </div>
-					$(cardDiv).append(cardLabel, cardInput);
-					//Add </div> to webpage
-					$(cardForm).append(cardDiv);
-				}
-			}
-			//Hide Initial Form and Create button if input valid
-			if(numberOfGroups != "" && numberOfCards != "")
-			{
-				//Hide inital creation form 
-				$("#create").hide();
-				//Hide inital buttons 
-				$("#createElements").hide();
-			
-				//Create button to Create Group Headings and Cards
-				var createButton = document.createElement('button');
-				//Add id, type and onclick attributes to </div>
-				$(createButton).attr("id","createCards").text("Make");
-				createButton.type = "button";
-				$(createButton).attr("onclick","appendCard()");
-							
-				//Create new </div> for Cards
-				var buttonDiv = document.createElement('div');
-				//Add class and id attributes to </div>
-				$(buttonDiv).attr("class","btn-group");
-				//Append buttons to </div>
-				$(buttonDiv).append(createButton);
-				
-			}
-			//Append form for Group Headings to Group Headings </div>
-			$(group).append(groupForm);
-			//Append form for Card  to Cards </div>
-			$(card).append(cardForm);
-			//Append Group Headings </div> and Card </div> to pageRows </div>
-			$("#pageRows").append(group, card);
-			$("#buttons").append(buttonDiv);
-		});
-	});
+//Allow content to be reordered in a list.
+$( function()
+{
+    $( ".connection" ).sortable(
+        {
+            connectWith: ".connection"
+        });
+
+});
+
+
+// Global variable card #ID counter - need to find a better way to handle this
+var id_num = 10; //start at 10 just in case?
+
+// Create-package functions
+function addCard(parentId)
+{
+	// Adds a new card to the card list
+	let cardList = document.getElementById(parentId);
+	let newCard = document.createElement("div");
+	newCard.setAttribute("class", "card");
+	newCard.setAttribute("id", id_num);
+	id_num = id_num + 1; //increment the #id count
+	let newTextArea = document.createElement("textarea");
+	newTextArea.setAttribute("maxlength", "200");
+	let newAddButton = document.createElement("button");
+	newAddButton.setAttribute("onclick", "addCard('cardList')");
+	newAddButton.setAttribute("type", "button");
+	newAddButton.innerHTML = "+";
+	let newRemoveButton = document.createElement("button");
+	newRemoveButton.setAttribute("onclick", "removeCard(this)");
+	newRemoveButton.setAttribute("type", "button");
+	newRemoveButton.innerHTML = "-";
+	newCard.appendChild(newTextArea);
+	newCard.appendChild(newAddButton);
+	newCard.appendChild(newRemoveButton);
+	cardList.appendChild(newCard);
+	window.scrollTo(0, cardList.scrollHeight);
+
+	//Add bootstrap container to </div>
+    $(cardList).attr("class","col-sm-7");
+}
+
+function removeCard(buttonObject)
+{
+	//Removes a card from the card list
+	let thisCard = buttonObject.parentElement
+	thisCard.remove();
+}
+
+function addCategory(parentId)
+{
+	// Add a new category to the category list
+	let categoryList = document.getElementById(parentId);
+	let newCategory = document.createElement("div");
+	newCategory.setAttribute("class", "category");
+	let newText = document.createElement("p");
+	let newLabel = document.createTextNode("Category Name:");
+	newText.appendChild(newLabel);
+	let newInput = document.createElement("input");
+	newInput.setAttribute("type", "text");
+	let newAddButton = document.createElement("button");
+	newAddButton.setAttribute("onclick", "addCategory('categoryList')");
+	newAddButton.setAttribute("type", "button");
+	newAddButton.innerHTML = "+";
+	let newRemoveButton = document.createElement("button");
+	newRemoveButton.setAttribute("onclick", "removeCategory(this)");
+	newRemoveButton.setAttribute("type", "button");
+	newRemoveButton.innerHTML = "-";
+	newCategory.appendChild(newText);
+	newCategory.appendChild(newInput);
+	newCategory.appendChild(newAddButton);
+	newCategory.appendChild(newRemoveButton);
+	categoryList.appendChild(newCategory);
+
+	//Add bootstrap container to </div>
+    $(categoryList).attr("class","col-sm-5");
+}
+
+function removeCategory(buttonObject) {
+	// Remove the category from the category list
+	let thisCategory = buttonObject.parentElement;
+	thisCategory.remove();
+}
+

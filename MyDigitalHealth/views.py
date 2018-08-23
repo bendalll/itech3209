@@ -24,15 +24,23 @@ def index(request):
     )
 
 
-def create(request):
+def create_package(request):
     return render(
         request,
         'create_package.html',
     )
 
 
+def preview_package(request):
+    return render(
+        request,
+        'preview_package.html',
+    )
+
+
 def cards(request):
     if request.method == 'POST':
+        print(request.POST)
         form = CreateCardPackage(request.POST, instance=Package())
         if form.is_valid():
             titles = request.POST.getlist('title')

@@ -3,17 +3,17 @@
 	{% load static %}
 	<script src="{% static 'scripts/cardsort.js' %}"></script>
 	<!-- Bootstrap Container -->
-	<div  class="container-fluid" id="formCreator">
+	<div  class="container-fluid" id="packageCreator">
 	<div>
-	<!-- Heading -->
-	<h1>New Package</h1>
+	    <!-- Heading -->
+	    <h1>New Package</h1>
 	</div>
 	
-	<div id="testing">
-	<!-- Package Name Heading -->
-	<label class="fb-text-label">Package Name</label>
-	<!-- Package Name Input-->
-	<input type="text" class="form-control" id="nameOfCardPackage">
+	<div id="packageNaming">
+	    <!-- Package Name Heading -->
+	    <label class="fb-text-label">Package Name</label>
+	    <!-- Package Name Input-->
+	    <input type="text" class="form-control" id="nameOfCardPackage">
 	</div></br>
 	
 	<!-- Bootstrap Row -->
@@ -21,38 +21,41 @@
 	</div>
 	<div  class="row" id="buttons">
 	</div>
-	<!-- Number of Categories and Cards Form-->
-	<div class="form-group" id ="create">
-	<!-- Number of Categories Heading -->
-	<label class="fb-text-label">Number of Categories</label>
-	<!-- Number of Categories Input -->
-	<input type="number" class="form-control" id="numberOfCategories">
-	<!-- Number of Cards Heading -->
-	<label class="fb-text-label">Number of Cards</label>
-	<!-- Number of Cards Input -->
-	<input type="number" class="form-control" id="numberOfCards">
-	<!-- Create Groups and Cards Button -->
-	<button type="button" id="createElements">Create</button>
+	<div id="admin_console">
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+		<div id="cardList">
+			<h2>Cards</h2>
+			<!-- Cards which can be dynamically added and removed -->
+			<div class="card" id="firstCard">
+				<textarea maxlength="200" placeholder="Card Text"></textarea>
+				<button type="button" onclick="addCard('cardList')">+</button>
+			</div>
+			<div class="card" id="2">
+				<textarea maxlength="200" placeholder="Card Text"></textarea>
+				<button type="button" onclick="addCard('cardList')">+</button>
+				<button type="button" onclick="removeCard(this)">-</button>
+			</div>
+		</div>
+		<div id="categoryList">
+			<!-- Categories which can be dynamically added and removed -->
+			<h2>Categories</h2>
+			<div class="category">
+				<p>Category Name:</p>
+				<input type="text" />
+				<button type="button" onclick="addCategory('categoryList')">+</button>
+			</div>
+			<div class="category">
+				<p>Category Name:</p>
+				<input type="text" />
+				<button type="button" onclick="addCategory('categoryList')">+</button>
+				<button type="button" onclick="removeCategory(this)">-</button>
+			</div>
+		</div>
+		<div>
+			<input type="submit" value="Preview" />
+		</div>
+    </form>
 	</div>
-	
-	<!-- Grouping Tables -->
-	<form class="form-signin" method="post" action="{% url 'cards' %} ">
-	{% csrf_token %}
-	<div id="listOfCards">
-	<!-- Name of Card Package -->
-	<input id ="cardPackageName" type="hidden" name="name">
-	<div class="cards" id="cards" style="display: none">
-	<!-- Initially hide sortable cards -->
-	<input type="hidden" name="group" value="Groups"><!-- Not used -->
-	<ul class="list-group">
-	<!-- Heading of Cards -->
-	<li class="list-group-item active">Cards</li>
-	<!-- Sortable Cards -->
-	<li id="sortable" class="connection"></li>
-	<input type="submit" value="Save" />
-	</ul>
-	</div>
-	</div>
-	</form>
 	</div>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
-    owner = models.ForeignKey(User.pk, on_delete=models.PROTECT)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.package_name
@@ -23,9 +23,9 @@ class Package(models.Model):
 
 
 class Category(models.Model):
-    package_id = models.ForeignKey(Package.pk, on_delete=models.PROTECT)
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
     category_name = models.CharField(max_length=200)
-    category_owner = models.ForeignKey(User.pk, on_delete=models.PROTECT)
+    category_owner = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.category_name
@@ -43,8 +43,8 @@ class Category(models.Model):
 
 
 class Card(models.Model):
-    package_id = models.ForeignKey(Package.pk, on_delete=models.PROTECT)
-    category_id = models.ForeignKey(Category.pk, on_delete=models.PROTECT, default='1')
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
+    category_id = models.ForeignKey(Category, on_delete=models.PROTECT, default='1')
     card_text = models.CharField(max_length=200)
 
     def __str__(self):
@@ -60,8 +60,8 @@ class Card(models.Model):
 
 
 class Comment(models.Model):
-    package_id = models.ForeignKey(Package.pk, on_delete=models.PROTECT)
-    user_id = models.ForeignKey(User.pk, on_delete=models.PROTECT)
+    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
     comment_text = models.TextField(default='Placeholder')
 
     def __str__(self):
