@@ -6,3 +6,5 @@
 MyDigitalHealth/__pycache__/*
 MyProject/__pycache__/*
 *.pyc
+MyDigitalHealth/migrations/__pycache__/*
+**/__pycache__/*
