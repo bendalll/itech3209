@@ -27,7 +27,7 @@ def index(request):
 def create(request):
     return render(
         request,
-        'project.html',
+        'create_package.html',
     )
 
 
@@ -58,7 +58,7 @@ def cards(request):
             args = {'form': form}
             return render(
                 request,
-                'project.html',
+                'create_package.html',
                 {'form': form}
             )
     else:
@@ -66,7 +66,7 @@ def cards(request):
         args = {'form': form}
         return render(
             request,
-            'project.html',
+            'create_package.html',
             {'form': form}
         )
 
