@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 {% block content %}	
 	{% load static %}
-	<script src="{% static 'scripts/project.js'%}"></script>
+	<script src="{% static 'scripts/cardsort.js' %}"></script>
 	<!-- Bootstrap Container -->
 	<div  class="container-fluid" id="formCreator">
 	<div>
@@ -10,9 +10,9 @@
 	</div>
 	
 	<div id="testing">
-	<!-- Name of Card Package Heading -->
-	<label class="fb-text-label">Name of Card Package</label>
-	<!-- Name of Card Package -->
+	<!-- Package Name Heading -->
+	<label class="fb-text-label">Package Name</label>
+	<!-- Package Name Input-->
 	<input type="text" class="form-control" id="nameOfCardPackage">
 	</div></br>
 	
@@ -21,15 +21,15 @@
 	</div>
 	<div  class="row" id="buttons">
 	</div>
-	<!-- Number of Groups and Cards Form-->
+	<!-- Number of Categories and Cards Form-->
 	<div class="form-group" id ="create">
-	<!-- Number of Groups Heading -->
-	<label class="fb-text-label">Number of Groups</label>
-	<!-- Number of Groups Input -->
-	<input type="number" class="form-control" id="numberOfGroups">
-	<!-- Number of Card Heading -->
+	<!-- Number of Categories Heading -->
+	<label class="fb-text-label">Number of Categories</label>
+	<!-- Number of Categories Input -->
+	<input type="number" class="form-control" id="numberOfCategories">
+	<!-- Number of Cards Heading -->
 	<label class="fb-text-label">Number of Cards</label>
-	<!-- Number of Card Input -->
+	<!-- Number of Cards Input -->
 	<input type="number" class="form-control" id="numberOfCards">
 	<!-- Create Groups and Cards Button -->
 	<button type="button" id="createElements">Create</button>
