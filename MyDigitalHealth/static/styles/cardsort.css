@@ -24,22 +24,16 @@ list-style-type:none;
     z-index: -1;
 }
 
-#cardList
-{
-    display: inline-block;
-    width: 60%;
-}
+/*#cardList*/
+/*{*/
+    /*display: inline-block;*/
+    /*width: 60%;*/
+/*}*/
 
-#categoryList
-{
-    display: inline-block;
-    width: 30%;
-}
-
-#pageActionButtons
-{
-    display: inline-block;
-    width: 100%;
-}
+/*#categoryList*/
+/*{*/
+    /*display: inline-block;*/
+    /*width: 30%;*/
+/*}*/
 	
 	

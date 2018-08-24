@@ -8,3 +8,4 @@ MyProject/__pycache__/*
 *.pyc
 MyDigitalHealth/migrations/__pycache__/*
 **/__pycache__/*
+MyDigitalHealth/migrations/*

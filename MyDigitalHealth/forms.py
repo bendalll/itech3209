@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Package, Category, Card, Comment
+from .models import Package, Category, Card, UserCardsort
 
 
 class RegistrationForm(UserCreationForm):
@@ -36,12 +36,10 @@ class CreateCardPackage(forms.ModelForm):
         )
 
 
-class CreateCardGroup(forms.ModelForm):
+class CreateCategory(forms.ModelForm):
     class Meta:
         model = Category
         fields = (
-            'package_id',
-            'category_name',
         )
 
 
@@ -49,16 +47,13 @@ class CreateCards(forms.ModelForm):
     class Meta:
         model = Card
         fields = (
-            'package_id',
             'card_text',
         )
 
 
-class CreateComments(forms.ModelForm):
+class CreateUserCardsort(forms.ModelForm):
     class Meta:
-        model = Comment
+        model = UserCardsort
         fields = (
-            'package_id',
-            'user_id',
             'comment_text',
         )

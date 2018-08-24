@@ -13,25 +13,28 @@
         <div class="cards row align-items-center">
 			<li class="list-group-item active">Cards</li>
 			<ul id="sortable" class="list-group connection">
-{#            Get the text for each card from the context provided list of "card_text"s #}
-                {% for card_text in card_text %}
-                <li class="list-group-item">{{ card_text }}</li>
+                {% for card in card_list %}
+                <li class="list-group-item">{{ card.card_text }}</li>
                 {% endfor %}
 			</ul>
         </div>
+        {% for category in category_list %}
         <div class="cards">
-{#            This needs more work but we need to get the category names from the list provided as context #}
-            {% for category_name in category_name %}
-            <li class="list-group-item active">{{ category_name }}</li>
-            {% endfor %}
             <ul class="list-group connection">
+                <li class="list-group-item active">{{ category.category_name }}</li>
             </ul>
         </div>
+        {% endfor %}
+    {% if request.user.is_superuser %}
+        {% include 'admin_preview_options.html' %}
+    {% else %}
         <!-- TODO: check this comment part to make it not submit anything in preview -->
         <div class="row form-group">
-                <input id ="cardPackageName" type="hidden" name="name" value="{{ package.name}}">
-                <textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
-                <button type="submit">Save</button>
+            <input id ="cardPackageName" type="hidden" name="name" value="{{ active_package.package_name}}">
+            <textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
+            <button type="submit">Save</button>
         </div>
+    {% endif %}
 	</div>
+
 {% endblock %}

@@ -41,7 +41,7 @@
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
-			{% for packages in card_packages %} <!-- THIS doesn't work? -->
+			{% for packages in card_packages %} <!-- This doesn't work? -->
 				<li><a href="{% url 'open_package' package.pk %}">{{ package.package_name }}</a></li>
 			{% endfor %}
 			</ul>

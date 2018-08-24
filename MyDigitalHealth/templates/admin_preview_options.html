@@ -1,0 +1,11 @@
+{% block content %}
+	<!-- Bootstrap Container -->
+    <div class="row form-group">
+        <input id ="cardPackageName" type="hidden" name="name" value="{{ active_package.package_name}}">
+        <textarea class="form-control" id="commentText" name="comment" placeholder="Comment field for the user"></textarea>
+    </div>
+    <div class="row form-group">
+        <button>Edit</button>
+        <button>Close</button>
+    </div>
+{% endblock %}

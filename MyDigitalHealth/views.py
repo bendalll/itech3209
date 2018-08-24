@@ -1,7 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, CreateCardPackage, CreateCardGroup, CreateCards, CreateComments
-from .models import Package, Category, Card, Comment
+from .forms import RegistrationForm, CreateCardPackage
+from .models import Package, Category, Card, UserCardsort
 from django.template.response import TemplateResponse
 from MyDigitalHealth import views
 
@@ -80,31 +80,43 @@ def create_package(request):
             new_package.save()
 
             for category_name in data.getlist('category_name'):
-                new_category = Category(package_id=new_package, category_name=category_name, category_owner=request.user)
+                new_category = Category(package=new_package, category_name=category_name)
                 new_category.save()
 
             for card_text in data.getlist('card_text'):
-                new_card = Card(package_id=new_package, card_text=card_text)
+                new_card = Card(package=new_package, card_text=card_text)
                 new_card.save()
 
-            # load the admin-view-all-the-packages page
             return redirect('admin')
 # TODO else do something useful
 
 
 def package_preview(request, package_id):
+    """
+    Generate a preview of a package to allow the Administrator to see it as the user would see it
+
+    TODO change name to 'load_cards' and extend template for admin vs user view
+    """
     active_package = Package.get_package_by_id(package_id)
-    # TODO: this should be a "collected package" object with all the card text / cat names etc in one object
-    # to pass through as context
+    card_list = Card.objects.filter(package=active_package)
+    category_list = Category.objects.filter(package=active_package)
+    # Pass through as accessible lists as context for ease of processing
     context = {'active_package': active_package,
-               'card_text': ["Message from the past", "Message from the future"],
-               'category_name': ["Move it here", "No, move it here"]
+               'card_list': card_list,
+               'category_list': category_list
                }
-    return render(
-        request,
-        'package_preview.html',
-        context
-    )
+    if request.user.is_staff:
+        return render(
+            request,
+            'package_preview.html',
+            context
+        )
+    else:
+        return render(
+            request,
+            'package_preview.html',
+            context
+        )
 
 
 def admin(request):
@@ -156,29 +168,21 @@ def open_package(request, package_id):
 
 def comments(request):
     if request.method == 'POST':
-        form = CreateComments(request.POST, instance=Comment())
-        name = request.POST.get('name')
-        cardPackage = Package.objects.get(name = name)
-        user = request.user
-        comment = request.POST.get('comment')
-        comments = Comment(card_package = cardPackage, user = user, comment = comment)
-        comments.save()
+        # TODO get the comments from the form and save them to UserCardsort item
         return render(
             request,
             'index.html',
         )
     else:
-        form = CreateCardPackage(instance=Comment())
-        args = {'form': form}
+        # TODO something meaningful here
         return render(
             request,
-            'package_active.html',
-            {'form': form}
+            'index.html'
         )
 
 
-def edit(request, package_id):
-    active_package = Package.objects.filter(package_id=package_id)
+def edit(request, package_in):
+    active_package = Package.objects.filter(package=package_in)
     context = {'active_package': active_package}
     return render(
         request,
@@ -235,9 +239,9 @@ def editPackage(request, package):
         )
 
 
-# def cardPackages(request):
-#     cardPackages = Package.objects.all()
-#     return TemplateResponse(request, views.index, {'cardPackages': cardPackages})
+def card_packages(request):
+    available_packages = Package.objects.all()
+    return TemplateResponse(request, views.index, {'packages': available_packages})
 
 
 # def cardGroups(request):

@@ -22,11 +22,20 @@ class Package(models.Model):
         packages_list = Package.objects.filter(owner_id=owner.id)
         return packages_list
 
+    @staticmethod
+    def get_package_categories(self):
+        categories = Category.objects.filter(self.pk)
+        return categories
+
+    @staticmethod
+    def get_package_cards(self):
+        cards = Card.objects.filter(package=self)
+        return cards
+
 
 class Category(models.Model):
-    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
     category_name = models.CharField(max_length=200)
-    category_owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.category_name
@@ -36,9 +45,8 @@ class Category(models.Model):
 
 
 class Card(models.Model):
-    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
-    category_id = models.ForeignKey(Category, on_delete=models.PROTECT, default='1')
     card_text = models.CharField(max_length=200)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.card_text
@@ -47,13 +55,10 @@ class Card(models.Model):
         verbose_name_plural = 'Cards'
 
 
-class Comment(models.Model):
-    package_id = models.ForeignKey(Package, on_delete=models.PROTECT)
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
-    comment_text = models.TextField(default='Placeholder')
-
-    def __str__(self):
-        return self.comment_text
-
-    class Meta:
-        verbose_name_plural = 'Comments'
+class UserCardsort(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)  # change to CASCADE if delete save when delete user
+    sortlist = {
+        models.ForeignKey(Card, on_delete=models.PROTECT): models.ForeignKey(Category, on_delete=models.PROTECT)
+    }
+    comment_text = models.TextField(default='placeholder text')

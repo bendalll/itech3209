@@ -18,44 +18,44 @@
                 <input type="text" class="form-control" id="nameOfCardPackage" placeholder="New package name" name="package_name">
             </div></br>
 
-        <!-- Bootstrap Row -->
+    {#  <!-- Bootstrap Row -->#}
     {#	<div  class="row" id="pageRows">#}
     {#	</div>#}
     {#	<div  class="row" id="buttons">#}
     {#	</div>#}
-    {#        Unsure what the above code does at this time #}
+    {#  Unsure what the above code does at this time #}
+            <div class="form-group" class="col-sm-7">
+                <div id="cardList">
+                    <h2 class="form-signin-heading">Cards</h2>
+                    <!-- Cards which can be dynamically added and removed -->
+                    <div class="list-group-item">
+                        <input type="text" class="form-control" placeholder="Card text here" name="card_text">
+                    </div>
+                    <div class="list-group-item">
+                        <input type="text" class="form-control" placeholder="Card text here" name="card_text">
+                        <button type="button" onclick="removeCard(this)">Remove This Card</button>
+                    </div>
+                </div>
+                    <br>
+                    <button type="button" onclick="addCard('cardList')">Add A Card</button>
+            </div>
+            <div class="form-group" class="col-sm-5">
+                <div id="categoryList">
+                    <!-- Categories which can be dynamically added and removed -->
+                    <h2 class="form-signin-heading">Categories</h2>
+                    <div class="list-group-item">
+                        <input type="text" placeholder="Category" name="category_name" class="form-control"/>
+                    </div>
+                    <div class="list-group-item">
+                        <input type="text" placeholder="Category" name="category_name" class="form-control"/>
+                        <button type="button" onclick="removeCategory(this)">Remove This Category</button>
+                    </div>
+                </div>
+                <button type="button" onclick="addCategory('categoryList')">Add A Category</button>
+            </div >
 
-            <div id="cardList">
-                <h2 class="form-signin-heading">Cards</h2>
-                <!-- Cards which can be dynamically added and removed -->
-                <div class="card" id="firstCard">
-                    <input type="text" class="form-control" placeholder="Card text here" name="card_text">
-                    <button type="button" onclick="addCard('cardList')">+</button>
-                </div>
-                <div class="card" id="2">
-                    <input type="text" class="form-control" placeholder="Card text here" name="card_text">
-                    <button type="button" onclick="addCard('cardList')">+</button>
-                    <button type="button" onclick="removeCard(this)">-</button>
-                </div>
-            </div>
-            <div id="categoryList">
-                <!-- Categories which can be dynamically added and removed -->
-                <h2 class="form-signin-heading">Categories</h2>
-                <div class="category">
-                    <p>Category Name:</p>
-                    <input type="text" placeholder="Category" name="category_name"/>
-                    <button type="button" onclick="addCategory('categoryList')">+</button>
-                </div>
-                <div class="category">
-                    <p>Category Name:</p>
-                    <input type="text" placeholder="Category" name="category_name"/>
-                    <button type="button" onclick="addCategory('categoryList')">+</button>
-                    <button type="button" onclick="removeCategory(this)">-</button>
-                </div>
-            </div>
-            <div id="pageActionButtons">
-                <input type="button" value="Preview (TODO)" onclick="location.href='{%  url 'view' %}'"/>
-                <br><br>
+            <div class="row" id="buttons">
+                <input type="button" value="Save and Preview" onclick="location.href='{%  url 'view' %}'"/>
                 <input type="submit" value="Save and Close"/>
             </div>
         </form>
