@@ -28,7 +28,7 @@ class RegistrationForm(UserCreationForm):
             return user
 
 
-class CreateCardPackage(forms.ModelForm):
+class CreatePackage(forms.ModelForm):
     class Meta:
         model = Package
         fields = (
@@ -40,10 +40,11 @@ class CreateCategory(forms.ModelForm):
     class Meta:
         model = Category
         fields = (
+            'category_name',
         )
 
 
-class CreateCards(forms.ModelForm):
+class CreateCard(forms.ModelForm):
     class Meta:
         model = Card
         fields = (
@@ -56,4 +57,5 @@ class CreateUserCardsort(forms.ModelForm):
         model = UserCardsort
         fields = (
             'comment_text',
+            'user',
         )

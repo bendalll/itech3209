@@ -22,14 +22,14 @@ class Package(models.Model):
         packages_list = Package.objects.filter(owner_id=owner.id)
         return packages_list
 
-    @staticmethod
-    def get_package_categories(self):
-        categories = Category.objects.filter(self.pk)
+    @classmethod
+    def get_package_categories(cls, package_id):
+        categories = Category.objects.filter(pk=package_id)
         return categories
 
-    @staticmethod
-    def get_package_cards(self):
-        cards = Card.objects.filter(package=self)
+    @classmethod
+    def get_package_cards(cls, package_id):
+        cards = Card.objects.filter(pk=package_id)
         return cards
 
 
@@ -62,3 +62,10 @@ class UserCardsort(models.Model):
         models.ForeignKey(Card, on_delete=models.PROTECT): models.ForeignKey(Category, on_delete=models.PROTECT)
     }
     comment_text = models.TextField(default='placeholder text')
+
+    def __str__(self):
+        return self.user_id
+        # TODO make this more meaningful
+
+    class Meta:
+        verbose_name_plural = 'Saved Packages'
