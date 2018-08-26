@@ -22,11 +22,9 @@
   <link rel="stylesheet" href="{% static 'styles/cardsort.css' %}">
   {% load templatetags %}
 </head>
-
 <body>
 <!-- Navigation Bar -->
 	<!-- Dark Bootstrap Theme -->
-
 	<!-- Bootstrap Container -->
 	<div class="container-fluid" style='background-color: #313131'>
 		<!-- Navigation Bar Text -->
@@ -41,8 +39,7 @@
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
-                <li>Package</li>
-			{% for packages in card_packages %} <!-- This doesn't work? -->
+			{% for package in card_packages %}
 				<li><a href="{% url 'open_package' package.pk %}">{{ package.package_name }}</a></li>
 			{% endfor %}
 			</ul>
