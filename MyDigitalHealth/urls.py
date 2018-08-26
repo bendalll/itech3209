@@ -1,20 +1,24 @@
-from django.urls import path, reverse
-from django.contrib import admin
-from django.contrib.auth.views import login, logout
+from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('login', login, {'template_name': 'login.html'}, name='login'),
-	path('logout', logout, name='logout'),
-	path('create', views.create, name='create'),
-	path('register', views.register, name='register'),
-	path('cards', views.cards, name='cards'),
-	path('view', views.view, name='view'),
-	path('package', views.package, name='package'),
-	path('packageList/<package>/', views.packageList, name='packageList'),
-	path('comments', views.comments, name='comments'),
-	path('admin', views.admin, name='admin'),
-	path('edit/<package>/', views.edit, name='edit'),
-	path('editPackage/<package>/', views.editPackage, name='editPackage'),
+    path('login', LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout', LogoutView.as_view(template_name='index.html'), name='logout'),
+    path('register', views.register, name='register'),
+    path('create_package', views.create_package, name='create_package'),
+    path('package_preview/<package_id>/', views.package_preview, name='package_preview'),
+    # path('view', views.view, name='view'),
+    # path('package', views.package, name='package'),
+    path('open_package/<package_id>/', views.open_package, name='open_package'),
+    # path('comments', views.comments, name='comments'),
+    path('admin', views.package_administration, name='admin'),
+    # path('edit/<package>/', views.edit, name='edit'),
+    path('edit_package/<package_id>/', views.edit_package, name='edit_package'),
+    path('edit_save/<package_id>/', views.edit_save, name='edit_save'),
+    path('preview/<package_id>/', views.package_preview, name='preview'),
+    path('assign/<package_id>/', views.assign_choose_user, name="assign"),
+    path('assign_to/<package_id>/<user_id>/', views.assign_package_to_user, name='assign_to'),
+    path('delete/<package_id>/', views.delete_package, name='delete'),
 ]

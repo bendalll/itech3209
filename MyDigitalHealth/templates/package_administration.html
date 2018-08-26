@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% load static %}
+	<!-- Bootstrap Container -->
+	<div class="container">
+	<form >
+	<h2 class="form-signin-heading">Administration</h2>
+	<h3 class="form-signin-heading">My Packages</h3>
+	<ul>
+		{% for package in own_packages %}
+			<li class="list-group-item">
+                <a href="{% url 'preview' package.pk %}">{{ package.package_name }}</a>
+				<a href="{% url 'edit_package' package.pk %} " class="btn btn-default">Edit</a>
+                <a href="{% url 'assign' package.pk %}" class="btn btn-default">Assign</a>
+                <a href="{% url 'delete' package.pk %}" class="btn btn-default">Delete (are you sure?)</a>
+			</li>
+		{% endfor %}
+	</ul>	
+	</form>
+	</div>	
+{% endblock %}

@@ -8,3 +8,7 @@
 MyDigitalHealth/__pycache__/
 MyProject/__pycache__/
 *.pyc
+.coverage
+.coveragerc
+MyDigitalHealth/migrations/0001_initial.py
+*.pyc

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Card_Packages, Card_Groups, Cards, Comments
+from .models import Package, Category, Card, UserCardsort
 
 
 class RegistrationForm(UserCreationForm):
@@ -28,37 +28,43 @@ class RegistrationForm(UserCreationForm):
             return user
 
 
-class CreateCardPackage(forms.ModelForm):
+class CreatePackageForm(forms.ModelForm):
     class Meta:
-        model = Card_Packages
+        model = Package
         fields = (
-            'name',
+            'package_name',
         )
 
 
-class CreateCardGroup(forms.ModelForm):
+class CreateCategoryForm(forms.ModelForm):
     class Meta:
-        model = Card_Groups
+        model = Category
         fields = (
-            'card_package',
-            'title',
+            'category_name',
         )
 
 
-class CreateCards(forms.ModelForm):
+class CreateCardForm(forms.ModelForm):
     class Meta:
-        model = Cards
+        model = Card
         fields = (
-            'card_package',
-            'text',
+            'card_text',
         )
 
 
-class CreateComments(forms.ModelForm):
+class CreateUserCardsort(forms.ModelForm):
     class Meta:
-        model = Comments
+        model = UserCardsort
         fields = (
-            'card_package',
+            'comment_text',
             'user',
-            'comment',
         )
+
+
+class CreateForm(forms.Form):
+    """
+    Form used to validate all data passed in from Create Package page before creating objects for db
+    """
+    package_name = forms.CharField()
+    category_name = forms.CharField()
+    card_text = forms.CharField()

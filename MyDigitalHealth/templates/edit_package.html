@@ -1,0 +1,60 @@
+{% extends "base_generic.html" %}
+{% block content %}
+	{% load static %}
+	<script src="{% static 'scripts/cardsort.js' %}"></script>
+	<!-- Bootstrap Container -->
+	<div  class="container-fluid" id="packageCreator">
+        <div>
+            <!-- Heading -->
+            <h1>Editing Package "{{ active_package.package_name }}"</h1>
+        </div>
+        <div id="admin_console">
+        <form action="{% url 'edit_save' active_package.pk %}" method="post">
+            {% csrf_token %}
+            <div id="packageNaming">
+                <!-- Package Name Heading -->
+                <label class="fb-text-label">Package Name</label>
+                <!-- Package Name Input-->
+                <input type="text" class="form-control" id="nameOfCardPackage" placeholder="New package name"
+                       name="package_name" value="{{ active_package.package_name }}">
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group" id="cardList">
+                    <h2 class="form-signin-heading">Cards</h2>
+                    <!-- Cards which can be dynamically added and removed -->
+                    {% for card in cardlist %}
+                    <div class="list-group-item">
+                        <input type="hidden" name="card_id" value="{{ card.pk }}"/>
+                        <input type="text" class="form-control" placeholder="Card text here" name="cur_card_text"
+                        value="{{ card.card_text }}">
+                        <button type="button" onclick="removeCard(this)">Remove This Card</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                    <br>
+                    <button type="button" onclick="addCard('cardList')">Add A Card</button>
+            </div>
+            <div class="col-sm-5">
+                <div class="form-group" id="categoryList">
+                    <!-- Categories which can be dynamically added and removed -->
+                    <h2 class="form-signin-heading">Categories</h2>
+                    {% for category in categorylist %}
+                    <div class="list-group-item">
+                        <input type="hidden" name="category_id" value="{{ category.pk }}"/>
+                        <input type="text" placeholder="Category" name="cur_category_name" class="form-control"
+                        value="{{ category.category_name }}"/>
+                        <button type="button" onclick="removeCategory(this)">Remove This Category</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" onclick="addCategory('categoryList')">Add A Category</button>
+            </div >
+            <br>
+            <div class="row" id="buttons">
+                <!-- TODO: 'Save and Preview' button-->
+                <input type="submit" value="Save and Close"/>
+            </div>
+        </form>
+        </div>
+	</div>
+{% endblock %}

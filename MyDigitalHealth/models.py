@@ -2,47 +2,82 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Card_Packages(models.Model):
-    name = models.CharField(max_length=200)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+class Package(models.Model):
+    package_name = models.CharField(max_length=200)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.name
+        return self.package_name
 
     class Meta:
-        verbose_name_plural = 'Card_Packages'
+        verbose_name_plural = 'Packages'
+
+    @classmethod
+    def get_package_by_id(cls, package_id):
+        package = Package.objects.get(id__exact=package_id)
+        return package
+
+    @classmethod
+    def get_packages_by_owner(cls, owner):
+        packages_list = Package.objects.filter(owner_id=owner.id)
+        return packages_list
+
+    @classmethod
+    def get_package_categories(cls, package_id):
+        categories = Category.objects.filter(pk=package_id)
+        return categories
+
+    @classmethod
+    def get_package_cards(cls, package_id):
+        cards = Card.objects.filter(pk=package_id)
+        return cards
 
 
-class Card_Groups(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    title = models.CharField(max_length=200)
+class Category(models.Model):
+    category_name = models.CharField(max_length=200)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return self.category_name
 
     class Meta:
-        verbose_name_plural = 'Card_Groups'
+        verbose_name_plural = 'Categories'
+
+    @classmethod
+    def create_categories_from_list(cls, categorylist, package_id):
+        for category_name in categorylist:
+            new_category = Category(category_name=category_name, package=package_id)
+            new_category.save()
 
 
-class Cards(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    card_group = models.ForeignKey(Card_Groups, on_delete=models.PROTECT, default='1')
-    text = models.CharField(max_length=200)
+class Card(models.Model):
+    card_text = models.CharField(max_length=200)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.text
+        return self.card_text
 
     class Meta:
         verbose_name_plural = 'Cards'
 
+    @classmethod
+    def create_cards_from_list(cls, cardlist, package_id):
+        for card_text in cardlist:
+            new_card = Card(card_text=card_text, package=package_id)
+            new_card.save()
 
-class Comments(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    comment = models.CharField(max_length=200, default='Placeholder')
+
+class UserCardsort(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)  # change to CASCADE if delete save when delete user
+    sortlist = {
+        models.ForeignKey(Card, on_delete=models.PROTECT): models.ForeignKey(Category, on_delete=models.PROTECT)
+    }
+    comment_text = models.TextField(default='placeholder text')
 
     def __str__(self):
-        return self.comment
+        return self.user_id
+        # TODO make this more meaningful
 
     class Meta:
-        verbose_name_plural = 'Comments'
+        verbose_name_plural = 'Saved Packages'
