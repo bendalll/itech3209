@@ -5,7 +5,7 @@
         <textarea class="form-control" id="commentText" name="comment" placeholder="Comment field for the user"></textarea>
     </div>
     <div class="row form-group">
-        <button>Edit</button>
+        <a href="{% url 'edit_package' active_package.pk %}" class="btn btn-default">Edit</a>
         <a href="{% url 'admin' %}" class="btn btn-default">Close</a>
     </div>
 {% endblock %}

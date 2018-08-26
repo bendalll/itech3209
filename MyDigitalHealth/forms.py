@@ -28,7 +28,7 @@ class RegistrationForm(UserCreationForm):
             return user
 
 
-class CreatePackage(forms.ModelForm):
+class CreatePackageForm(forms.ModelForm):
     class Meta:
         model = Package
         fields = (
@@ -36,7 +36,7 @@ class CreatePackage(forms.ModelForm):
         )
 
 
-class CreateCategory(forms.ModelForm):
+class CreateCategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = (
@@ -44,7 +44,7 @@ class CreateCategory(forms.ModelForm):
         )
 
 
-class CreateCard(forms.ModelForm):
+class CreateCardForm(forms.ModelForm):
     class Meta:
         model = Card
         fields = (
@@ -59,3 +59,12 @@ class CreateUserCardsort(forms.ModelForm):
             'comment_text',
             'user',
         )
+
+
+class CreateForm(forms.Form):
+    """
+    Form used to validate all data passed in from Create Package page before creating objects for db
+    """
+    package_name = forms.CharField()
+    category_name = forms.CharField()
+    card_text = forms.CharField()

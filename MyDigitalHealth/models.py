@@ -43,6 +43,12 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+    @classmethod
+    def create_categories_from_list(cls, categorylist, package_id):
+        for category_name in categorylist:
+            new_category = Category(category_name=category_name, package=package_id)
+            new_category.save()
+
 
 class Card(models.Model):
     card_text = models.CharField(max_length=200)
@@ -53,6 +59,12 @@ class Card(models.Model):
 
     class Meta:
         verbose_name_plural = 'Cards'
+
+    @classmethod
+    def create_cards_from_list(cls, cardlist, package_id):
+        for card_text in cardlist:
+            new_card = Card(card_text=card_text, package=package_id)
+            new_card.save()
 
 
 class UserCardsort(models.Model):

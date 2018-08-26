@@ -8,6 +8,16 @@
             <!-- Heading -->
             <h1>Create A New Package</h1>
         </div>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <div id="admin_console">
         <form action="{% url 'create_package' %}" method="post">
             {% csrf_token %}
@@ -16,7 +26,7 @@
                 <label class="fb-text-label">Package Name</label>
                 <!-- Package Name Input-->
                 <input type="text" class="form-control" id="nameOfCardPackage" placeholder="New package name" name="package_name">
-            </div></br>
+            </div>
 
     {#  <!-- Bootstrap Row -->#}
     {#	<div  class="row" id="pageRows">#}
@@ -24,8 +34,8 @@
     {#	<div  class="row" id="buttons">#}
     {#	</div>#}
     {#  Unsure what the above code does at this time #}
-            <div class="form-group" class="col-sm-7">
-                <div id="cardList">
+            <div class="col-sm-7">
+                <div class="form-group" id="cardList">
                     <h2 class="form-signin-heading">Cards</h2>
                     <!-- Cards which can be dynamically added and removed -->
                     <div class="list-group-item">
@@ -39,8 +49,8 @@
                     <br>
                     <button type="button" onclick="addCard('cardList')">Add A Card</button>
             </div>
-            <div class="form-group" class="col-sm-5">
-                <div id="categoryList">
+            <div class="col-sm-5">
+                <div class="form-group" id="categoryList">
                     <!-- Categories which can be dynamically added and removed -->
                     <h2 class="form-signin-heading">Categories</h2>
                     <div class="list-group-item">

@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
-from .forms import RegistrationForm, CreatePackage, CreateCategory, CreateCard
+from django.contrib import messages
+from .forms import RegistrationForm, CreatePackageForm, CreateCategoryForm, CreateCardForm, CreateForm
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import get_admin_own_packages
 
@@ -75,34 +76,21 @@ def create_package(request):
         if request.method == 'POST':
             # get data from request.POST and create cards and categories and new package as objects
             # save new objects to the database
-            # etc in a dict so they can be easily accessed via template code. Somewhere should define "create pack obj"
-            data = request.POST
-            package_form = CreatePackage(data, instance=Package())
-            category_form = CreateCategory(data, instance=Category())
-            card_form = CreateCard(data, instance=Card())
-
-            if package_form.is_valid() and category_form.is_valid() and card_form.is_valid():
-                new_package_name = package_form.cleaned_data.get('package_name')
-                new_package = Package(package_name=new_package_name, owner=request.user)
-                # new_package.save()
-
-                category_name = category_form.cleaned_data.get('category_name')
-                print(category_name)
-
+            if validate_input(request):
+                data = request.POST
+                new_package = Package(package_name=data['package_name'], owner=request.user)
+                new_package.save()
+                categorylist = data.getlist('category_name')
+                Category.create_categories_from_list(categorylist, new_package)
+                cardlist = data.getlist('card_text')
+                Card.create_cards_from_list(cardlist, package_id=new_package)
+                return redirect('admin')
             else:
-                print("We got here but [a value] provided was invalid")
-                # raise a validation error
-                # return the error message to the user e.g. "Package Name invalid"
-
-            # for category_name in data.getlist('category_name'):
-            #     new_category = Category(package=new_package, category_name=category_name)
-            #     new_category.save()
-            #
-            # for card_text in data.getlist('card_text'):
-            #     new_card = Card(package=new_package, card_text=card_text)
-            #     new_card.save()
-
-            return redirect('admin')
+                messages.info(request, 'Something went wrong. Please ensure all fields are filled out.')
+                return redirect('create_package')
+        else:
+            messages.info(request, 'Something went wrong. Sorry!')
+            return redirect('create_package')
 # TODO else do something useful
 
 
@@ -186,9 +174,9 @@ def edit_package(request, package_id):
     )
 
 
-def edit_package_OLD(request, package_id):
+def edit_package_old(request, package_id):
     if request.method == 'POST':
-        form = CreatePackage(request.POST, instance=Package())
+        form = CreatePackageForm(request.POST, instance=Package())
         if form.is_valid():
             cardPackage = Package.objects.get(id__exact=package)
             titles = request.POST.getlist('title')
@@ -217,7 +205,7 @@ def edit_package_OLD(request, package_id):
                 'package_administration.html',
             )
         else:
-            form = CreatePackage(instance=Package())
+            form = CreatePackageForm(instance=Package())
             args = {'form': form}
             return render(
                 request,
@@ -225,7 +213,7 @@ def edit_package_OLD(request, package_id):
                 {'form': form}
             )
     else:
-        form = CreatePackage(instance=Package())
+        form = CreatePackageForm(instance=Package())
         args = {'form': form}
         return render(
             request,
@@ -237,39 +225,101 @@ def edit_package_OLD(request, package_id):
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def edit_save(request, package_id):
     if request.method == 'POST':
-        package_form = CreatePackage(request.POST, instance=Package())
-
-        if package_form.is_valid():
+        if validate_input(request):
+            data = request.POST
             active_package = Package.objects.get(pk=package_id)
-            titles = request.POST.getlist('title')
-            texts = request.POST.getlist('text')
-            cardGroupIDs = request.POST.getlist('cardGroupID')
-            cardListIDs = request.POST.getlist('cardListID')
-            name = request.POST.get('name')
-            user = request.user
-            cardPackage.name = name
-            cardPackage.save()
-            group = Category()
-            card = Card()
-            for cardGroupID, title in zip(cardGroupIDs, titles):
-                group.id = cardGroupID
-                group.card_package = cardPackage
-                group.title = title
-                group.save()
-            for cardListID, text in zip(cardListIDs, texts):
-                card.id = cardListID
-                card.card_package = cardPackage
-                card.card_group = group
-                card.text = text
+            cat_ids = data.getlist('category_id')
+            cat_names = data.getlist('cur_category_name')
+            for category_id, category_name in zip(cat_ids, cat_names):
+                category = Category.objects.get(pk=category_id)
+                category.category_name = category_name
+                category.save()
+
+            card_ids = data.getlist('card_id')
+            card_texts = data.getlist('cur_card_text')
+            for card_id, card_text in zip(card_ids, card_texts):
+                card = Card.objects.get(pk=card_id)
+                card.card_text = card_text
                 card.save()
-            return render(
-                request,
-                'package_administration.html',
-            )
-    return render(
-        request,
-        'package_administration.html'
-    )
+
+            # TODO: tidy this code
+            # if Categories or Cards were removed, delete them
+            # get the list of ids as the package thinks they are
+            cur_categorylist = Category.objects.filter(package=active_package)
+            # turn the list into a list of ints for ease of comparison
+            int_cat_ids = []
+            for cat_id in cat_ids:
+                int_id = int(cat_id)
+                int_cat_ids.append(int_id)
+
+            # compare the lists and remove the Categories that have been edited out by the admin
+            for category in cur_categorylist:
+                if category.pk not in int_cat_ids:
+                    category.delete()
+
+            # repeat for Cards
+            cur_cardlist = Card.objects.filter(package=active_package)
+            # turn the list into a list of ints for ease of comparison
+            int_card_ids = []
+            for card_id in card_ids:
+                int_id = int(card_id)
+                int_card_ids.append(int_id)
+
+            # compare the lists and remove the Categories that have been edited out by the admin
+            for card in cur_cardlist:
+                if card.pk not in int_card_ids:
+                    card.delete()
+
+            # if new Categories or Cards were added, create them
+            new_categories = data.getlist('category_name')
+            for category_name in new_categories:
+                new_category = Category(category_name=category_name, package=active_package)
+                new_category.save()
+
+            new_cards = data.getlist('card_text')
+            for card_text in new_cards:
+                new_card = Card(card_text=card_text, package=active_package)
+                new_card.save()
+
+            # TODO: success message and redirect
+            return redirect('admin')
+        else:
+            messages.info(request, 'Something went wrong. Please ensure all fields are filled out.')
+            return redirect('edit_package')
+    else:
+        messages.info(request, 'Something went wrong. Sorry!')
+        return redirect('edit_package')
+    """
+        titles = request.POST.getlist('title')
+        texts = request.POST.getlist('text')
+        cardGroupIDs = request.POST.getlist('cardGroupID')
+        cardListIDs = request.POST.getlist('cardListID')
+        name = request.POST.get('name')
+        user = request.user
+        cardPackage.name = name
+        cardPackage.save()
+        group = Category()
+        card = Card()
+        for cardGroupID, title in zip(cardGroupIDs, titles):
+            group.id = cardGroupID
+            group.card_package = cardPackage
+            group.title = title
+            group.save()
+        for cardListID, text in zip(cardListIDs, texts):
+            card.id = cardListID
+            card.card_package = cardPackage
+            card.card_group = group
+            card.text = text
+            card.save()
+        return render(
+            request,
+            'package_administration.html',
+        )
+return render(
+    request,
+    'package_administration.html'
+)
+"""
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -404,3 +454,29 @@ def edit(request, package_in):
 def get_cards_for_dropdown(request):
     user = request.user
     # TODO: create package/user relationship
+
+
+def validate_input(request):
+    """
+    Function to ensure input from create or edit card page is not blank
+    TODO: improve this, possibly using Form validation instead
+    """
+    data = request.POST
+    categorylist = data.getlist('category_name')
+    cardlist = data.getlist('card_text')
+
+    if data['package_name'] != "":
+        for name in categorylist:
+            if name != "":
+                pass
+            else:
+                return False  # messages.info(request, 'A category name provided is invalid.')
+        for text in cardlist:
+            if text != "":
+                pass
+            else:
+                return False  # messages.info(request, "A card text value provided is invalid.")
+        # if we made it to here, everything is valid and return True
+        return True
+    else:
+        return False  # messages.info(request, 'The package name provided is invalid.')
