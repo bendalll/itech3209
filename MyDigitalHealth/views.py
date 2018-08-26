@@ -6,7 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from .forms import RegistrationForm, CreatePackageForm, CreateCategoryForm, CreateCardForm, CreateForm
 from .models import Package, Category, Card, UserCardsort
-from .context_processors import get_admin_own_packages
+from .context_processors import admin_own_packages
 
 
 def index(request):
@@ -127,7 +127,7 @@ def package_administration(request):
     """
     View to generate and display the Administration page with a list of the packages the admin has created
     """
-    own_packages = get_admin_own_packages(request)
+    own_packages = admin_own_packages(request)
     context = {'own_packages': own_packages}
     return render(
         request,
@@ -172,54 +172,6 @@ def edit_package(request, package_id):
         'edit_package.html',
         context
     )
-
-
-def edit_package_old(request, package_id):
-    if request.method == 'POST':
-        form = CreatePackageForm(request.POST, instance=Package())
-        if form.is_valid():
-            cardPackage = Package.objects.get(id__exact=package)
-            titles = request.POST.getlist('title')
-            texts = request.POST.getlist('text')
-            cardGroupIDs = request.POST.getlist('cardGroupID')
-            cardListIDs = request.POST.getlist('cardListID')
-            name = request.POST.get('name')
-            user = request.user
-            cardPackage.name = name
-            cardPackage.save()
-            group = Category()
-            card = Card()
-            for cardGroupID, title in zip(cardGroupIDs, titles):
-                group.id = cardGroupID
-                group.card_package = cardPackage
-                group.title = title
-                group.save()
-            for cardListID, text in zip(cardListIDs, texts):
-                card.id = cardListID
-                card.card_package = cardPackage
-                card.card_group = group
-                card.text = text
-                card.save()
-            return render(
-                request,
-                'package_administration.html',
-            )
-        else:
-            form = CreatePackageForm(instance=Package())
-            args = {'form': form}
-            return render(
-                request,
-                'package_administration.html',
-                {'form': form}
-            )
-    else:
-        form = CreatePackageForm(instance=Package())
-        args = {'form': form}
-        return render(
-            request,
-            'package_administration.html',
-            {'form': form}
-        )
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
