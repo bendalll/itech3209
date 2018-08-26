@@ -1,25 +1,15 @@
-from .models import Package, Category, Card
+from .models import Card_Packages, Card_Groups, Cards
 
-
-def card_packages(request):
+def cardPackages(request):
     return {
-        'all_packages': Package.objects.all()
+        'cardPackages': Card_Packages.objects.all()
     }
-
-
-def card_categories(request):
+def cardGroups(request):
     return {
-        'card_categories': Category.objects.all()
+        'cardGroups': Card_Groups.objects.all()
     }
-
-
-def all_cards(request):
+	
+def cardList(request):
     return {
-        'card_list': Card.objects.all()
+        'cardList': Cards.objects.all()
     }
-
-
-def get_admin_own_packages(request):
-    owner = request.user
-    own_packages = Package.get_packages_by_owner(owner)
-    return own_packages

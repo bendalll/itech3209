@@ -1,0 +1,27 @@
+	/* Card List */
+	.connection 
+	{
+    min-height: 100px;
+	list-style-type:none;
+	}
+	
+	/* Card Containers */
+	.cards
+	{
+    width: 30%;
+    min-height: 20px;
+    list-style-type: none;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+	cursor: move;
+	}
+	
+	/* Navigation Bar Color */
+	.navbar-inverse
+	{
+		background-color: #313131;
+		z-index: -1;
+	}
+	
+	
