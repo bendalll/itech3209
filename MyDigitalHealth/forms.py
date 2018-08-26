@@ -61,10 +61,52 @@ class CreateUserCardsort(forms.ModelForm):
         )
 
 
-class CreateForm(forms.Form):
+class CreateForm(forms.ModelForm):
     """
     Form used to validate all data passed in from Create Package page before creating objects for db
     """
     package_name = forms.CharField()
     category_name = forms.CharField()
     card_text = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        category_names = CreateForm.objects.filter(
+            profile=self.instance
+        )
+        for i in range(len(category_names) + 1):
+            field_name = 'category_name%s' % (i,)
+            self.fields[field_name] = forms.CharField(required=False)
+            try:
+                self.initial[field_name] = category_names[i].category_name
+            except IndexError:
+                    self.initial[field_name] = ""
+            field_name = 'category_name%s' % (i + 1,)
+            self.fields[field_name] = forms.CharField(required=False)
+            self.fields[field_name] = ""
+
+    def clean(self):
+        category_names = set()
+        i = 0
+        field_name = 'category_name%s' % (i,)
+        while self.cleaned_data.get(field_name):
+            category_name = self.cleaned_data[field_name]
+            if category_name in category_names:
+                self.add_error(field_name, 'Duplicate')
+            else:
+                category_names.add(category_name)
+            i += 1
+            field_name = 'category_name%s' % (i,)
+        self.cleaned_data["category_names"] = category_names
+
+    def save(self):
+        package = self.instance
+
+        package.category_set.all().delete()
+        for category_name in self.cleaned_data["category_names"]:
+            CreateForm.objects.create(
+                package=package,
+                category_name="",
+            )
+
+# https://www.caktusgroup.com/blog/2018/05/07/creating-dynamic-forms-django/
