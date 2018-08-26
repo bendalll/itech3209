@@ -3,7 +3,7 @@ from .models import Package, Category, Card
 
 def card_packages(request):
     return {
-        'all_packages': Package.objects.all()
+        'card_packages': Package.objects.all()
     }
 
 
@@ -19,7 +19,7 @@ def all_cards(request):
     }
 
 
-def get_admin_own_packages(request):
+def admin_own_packages(request):
     owner = request.user
     own_packages = Package.get_packages_by_owner(owner)
     return own_packages
