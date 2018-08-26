@@ -150,12 +150,25 @@ def open_package(request, package_id):
     """
     Take a package id and generate the activity page for the user to card sort with that package
     """
-    active_package = Package.objects.get(pk=package_id)
-    context = {'active_package': active_package}
+    active_package = Package.get_package_by_id(package_id)
+    card_list = Card.objects.filter(package=active_package)
+    category_list = Category.objects.filter(package=active_package)
+    # Pass through as accessible lists as context for ease of processing
+    context = {'active_package': active_package,
+               'card_list': card_list,
+               'category_list': category_list
+               }
     return render(
         request,
         'package_active.html',
         context
+    )
+
+
+def save(request, package_id):
+    return(
+        request,
+        'index.html'
     )
 
 

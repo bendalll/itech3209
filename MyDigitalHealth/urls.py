@@ -21,4 +21,5 @@ urlpatterns = [
     path('assign/<package_id>/', views.assign_choose_user, name="assign"),
     path('assign_to/<package_id>/<user_id>/', views.assign_package_to_user, name='assign_to'),
     path('delete/<package_id>/', views.delete_package, name='delete'),
+    path('save/<package_id>/', views.save, name='save'),
 ]
