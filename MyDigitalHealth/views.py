@@ -1,10 +1,10 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from .forms import RegistrationForm, CreatePackageForm, CreateCategoryForm, CreateCardForm, CreateForm
+from .forms import RegistrationForm, CreatePackageForm, CreateCategoryForm, CreateCardForm, CreateForm, CreatePackageInitialForm
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import admin_own_packages
 
@@ -62,11 +62,24 @@ def register(request):
 
 
 def create_package(request):
+    if request.method == 'POST':
+        form = CreatePackageInitialForm(request.POST)
+        if form.is_valid():
+            print("Form submitted")
+            return HttpResponseRedirect('admin')
+
+    else:
+        form = CreatePackageInitialForm()
+
+    return render(
+        request,
+        'create_package.html',
+        {'form': form}
+    )
     """
     Administrator functionality to create new Packages with related Cards and Categories
     If request is GET, displays the form to enter data for new Package
     If request is POST, should submit data and create new Package, then redirect to Package list
-    """
     if request.method == 'GET':
         return render(
             request,
@@ -92,6 +105,7 @@ def create_package(request):
             messages.info(request, 'Something went wrong. Sorry!')
             return redirect('create_package')
 # TODO else do something useful
+"""
 
 
 def package_preview(request, package_id):

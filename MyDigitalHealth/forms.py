@@ -60,7 +60,7 @@ class CreateUserCardsort(forms.ModelForm):
             'user',
         )
 
-
+# not using this form currently
 class CreateForm(forms.ModelForm):
     """
     Form used to validate all data passed in from Create Package page before creating objects for db
@@ -99,14 +99,25 @@ class CreateForm(forms.ModelForm):
             field_name = 'category_name%s' % (i,)
         self.cleaned_data["category_names"] = category_names
 
-    def save(self):
-        package = self.instance
-
-        package.category_set.all().delete()
-        for category_name in self.cleaned_data["category_names"]:
-            CreateForm.objects.create(
-                package=package,
-                category_name="",
-            )
+    # def save(self):
+    #     package = self.instance
+    #
+    #     package.category_set.all().delete()
+    #     for category_name in self.cleaned_data["category_names"]:
+    #         CreateForm.objects.create(
+    #             package=package,
+    #             category_name="",
+    #         )
+    #     return True
 
 # https://www.caktusgroup.com/blog/2018/05/07/creating-dynamic-forms-django/
+
+
+class CreatePackageInitialForm(forms.Form):
+    package_name = forms.CharField(max_length=200, label="Package Name")
+    category_name_1 = forms.CharField(max_length=100, label="Category 1 Name")
+    category_name_2 = forms.CharField(max_length=100, label="Category 2 Name")
+    card_text_1 = forms.CharField(max_length=500, label="Card 1 Text")
+    card_text_2 = forms.CharField(max_length=500, label="Card 2 Text")
+    card_text_3 = forms.CharField(max_length=500, label="Card 3 Text")
+    card_text_4 = forms.CharField(max_length=500, label="Card 4 Text")
