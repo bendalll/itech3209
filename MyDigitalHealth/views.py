@@ -1,10 +1,11 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from .forms import RegistrationForm, CreatePackageForm, CreateCategoryForm, CreateCardForm, CreateForm, CreatePackageInitialForm
+from .forms import RegistrationForm, PackageSubmittedForm, PackageForm
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import admin_own_packages
 
@@ -63,19 +64,25 @@ def register(request):
 
 def create_package(request):
     if request.method == 'POST':
-        form = CreatePackageInitialForm(request.POST)
+        print(request.POST)
+        form = PackageSubmittedForm(request.POST)
+        print("Form is: ", form)
         if form.is_valid():
             print("Form submitted")
             return HttpResponseRedirect('admin')
 
     else:
-        form = CreatePackageInitialForm()
+        package_form = PackageForm()
+        categories_formset = modelformset_factory(Category, fields=('category_name',), extra=2)
+        categories_formset = categories_formset(queryset=Category.objects.none())
+        cards_formset = modelformset_factory(Card, fields=('card_text',), extra=4)
+        cards_formset = cards_formset(queryset=Card.objects.none())
 
-    return render(
-        request,
-        'create_package.html',
-        {'form': form}
-    )
+        return render(
+            request,
+            'create_package.html',
+            {'package_form': package_form, 'categories_formset': categories_formset, 'cards_formset': cards_formset}
+        )
     """
     Administrator functionality to create new Packages with related Cards and Categories
     If request is GET, displays the form to enter data for new Package
