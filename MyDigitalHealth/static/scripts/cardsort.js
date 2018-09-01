@@ -76,6 +76,10 @@ function addCategory(parent_id)
     new_label.innerHTML = "Category name:";
     category_list.appendChild(new_label);
     category_list.appendChild(new_category);
+
+    let total_forms = $('#id_form-TOTAL_FORMS').val();
+    total_forms++;
+    $('#id_form-TOTAL_FORMS').val(total_forms);
 }
 
 
@@ -83,4 +87,49 @@ function removeCategory(category_id)
 {
 	// Remove the category from the category list
     // TODO
+}
+
+
+function cloneCard(selector, type)
+{
+    let new_card = $(selector).clone(true);
+    let total = $('#id_' + type + '-TOTAL_FORMS').val();
+    new_card.find(':input').each(function()
+    {
+        let name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
+        let id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+    });
+    new_card.find('label').each(function() {
+        let newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+        $(this).attr('for', newFor);
+    });
+    total++;
+    $('#id_' + type + '-TOTAL_FORMS').val(total);
+
+
+    $(selector).after(new_card);
+}
+
+
+function cloneCategory(selector, total_forms)
+{
+    console.log(selector)
+    let new_category = $(selector).clone(true);
+    console.log(new_category)
+    let total = $(total_forms).val();
+    new_category.find(':input').each(function()
+    {
+        let name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
+        let id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+    });
+    new_category.find('label').each(function()
+    {
+        let newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+        $(this).attr('for', newFor);
+    });
+    total++;
+    $(total_forms).val(total);
+    $(selector).parent().after(new_category);
 }
