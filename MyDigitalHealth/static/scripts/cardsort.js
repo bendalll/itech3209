@@ -20,66 +20,52 @@ $( function()
 });
 
 
-// global variable to count numbers of cards and categories
-// initially 4 cards and 2 categories are rendered with the form
+// Global variables to count numbers of cards and categories
+// Initially the form consists of 4 cards and 2 categories
 var num_cards = 4;
 var num_categories = 2;
 
 
 // Create-package functions
-function addCard(parent_id)
+function cloneItem(type)
 {
-	// Adds a new card to the card list
-    // :param: parent_id: the id of the <div> to add new card to
-	let card_list = document.getElementById(parent_id);
-	let new_card = document.createElement("input");
-	new_card.setAttribute("type", "text");
-	new_card.setAttribute("maxlength", "200");
+    /* Clone a card or category from the list and append it to the list after updating
+     the name and id values on the clone
+    :param: type: indicates whether the item to clone and append is a card or category
+    ALSO REQUIRES: that the formset prefix assigned by Django be 'card' or 'category' as expected,
+    AND: that the formset is rendered so each form is an </li> within a </ul>,
+    AND: that the #id of the </ul> is 'id_card_list' or 'id_category_list' as appropriate
+     */
+    let item_number = 0; // currently used so later code will fail gracefully if param is somehow incorrect
+    if(type === 'card') {
+        item_number = num_cards;
+        num_cards += 1;
+    }
+    else if (type === 'category') {
+        item_number = num_categories;
+        num_categories += 1;
+    }
 
-	// increment global num_cards and append to new card id
-    num_cards += 1;
-    new_card.setAttribute("name", "form-" + num_cards + "-card_text");
-	new_card.setAttribute("id", "id_form-" + num_cards + "-card_text");
+    let new_item = $('#id_' + type + '_list li:last').clone(true);
+    new_item.find(':input').each(function()
+    {
+        let name = $(this).attr('name').replace('-' + (item_number-1) + '-','-' + item_number + '-');
+        let id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+    });
+    new_item.find('label').each(function()
+    {
+        let newFor = $(this).attr('for').replace('-' + (item_number-1) + '-','-' + item_number + '-');
+        $(this).attr('for', newFor);
+    });
 
-	//create a new label for the new card and append both to div
-    let new_label = document.createElement("label");
-    new_label.setAttribute("for", "id_card_text_" + num_cards);
-    new_label.innerHTML = "Card text:";
-    card_list.appendChild(new_label);
-    card_list.appendChild(new_card);
-}
+    // Increment the total number of forms on the page so all forms will be submitted
+    let id_total_forms = '#id_' + type + '-TOTAL_FORMS';
+    let total = $(id_total_forms).val();
+    total++;
+    $(id_total_forms).val(total);
 
-
-function removeCard(card_id)
-{
-	//Removes a card from the card list
-	// TODO
-}
-
-
-function addCategory(parent_id)
-{
-	// Add a new category to the category list
-    // :param: parent_id: the id of the <div> to add new category to
-	let category_list = document.getElementById(parent_id);
-	let new_category = document.createElement("input");
-	new_category.setAttribute("type", "text");
-	new_category.setAttribute("maxlength", "200");
-
-	// increment the global num_categories and append to new category id
-    num_categories += 1;
-    new_category.setAttribute("name", "form-" + num_categories + "-category_name");
-    new_category.setAttribute("id", "id_form-" + num_categories + "-category_name");
-
-    let new_label = document.createElement("label");
-    new_label.setAttribute("for", "id_form-" + num_categories + "-category_name");
-    new_label.innerHTML = "Category name:";
-    category_list.appendChild(new_label);
-    category_list.appendChild(new_category);
-
-    let total_forms = $('#id_form-TOTAL_FORMS').val();
-    total_forms++;
-    $('#id_form-TOTAL_FORMS').val(total_forms);
+    $('#id_' + type + "_list").append(new_item);
 }
 
 
@@ -90,46 +76,8 @@ function removeCategory(category_id)
 }
 
 
-function cloneCard(selector, type)
+function removeCard(card_id)
 {
-    let new_card = $(selector).clone(true);
-    let total = $('#id_' + type + '-TOTAL_FORMS').val();
-    new_card.find(':input').each(function()
-    {
-        let name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
-        let id = 'id_' + name;
-        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-    });
-    new_card.find('label').each(function() {
-        let newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
-        $(this).attr('for', newFor);
-    });
-    total++;
-    $('#id_' + type + '-TOTAL_FORMS').val(total);
-
-
-    $(selector).after(new_card);
-}
-
-
-function cloneCategory(selector, total_forms)
-{
-    console.log(selector)
-    let new_category = $(selector).clone(true);
-    console.log(new_category)
-    let total = $(total_forms).val();
-    new_category.find(':input').each(function()
-    {
-        let name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
-        let id = 'id_' + name;
-        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-    });
-    new_category.find('label').each(function()
-    {
-        let newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
-        $(this).attr('for', newFor);
-    });
-    total++;
-    $(total_forms).val(total);
-    $(selector).parent().after(new_category);
+	//Removes a card from the card list
+	// TODO
 }
