@@ -5,7 +5,8 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from .forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form
+from .forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form, \
+    get_whole_package
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import admin_own_packages
 
@@ -84,14 +85,7 @@ def package_preview(request, package_id):
     """
     Generate a preview of a package to allow the Administrator to see it as the user would see it
     """
-    active_package = Package.get_package_by_id(package_id)
-    card_list = Card.objects.filter(package=active_package)
-    category_list = Category.objects.filter(package=active_package)
-    # Pass through as accessible lists as context for ease of processing
-    context = {'active_package': active_package,
-               'card_list': card_list,
-               'category_list': category_list
-               }
+    context = get_whole_package(package_id)
     if request.user.is_staff:
         return render(
             request,

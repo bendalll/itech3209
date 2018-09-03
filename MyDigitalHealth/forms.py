@@ -152,12 +152,13 @@ def create_package(package_form_cleaned, categories_form_cleaned, cards_form_cle
 
 def get_whole_package(package_id):
     active_package = Package.get_package_by_id(package_id)
-    card_list = Card.objects.filter(package=active_package)
-    print("Card list is: ", card_list)
-    category_list = Category.objects.filter(package=active_package)
-    # Pass through as accessible lists as context for ease of processing
-    package = {'package_name': active_package.package_name,
-               'card_list': card_list,
-               'category_list': category_list
+    list_of_card_objects = Card.objects.filter(package=active_package)
+    list_of_category_objects = Category.objects.filter(package=active_package)
+
+    # Return items in dict for ease of processing
+    package = {'package_id': package_id,
+               'package_name': active_package.package_name,
+               'cards': list_of_card_objects,
+               'categories': list_of_category_objects
                }
     return package

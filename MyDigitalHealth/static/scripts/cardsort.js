@@ -4,7 +4,7 @@
 //Allow content to be draggable and droppable.
 $( function()
 {
-    $( ".cards" ).draggable();
+    $( ".draggable" ).draggable();
 
 
 } );
