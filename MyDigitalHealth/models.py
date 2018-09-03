@@ -58,10 +58,12 @@ class Card(models.Model):
 
 
 class UserCardsort(models.Model):
-    package = models.ForeignKey(Package, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)  # change to CASCADE if delete save when delete user
+    """ Represents a saved version of a package, as assigned to a user, holding their comment data and sorted
+    card-category associations"""
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # change to CASCADE if delete save when delete user
     sortlist = {
-        models.ForeignKey(Card, on_delete=models.PROTECT): models.ForeignKey(Category, on_delete=models.PROTECT)
+        models.ForeignKey(Card, on_delete=models.CASCADE): models.ForeignKey(Category, on_delete=models.CASCADE)
     }
     comment_text = models.TextField(default='placeholder text')
 

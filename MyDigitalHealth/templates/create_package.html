@@ -4,7 +4,7 @@
 	<script src="{% static 'scripts/cardsort.js' %}"></script>
     {% load templatetags %}
 	<!-- Bootstrap Container -->
-	<div  class="container-fluid" id="packageCreator">
+	<div  class="container-fluid" id="package_creator">
         <div>
             <h1>Create A New Package</h1>
         </div>
@@ -19,7 +19,11 @@
             </ul>
         {% endif %}
         <div id="admin_console">
+        {% if exists_flag %}
+        <form action="{% url 'edit_save' package_id %}" method="post" id="new_package">
+        {% else %}
         <form action="{% url 'create_package' %}" method="post" id="new_package">
+        {% endif %}
             {% csrf_token %}
             <div class="form-row" id="form_items">
                 <div id="id_package_name">

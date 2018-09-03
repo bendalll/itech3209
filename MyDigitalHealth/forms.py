@@ -104,19 +104,20 @@ def edit_package_form(package_id):
 
     return {'package_form': package_form,
             'categories_formset': categories_formset,
-            'cards_formset': cards_formset}
+            'cards_formset': cards_formset,
+            'exists_flag': True,
+            'package_id': package_id}  # processing flag to indicate package already exists
 
 
 def validate_and_create_package(request):
-    # TODO: method receives request.POST data and validates it before calling create()
     package_form = PackageForm(request.POST)
     categories_formset = CategoriesFormSet(request.POST, request.FILES, prefix='category')
     cards_formset = CardsFormSet(request.POST, request.FILES, prefix='card')
     if package_form.is_valid() and categories_formset.is_valid() and cards_formset.is_valid():
         new_package = create_package(package_form.cleaned_data,
-                             categories_formset.cleaned_data,
-                             cards_formset.cleaned_data,
-                             request.user)
+                                     categories_formset.cleaned_data,
+                                     cards_formset.cleaned_data,
+                                     request.user)
         return new_package
     else:
         return "Form data invalid?"
@@ -147,3 +148,16 @@ def create_package(package_form_cleaned, categories_form_cleaned, cards_form_cle
         new_card.save()
 
     return new_package
+
+
+def get_whole_package(package_id):
+    active_package = Package.get_package_by_id(package_id)
+    card_list = Card.objects.filter(package=active_package)
+    print("Card list is: ", card_list)
+    category_list = Category.objects.filter(package=active_package)
+    # Pass through as accessible lists as context for ease of processing
+    package = {'package_name': active_package.package_name,
+               'card_list': card_list,
+               'category_list': category_list
+               }
+    return package
