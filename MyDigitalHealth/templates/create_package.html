@@ -26,25 +26,25 @@
                     <!-- Render initial form -->
                     {{ package_form }}
                 </div>
-                <div class="col-sm-7" id="id_card_list">
+                <div class="col-sm-7">
                     <h2 class="form-signin-heading">Cards</h2>
                     {{ cards_formset.management_form }}
-                    {% for card_form in cards_formset %}
-                        <div class="table">
-                            <table>
-                                {{ card_form.as_table }}
-                            </table>
-                        </div>
-                    {% endfor %}
-                    <input type="button" value="Add A Card" onclick="cloneCard('id_card_list', 'form')"/>
+                        <ul id="id_card_list">
+                            {% for card in cards_formset %}
+                            <li>{{ card }}</li>
+                            {% endfor %}
+                        </ul>
+                    <input type="button" value="Add A Card" onclick="cloneItem('card')"/>
                 </div>
                 <div class="col-sm-5">
                     <h2 class="form-signin-heading">Categories</h2>
-                    <div id="id_category_list">
-                    {{ categories_formset }}
-                    </div>
-                <input type="button" value="Add A Category"
-                       onclick="cloneCategory('#id_form-0-category_text', '#id_form-TOTAL_FORMS')"/>
+                    {{ categories_formset.management_form }}
+                    <ul id="id_category_list">
+                        {%  for category in categories_formset %}
+                        <li>{{ category }}</li>
+                        {% endfor %}
+                    </ul>
+                <input type="button" value="Add A Category" onclick="cloneItem('category')"/>
                 </div>
             <div class="row" id="buttons">
                 <input type="submit" value="Save and Close"/>

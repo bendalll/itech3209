@@ -1,11 +1,10 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
-from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from .forms import RegistrationForm, PackageSubmittedForm, PackageForm
+from .forms import RegistrationForm, PackageForm, CategoriesFormSet, CardsFormSet
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import admin_own_packages
 
@@ -63,56 +62,29 @@ def register(request):
 
 
 def create_package(request):
+    """
+        Administrator functionality to create new Packages with related Cards and Categories
+        If request is GET, displays the form to enter data for new Package
+        If request is POST, should submit data and create new Package, then redirect to Package list
+    """
     if request.method == 'POST':
-        print(request.POST)
-        form = PackageSubmittedForm(request.POST)
-        print("Form is: ", form)
-        if form.is_valid():
-            print("Form submitted")
+        package_form = PackageForm(request.POST)
+        categories_formset = CategoriesFormSet(request.POST, request.FILES, prefix='category')
+        cards_formset = CardsFormSet(request.POST, request.FILES, prefix='card')
+        if package_form.is_valid() and categories_formset.is_valid() and cards_formset.is_valid():
+            print("It is all valid!")
             return HttpResponseRedirect('admin')
 
     else:
         package_form = PackageForm()
-        categories_formset = modelformset_factory(Category, fields=('category_name',), extra=2)
-        categories_formset = categories_formset(queryset=Category.objects.none())
-        cards_formset = modelformset_factory(Card, fields=('card_text',), extra=4)
-        cards_formset = cards_formset(queryset=Card.objects.none())
+        categories_formset = CategoriesFormSet(queryset=Category.objects.none(), prefix='category')
+        cards_formset = CardsFormSet(queryset=Card.objects.none(), prefix='card')
 
         return render(
             request,
             'create_package.html',
             {'package_form': package_form, 'categories_formset': categories_formset, 'cards_formset': cards_formset}
         )
-    """
-    Administrator functionality to create new Packages with related Cards and Categories
-    If request is GET, displays the form to enter data for new Package
-    If request is POST, should submit data and create new Package, then redirect to Package list
-    if request.method == 'GET':
-        return render(
-            request,
-            'create_package.html',
-        )
-    else:
-        if request.method == 'POST':
-            # get data from request.POST and create cards and categories and new package as objects
-            # save new objects to the database
-            if validate_input(request):
-                data = request.POST
-                new_package = Package(package_name=data['package_name'], owner=request.user)
-                new_package.save()
-                categorylist = data.getlist('category_name')
-                Category.create_categories_from_list(categorylist, new_package)
-                cardlist = data.getlist('card_text')
-                Card.create_cards_from_list(cardlist, package_id=new_package)
-                return redirect('admin')
-            else:
-                messages.info(request, 'Something went wrong. Please ensure all fields are filled out.')
-                return redirect('create_package')
-        else:
-            messages.info(request, 'Something went wrong. Sorry!')
-            return redirect('create_package')
-# TODO else do something useful
-"""
 
 
 def package_preview(request, package_id):
@@ -120,6 +92,7 @@ def package_preview(request, package_id):
     Generate a preview of a package to allow the Administrator to see it as the user would see it
 
     TODO change name to 'load_cards' and extend template for admin vs user view
+    TODO: nope that's bad, move functionality further back to models and make it modular
     """
     active_package = Package.get_package_by_id(package_id)
     card_list = Card.objects.filter(package=active_package)
@@ -275,37 +248,6 @@ def edit_save(request, package_id):
     else:
         messages.info(request, 'Something went wrong. Sorry!')
         return redirect('edit_package')
-    """
-        titles = request.POST.getlist('title')
-        texts = request.POST.getlist('text')
-        cardGroupIDs = request.POST.getlist('cardGroupID')
-        cardListIDs = request.POST.getlist('cardListID')
-        name = request.POST.get('name')
-        user = request.user
-        cardPackage.name = name
-        cardPackage.save()
-        group = Category()
-        card = Card()
-        for cardGroupID, title in zip(cardGroupIDs, titles):
-            group.id = cardGroupID
-            group.card_package = cardPackage
-            group.title = title
-            group.save()
-        for cardListID, text in zip(cardListIDs, texts):
-            card.id = cardListID
-            card.card_package = cardPackage
-            card.card_group = group
-            card.text = text
-            card.save()
-        return render(
-            request,
-            'package_administration.html',
-        )
-return render(
-    request,
-    'package_administration.html'
-)
-"""
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -435,6 +377,7 @@ def edit(request, package_in):
     )
 """
 
+
 # TODO: Move this to a different place but code is here for now
 # Function to get the cards to populate the dropdown list
 def get_cards_for_dropdown(request):
@@ -442,6 +385,7 @@ def get_cards_for_dropdown(request):
     # TODO: create package/user relationship
 
 
+# TODO: remove this and refactor code accordingly
 def validate_input(request):
     """
     Function to ensure input from create or edit card page is not blank

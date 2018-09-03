@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import modelformset_factory
+
 from .models import Package, Category, Card, UserCardsort
 
 
@@ -44,12 +46,20 @@ class CategoryForm(forms.ModelForm):
         )
 
 
+# note: if changing 'extra' also change the cardsort.js global var num_categories
+CategoriesFormSet = modelformset_factory(Category, fields=('category_name',), extra=2)
+
+
 class CardForm(forms.ModelForm):
     class Meta:
         model = Card
         fields = (
             'card_text',
         )
+
+
+# note: if changing 'extra' also change the cardsort.js global var num_cards
+CardsFormSet = modelformset_factory(Card, fields=('card_text',), extra=4)
 
 
 class UserCardsortForm(forms.ModelForm):
@@ -59,32 +69,3 @@ class UserCardsortForm(forms.ModelForm):
             'comment_text',
             'user',
         )
-
-
-class PackageSubmittedForm(forms.Form):
-    package_name = forms.CharField(max_length=200, label="Package Name")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        print("My things are: ", self.fields)
-
-        # for i in range(len(12) + 1):
-        #     field_name = 'cateogry_%s' % (i,)
-        #     self.fields[field_name] = forms.CharField(required=True)
-        #     try:
-        #         self.initial[field_name] = categories[i].category_name
-        #     except IndexError:
-        #         self.initial[field_name] = ''
-        # field_name = 'category_%s' % (i + 1,)
-        # self.fields[field_name] = forms.CharField(required=False)
-        # self.fields[field_name] = ''
-
-    def get_category_names(self):
-        for field_name in self.fields:
-            if field_name.startswith('category_'):
-                yield self[field_name]
-
-    # Iterate over the category_name items to create categories
-
-    # Iterate over the card_id items to create cards
