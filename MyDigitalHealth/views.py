@@ -84,6 +84,8 @@ def create_package(request):
 def package_preview(request, package_id):
     """
     Generate a preview of a package to allow the Administrator to see it as the user would see it
+
+    #TODO this is a duplicate of open_package
     """
     context = get_whole_package(package_id)
     if request.user.is_staff:
@@ -127,26 +129,31 @@ def package(request):
 def open_package(request, package_id):
     """
     Take a package id and generate the activity page for the user to card sort with that package
+
+    # TODO this is a duplicate of open_package
     """
-    active_package = Package.get_package_by_id(package_id)
-    card_list = Card.objects.filter(package=active_package)
-    category_list = Category.objects.filter(package=active_package)
-    # Pass through as accessible lists as context for ease of processing
-    context = {'active_package': active_package,
-               'card_list': card_list,
-               'category_list': category_list
-               }
-    return render(
-        request,
-        'package_active.html',
-        context
-    )
+    context = get_whole_package(package_id)
+    if request.user.is_staff:
+        return render(
+            request,
+            'package_active.html',
+            context
+        )
+    else:  # TODO: this else makes no sense
+        return render(
+            request,
+            'package_active.html',
+            context
+        )
 
 
 def save(request, package_id):
-    return(
-        request,
-        'index.html'
+    # TODO: this should create a UserCardsort object with the positions of cards in categories from request.POST
+    context = {'num_visits': 0}
+    return (
+        render,
+        'index.html',
+        context
     )
 
 
