@@ -14,7 +14,7 @@ class Package(models.Model):
 
     @classmethod
     def get_package_by_id(cls, package_id):
-        package = Package.objects.get(id__exact=package_id)
+        package = Package.objects.get(pk=package_id)
         return package
 
     @classmethod
@@ -34,6 +34,7 @@ class Package(models.Model):
 
 
 class Category(models.Model):
+    """ Represents a category within a package into which Cards are sorted """
     category_name = models.CharField(max_length=200)
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
@@ -43,14 +44,9 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
-    @classmethod
-    def create_categories_from_list(cls, categorylist, package_id):
-        for category_name in categorylist:
-            new_category = Category(category_name=category_name, package=package_id)
-            new_category.save()
-
 
 class Card(models.Model):
+    """ Represents a card within a package which is sorted into a category"""
     card_text = models.CharField(max_length=200)
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
@@ -59,12 +55,6 @@ class Card(models.Model):
 
     class Meta:
         verbose_name_plural = 'Cards'
-
-    @classmethod
-    def create_cards_from_list(cls, cardlist, package_id):
-        for card_text in cardlist:
-            new_card = Card(card_text=card_text, package=package_id)
-            new_card.save()
 
 
 class UserCardsort(models.Model):
