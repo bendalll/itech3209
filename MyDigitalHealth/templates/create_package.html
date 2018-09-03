@@ -18,7 +18,7 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <div id="admin_console">
+        <div>
         {% if exists_flag %}
         <form action="{% url 'edit_save' package_id %}" method="post" id="new_package">
         {% else %}
@@ -50,9 +50,9 @@
                     </ul>
                 <input type="button" value="Add A Category" onclick="cloneItem('category')"/>
                 </div>
+            </div>
             <div class="row" id="buttons">
                 <input type="submit" value="Save and Close"/>
-            </div>
             </div>
         </form>
         </div>
