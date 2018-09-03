@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from .forms import RegistrationForm, PackageForm, CategoriesFormSet, CardsFormSet
+
+from .forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form
 from .models import Package, Category, Card, UserCardsort
 from .context_processors import admin_own_packages
 
@@ -64,26 +65,19 @@ def register(request):
 def create_package(request):
     """
         Administrator functionality to create new Packages with related Cards and Categories
-        If request is GET, displays the form to enter data for new Package
-        If request is POST, should submit data and create new Package, then redirect to Package list
     """
     if request.method == 'POST':
-        package_form = PackageForm(request.POST)
-        categories_formset = CategoriesFormSet(request.POST, request.FILES, prefix='category')
-        cards_formset = CardsFormSet(request.POST, request.FILES, prefix='card')
-        if package_form.is_valid() and categories_formset.is_valid() and cards_formset.is_valid():
-            print("It is all valid!")
-            return HttpResponseRedirect('admin')
+        print(request.POST)
+        #  new_package = validate_and_create_package(request)
+        return HttpResponseRedirect('admin')
 
     else:
-        package_form = PackageForm()
-        categories_formset = CategoriesFormSet(queryset=Category.objects.none(), prefix='category')
-        cards_formset = CardsFormSet(queryset=Card.objects.none(), prefix='card')
+        form = create_blank_form()
 
         return render(
             request,
             'create_package.html',
-            {'package_form': package_form, 'categories_formset': categories_formset, 'cards_formset': cards_formset}
+            context=form
         )
 
 
@@ -167,17 +161,11 @@ def save(request, package_id):
 
 
 def edit_package(request, package_id):
-    active_package = Package.objects.get(pk=package_id)
-    cardlist = Card.objects.filter(package_id=active_package.pk)
-    categorylist = Category.objects.filter(package_id=active_package.pk)
-    context = {'active_package': active_package,
-               'cardlist': cardlist,
-               'categorylist': categorylist
-               }
+    filled_form = edit_package_form(package_id)
     return render(
         request,
-        'edit_package.html',
-        context
+        'create_package.html',
+        context=filled_form
     )
 
 
