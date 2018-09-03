@@ -22,7 +22,7 @@ $( function()
 
 // Global variables to count numbers of cards and categories
 // Initially the form consists of 4 cards and 2 categories
-var num_cards = 4;
+var num_cards = 2;
 var num_categories = 2;
 
 
