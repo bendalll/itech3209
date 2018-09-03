@@ -95,7 +95,6 @@ def edit_package_form(package_id):
         package = Package.objects.get(pk=package_id)
         package_form = PackageForm(instance=package)
         categories_formset = CategoriesFormSet(queryset=Category.objects.filter(package=package), prefix='category')
-        print(categories_formset)
         cards_formset = CardsFormSet(queryset=Card.objects.filter(package=package), prefix='card')
 
     except ObjectDoesNotExist:
