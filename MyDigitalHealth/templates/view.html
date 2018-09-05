@@ -2,15 +2,14 @@
 
 {% block content %}
 	{% load static %}
-	<script src="{% static 'scripts/view.js'%}"></script>
+	<script src="{% static 'scripts/cardsort.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
 	<!-- Login Form -->
 	<!-- Form Heading -->
 	{% for cardPackages in cardPackages %}
 	<h2 class="form-signin-heading">Card Package: {{ cardPackages.name}} {{ cardPackages.id}} </h2>
-	<form >
-		</br>
+	<form>
 		<div>
 		{% for cardGroups in cardGroups %}		
 		<div id="test" class="cards">
