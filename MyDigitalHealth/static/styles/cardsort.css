@@ -1,8 +1,8 @@
 /* Card List */
 .connection
 {
-min-height: 100px;
-list-style-type:none;
+    min-height: 100px;
+    list-style-type:none;
 }
 
 /* Card Containers */
@@ -10,10 +10,14 @@ list-style-type:none;
 {
     width: 30%;
     min-height: 20px;
-    list-style-type: none;
     padding: 5px 0 0 0;
     float: left;
     margin-right: 10px;
+}
+
+li
+{
+    list-style-type: none;
     cursor: move;
 }
 

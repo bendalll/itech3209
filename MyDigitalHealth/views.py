@@ -149,12 +149,25 @@ def open_package(request, package_id):
 
 def save(request, package_id):
     # TODO: this should create a UserCardsort object with the positions of cards in categories from request.POST
-    context = {'num_visits': 0}
-    return (
-        render,
-        'index.html',
-        context
-    )
+    if request.method == "POST":
+        data = request.POST
+        package = Package.objects.get(pk=package_id)
+        cards_unassigned = data['card_ids_unassigned'].split(',')
+        sortlist = {}
+
+        # Check if save thing exists
+        if UserCardsort.objects.filter(package=package, user=request.user).exists():
+            UserCardsort.objects.get(package=package, user=request.user).delete()
+
+        print(package.get_package_categories())
+
+        for category in package.get_package_categories():
+            new_sortlist = data['card_ids_for_' + str(category.pk)].split(',')
+            for card in new_sortlist:
+                sortlist[card] = category.pk
+
+            print(sortlist)
+    return redirect('open_package', package_id)
 
 
 def edit_package(request, package_id):

@@ -1,15 +1,7 @@
 // Javascript to control the dynamic creation of html Card and Category elements for the Admin Create Package
 // and user viewing and completing package activity functionality
 
-//Allow content to be draggable and droppable.
-$( function()
-{
-    $( ".draggable" ).draggable();
-
-
-} );
-
-//Allow content to be reordered in a list.
+//Allow content to be reordered in a list, drag and droppable
 $( function()
 {
     $( ".connection" ).sortable(
@@ -80,4 +72,29 @@ function removeCard(card_id)
 {
 	//Removes a card from the card list
 	// TODO
+}
+
+
+// Function runs on form submit and collects positions of cards
+// Puts them in hidden input field per category
+// Submits
+
+function processCards()
+{
+    // !For each </ul> get .contents() and add card #id to ul.input!
+
+    // Get parent items for cards by class (.connection)
+    let ULists = document.getElementsByClassName("connection");
+
+    for(i=0; i<ULists.length; i++)
+    {
+        let hiddenInput = ULists[i].getElementsByTagName("input")[0];   // Only ever going to be one hidden input at this point
+        hiddenInput.value = "";
+        let list_items = ULists[i].getElementsByClassName("list-group-item"); // Filter by class here because tag name doesn't work (don't know why)
+        for(j=0; j<list_items.length; j++)
+        {
+            hiddenInput.value += (list_items[j].getAttribute("id") + ",");
+        }
+        console.log(hiddenInput.id + " values: " + hiddenInput.value);
+    }
 }

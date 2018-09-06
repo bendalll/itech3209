@@ -22,9 +22,8 @@ class Package(models.Model):
         packages_list = Package.objects.filter(owner_id=owner.id)
         return packages_list
 
-    @classmethod
-    def get_package_categories(cls, package_id):
-        categories = Category.objects.filter(pk=package_id)
+    def get_package_categories(self):
+        categories = Category.objects.filter(package=self)
         return categories
 
     @classmethod
