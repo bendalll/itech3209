@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Package, Category, Card, UserCardsort
+from cardsort.models import Package, Category, Card, UserCardsort
 
 # Register your models here.
 admin.site.register(Package)

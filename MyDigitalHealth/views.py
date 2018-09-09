@@ -5,9 +5,9 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from .forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form, \
+from cardsort.forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form, \
     get_whole_package
-from .models import Package, UserCardsort
+from cardsort.models import Package, UserCardsort
 from .context_processors import admin_own_packages, user_assigned_packages
 
 

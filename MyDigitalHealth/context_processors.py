@@ -1,4 +1,4 @@
-from .models import Package, Category, Card, UserCardsort
+from cardsort.models import Package, Category, Card, UserCardsort
 
 
 def card_packages(request):
