@@ -33,14 +33,14 @@
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
 		{% if request.user.is_staff %}
 		<li><a href="{% url 'create_package' %} " style="color:#969696">Create</a></li>
-		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
+		<li><a href="{% url 'administration' %} " style="color:#969696">Administration</a></li>
 		{% endif %}
 		<!-- Card Package Dropdown -->
 			<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 			{% for package in card_packages %}
-				<li><a href="{% url 'open_package' package.pk %}">{{ package.package_name }}</a></li>
+				<li><a href="{% url 'package_open' package.pk %}">{{ package.package_name }}</a></li>
 			{% endfor %}
 			</ul>
 		</ul>

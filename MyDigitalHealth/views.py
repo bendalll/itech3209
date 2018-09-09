@@ -7,14 +7,12 @@ from django.contrib import messages
 
 from .forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form, \
     get_whole_package
-from .models import Package, Category, Card, UserCardsort
-from .context_processors import admin_own_packages
+from .models import Package, UserCardsort
+from .context_processors import admin_own_packages, user_assigned_packages
 
 
 def index(request):
-    """
-    View function for home page of site.
-    """
+    """ View function for home page of site. """
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits+1
@@ -79,7 +77,7 @@ def create_package(request):
         )
 
 
-def package_preview(request, package_id):
+def package_open(request, package_id):
     """ Display the package as a cardsort activity for the user to complete """
     context = get_whole_package(package_id)
     return render(
@@ -111,7 +109,7 @@ def package(request):
     )
 
 
-def save(request, package_id):
+def activity_save(request, package_id):
     # TODO: this should create a UserCardsort object with the positions of cards in categories from request.POST
     if request.method == "POST":
         data = request.POST
@@ -134,26 +132,22 @@ def save(request, package_id):
     return redirect('open_package', package_id)
 
 
-def edit_package(request, package_id):
-    filled_form = edit_package_form(package_id)
-    return render(
-        request,
-        'create_package.html',
-        context=filled_form
-    )
-
-
 @staff_member_required(None, redirect_field_name='next', login_url='login')
-def edit_save(request, package_id):
+def edit_package(request, package_id):
+    """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
     if request.method == 'POST':
         # Just delete the current package and create it all again
         Package.objects.get(pk=package_id).delete()
         new_package = validate_and_create_package(request)
+        messages.info(request, 'Package saved.')
         return redirect('admin')
-
     else:
-        messages.info(request, 'Something went wrong. Please ensure all fields are filled out.')
-        return redirect('edit_package')
+        filled_form = edit_package_form(package_id)
+        return render(
+            request,
+            'create_package.html',
+            context=filled_form
+        )
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -172,9 +166,7 @@ def assign_choose_user(request, package_id):
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def assign_package_to_user(request, package_id, user_id):
-    """
-    Function to assign the active package to the provided user - creates instance of UserCardsort
-    """
+    """ Function to assign the active package to the provided user - # TODO? creates instance of UserCardsort """
     # get the package by id
     active_package = Package.objects.get(pk=package_id)
     # get the user by id
@@ -240,5 +232,6 @@ def card_packages(request):
 # TODO: Move this to a different place but code is here for now
 # Function to get the cards to populate the dropdown list
 def get_cards_for_dropdown(request):
-    user = request.user
+    packages = user_assigned_packages(request)
+    return packages
     # TODO: create package/user relationship
