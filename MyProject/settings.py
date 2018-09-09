@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'MyProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'bluebird',
+        'NAME': 'cardsort',
     }
 }
 
