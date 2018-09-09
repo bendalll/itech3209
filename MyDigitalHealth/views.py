@@ -220,6 +220,23 @@ def editPackage(request, package):
         )
 
 
+def deletePackage(request, package_id):
+    """
+    Remove the provided package from the database
+    """
+    if request.method == "POST":
+        # TODO: put this in a try/catch for db errors
+        Card_Packages.objects.get(pk=package_id).delete()
+        # TODO: return some indicator of success or failure
+    cardPackages = Card_Packages.objects.all()
+    context = {'cardPackages': cardPackages}
+    return render(
+        request,
+        'admin.html',
+        context
+    )
+
+
 def cardPackages(request):
     cardPackages = Card_Packages.objects.all() 
     return TemplateResponse(request, views.index, {'cardPackages': cardPackages})
