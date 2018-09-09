@@ -31,7 +31,7 @@ def register(request):
     View to create a new user with data provided
     **Fails if the password does not meet the requirements, without advising the user of the reason**
     If successful, creates the user, logs them in and sends to home page;
-    If fails, refreshes the page with no additional information currently
+    If fails, currently refreshes the page with no additional information
     """
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -45,7 +45,7 @@ def register(request):
                 request,
                 'index.html',
             )
-        else:  # TODO meaningful "else" functionality
+        else:  # TODO return error
             form = RegistrationForm()
             args = {'form': form}
             return render(
@@ -53,7 +53,7 @@ def register(request):
                 'register.html',
                 {'form': form}
             )
-    else:  # TODO meaningful "else" functionality
+    else:  # TODO return error
         form = RegistrationForm()
         args = {'form': form}
         return render(
@@ -64,9 +64,7 @@ def register(request):
 
 
 def create_package(request):
-    """
-        Administrator functionality to create new Packages with related Cards and Categories
-    """
+    """ Administrator functionality to create new Packages with related Cards and Categories """
     if request.method == 'POST':
         new_package = validate_and_create_package(request)
         return HttpResponseRedirect('admin')
@@ -82,31 +80,18 @@ def create_package(request):
 
 
 def package_preview(request, package_id):
-    """
-    Generate a preview of a package to allow the Administrator to see it as the user would see it
-
-    #TODO this is a duplicate of open_package
-    """
+    """ Display the package as a cardsort activity for the user to complete """
     context = get_whole_package(package_id)
-    if request.user.is_staff:
-        return render(
-            request,
-            'package_preview.html',
-            context
-        )
-    else:
-        return render(
-            request,
-            'package_preview.html',
-            context
-        )
+    return render(
+        request,
+        'package_preview.html',
+        context
+    )
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def package_administration(request):
-    """
-    View to generate and display the Administration page with a list of the packages the admin has created
-    """
+    """ Generate and display the Administration page with a list of the packages the admin has created """
     own_packages = admin_own_packages(request)
     context = {'own_packages': own_packages}
     return render(
@@ -124,27 +109,6 @@ def package(request):
         'packages_dropdown_list.html',
         context
     )
-
-
-def open_package(request, package_id):
-    """
-    Take a package id and generate the activity page for the user to card sort with that package
-
-    # TODO this is a duplicate of open_package
-    """
-    context = get_whole_package(package_id)
-    if request.user.is_staff:
-        return render(
-            request,
-            'package_active.html',
-            context
-        )
-    else:  # TODO: this else makes no sense
-        return render(
-            request,
-            'package_active.html',
-            context
-        )
 
 
 def save(request, package_id):
