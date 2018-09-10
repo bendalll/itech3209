@@ -221,9 +221,7 @@ def editPackage(request, package):
 
 
 def deletePackage(request, package_id):
-    """
-    Remove the provided package from the database
-    """
+    """ Remove the package (as provided by package id) from the database """
     if request.method == "POST":
         # TODO: put this in a try/catch for db errors
         Card_Packages.objects.get(pk=package_id).delete()
