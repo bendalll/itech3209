@@ -2,10 +2,13 @@
 
 {% block content %}
 	{% load static %}
-	 {% load templatetags %}
+	{% load templatetags %}
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
+
+			<form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
+			{% csrf_token %}
 			<div class="row align-items-start">
 			<div class="col">
 			<h2>Card Package: {{ package.name}} {% if request.user|has_group:"Staff" %}
@@ -19,29 +22,38 @@
 			<ul id="sortable" class="list-group connection">
 			{% for cardList in cardList %}
 					{% if cardList.card_package.id == package.pk  %}
-					<li class="list-group-item">{{ cardList.text}}</li>
+					<li id ="cardGroupID{{forloop.counter}}" class="list-group-item" >{{cardList.text }}</li>
+					<input type="hidden" name="cardListID" value="{{cardList.pk}}">	
 					{% endif %}
 			{% endfor %}
 			</ul>			
 			</div>	
 			{% for cardGroups in cardGroups %}		
 					{% if cardGroups.card_package.id == package.pk %}
-					<div class="cards">
-					<li class="list-group-item active">{{ cardGroups }}</li>
-					<ul class="list-group connection">
+					<div class="cards" value="{{cardGroups.pk}}">
+					<li class="list-group-item active" value="{{cardGroups.title}}">{{cardGroups }}</li>
+					<input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{cardGroups.pk}}">	
+					<ul class="list-group connection cardGroups">
 					</ul>
 					</div>
 					{% endif %}
 			{% endfor %}
+			
 			{% if user.is_authenticated %}
 			<div class="row form-group">
-				<form class="form-signin" method="post" action="{% url 'comments' %}" >
-				{% csrf_token %}
-				<input id ="cardPackageName" type="hidden" name="name" value="{{ package.name}}">
-				<textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
-				<input type="submit" value="Save" />
-				<form>
+
+				<input id ="cardPackageName" type="hidden" name="name" value="{{package.name}}">			
+					{% for comments in comments %}
+						<textarea class="form-control" id="commentText" name="comment">{{comments.comment}}</textarea>
+						<input id ="commentID" type="hidden" name="commentID" value="{{comments.pk}}">	
+						{% empty %}
+						<textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
+					{% endfor %}
+				<input id ="cardsList" type="hidden" name="cardsList" >		
+				<input type="submit" value="Save" />	
+				
 			</div>
 			{% endif %}
+			<form>
 	</div>	
 {% endblock %}

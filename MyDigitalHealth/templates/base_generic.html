@@ -55,7 +55,7 @@
 		{% else %}	
 		<!-- Sign Up -->
 		<li><a href="{% url 'register' %} " style="color:#969696"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-		<li><a href="{% url 'login' %} " style="color:#969696"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+		<li><a href="{% url 'login' %}?next={{request.path}} " style="color:#969696"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		{% endif %}
 		</ul>
 	</div>
