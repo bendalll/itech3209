@@ -10,7 +10,7 @@
 	<ul>
 		{% for package in own_packages %}
 			<li class="list-group-item">
-                <a href="{% url 'preview' package.pk %}">{{ package.package_name }}</a>
+                <a href="{% url 'package_open' package.pk %}">{{ package.package_name }}</a>
 				<a href="{% url 'edit_package' package.pk %} " class="btn btn-default">Edit</a>
                 <a href="{% url 'assign' package.pk %}" class="btn btn-default">Assign</a>
                 <a href="{% url 'delete' package.pk %}" class="btn btn-default">Delete (are you sure?)</a>

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'MyDigitalHealth.apps.MyDigitalHealthConfig',
+    'cardsort.apps.cardsort',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': ['./MyDigitalHealth/templates',
+                 './cardsort/templates',
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -64,9 +66,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'MyDigitalHealth.context_processors.card_packages',
-                'MyDigitalHealth.context_processors.card_categories',
-                'MyDigitalHealth.context_processors.all_cards',
             ],
         },
     },

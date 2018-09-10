@@ -34,8 +34,8 @@
                     <h2 class="form-signin-heading">Cards</h2>
                     {{ cards_formset.management_form }}
                         <ul id="id_card_list">
-                            {% for card in cards_formset %}
-                            <li>{{ card }}</li>
+                            {% for card_form in cards_formset %}
+                            <li>{{ card_form }}</li>
                             {% endfor %}
                         </ul>
                     <input type="button" value="Add A Card" onclick="cloneItem('card')"/>

@@ -65,7 +65,7 @@ def create_package(request):
     """ Administrator functionality to create new Packages with related Cards and Categories """
     if request.method == 'POST':
         new_package = validate_and_create_package(request)
-        return HttpResponseRedirect('admin')
+        return HttpResponseRedirect('administration')
 
     else:
         form = create_blank_form()
