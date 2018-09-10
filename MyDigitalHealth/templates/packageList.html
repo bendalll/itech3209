@@ -8,7 +8,7 @@
 	<div class="container">
 			<div class="row align-items-start">
 			<div class="col">
-			<h2>Card Package: {{ package.name}} {% if request.user|has_group:"Staff" %}
+			<h2>Card Package: {{ package.name}} {% if request.user.is_staff %}
 
 			{% endif %}</h2>
 			</div>
