@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   {% block title %}<title>Bluebird Digital Technologies</title>{% endblock %}
 	<!-- Responsive Web Design -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,17 +12,13 @@
 	<!-- jQuery -->
 	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<!-- Add additional Javascript in static file -->
+	<!-- Add additional Javascript and CSS in static files -->
 	{% load static %}
 	<script src="{% static 'scripts/jquery.ui.touch-punch.min.js' %}"></script>
-
-  <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'styles/../../cardsort/static/cardsort.css' %}">
-  {% load templatetags %}
+    <link rel="stylesheet" href="{% static 'cardsort.css' %}">
 </head>
 <body>
-<!-- Navigation Bar -->
+    <!-- Navigation Bar -->
 	<!-- Dark Bootstrap Theme -->
 	<!-- Bootstrap Container -->
 	<div class="container-fluid" style='background-color: #313131'>
@@ -56,11 +51,9 @@
 		{% endif %}
 		</ul>
 	</div>
-
-  <div class="container-fluid">
-      <div>
-      {% block content %}{% endblock %}
-      </div>
-  </div>
+    <div class="container-fluid">
+        {% block heading %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

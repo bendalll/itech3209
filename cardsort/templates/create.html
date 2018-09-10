@@ -1,0 +1,45 @@
+{% extends "base_generic.html" %}
+{% block heading %}
+    <h1>Create A New Package</h1>
+{% endblock %}
+{% block content %}
+    {% load static %}
+    <script src="{% static 'cardsort.js' %}"></script>
+    <div>
+    {% if exists_flag %}
+    <form action="{% url 'edit_save' package_id %}" method="post" id="new_package">
+    {% else %}
+    <form action="{% url 'create_package' %}" method="post" id="new_package">
+    {% endif %}
+        {% csrf_token %}
+        <div class="form-row" id="form_items">
+            <div id="id_package_name">
+                {{ package_form }}
+            </div>
+            <div class="col-sm-7">
+                <h2 class="form-signin-heading">Cards</h2>
+                {{ cards_formset.management_form }}
+                    <ul id="id_card_list">
+                        {% for card_form in cards_formset %}
+                            <li>{{ card_form }}<button type="button" class="btn btn-default">Remove</button></li>
+                        {% endfor %}
+                    </ul>
+                <input type="button" value="Add Another Card" class="btn btn-default" onclick="cloneItem('card')"/>
+            </div>
+            <div class="col-sm-5">
+                <h2 class="form-signin-heading">Categories</h2>
+                {{ categories_formset.management_form }}
+                <ul id="id_category_list">
+                    {%  for category in categories_formset %}
+                        <li>{{ category }}<button type="button" class="btn btn-default">Remove</button></li>
+                    {% endfor %}
+                </ul>
+            <input type="button" value="Add A Category" class="btn btn-default" onclick="cloneItem('category')"/>
+            </div>
+        </div>
+        <div class="row" id="buttons">
+            <input type="submit" value="Save and Close" class="btn btn-default"/>
+        </div>
+    </form>
+    </div>
+{% endblock %}

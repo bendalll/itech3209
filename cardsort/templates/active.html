@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+{% block heading %}
+    <h1>Cardsort: {{ package.package_name }}</h1>
+{% endblock %}
+{% block content %}
+    {% load static %}
+    <script src="{% static 'cardsort.js' %}"></script>
+    <div class="container">
+        <form class="form" method="post" action="{% url 'save' package_id %}" onsubmit="return processCards()">
+        <div class="cards row align-items-center">
+            <h3 class="list-group-item active">Cards</h3>
+            <ul id="sortable" class="list-group connection">
+                <input type="hidden" id="cards" name="card_ids_unassigned"/>
+            {% for card in cards %}
+                <li class="list-group-item" id="{{ card.pk }}">{{ card.card_text }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% for category in categories %}
+        <div class="cards">
+            <h3 class="list-group-item active">{{ category.category_name }}</h3>
+            <ul class="list-group connection">
+                <input type="hidden" id="category_{{ category.pk }}" name="card_ids_for_{{ category.pk }}"/>
+            </ul>
+        </div>
+        {% endfor %}
+        <div class="row form-group">
+            {% csrf_token %}
+            <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
+            <textarea class="form-control" id="id_comment_text" name="comment"
+                      placeholder="Feel free to add any comments"></textarea>
+            <input type="submit" value="Save"/>
+        </div>
+        </form>
+    </div>
+{% endblock %}

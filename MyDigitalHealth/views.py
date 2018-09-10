@@ -72,7 +72,7 @@ def create_package(request):
 
         return render(
             request,
-            'create_package.html',
+            'create.html',
             context=form
         )
 
@@ -82,7 +82,7 @@ def package_open(request, package_id):
     context = get_whole_package(package_id)
     return render(
         request,
-        'package_preview.html',
+        'active.html',
         context
     )
 
