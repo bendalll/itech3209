@@ -1,4 +1,4 @@
-from .models import Card_Packages, Card_Groups, Cards
+from .models import Card_Packages, Card_Groups, Cards, Comments, Sorted_Package
 
 def cardPackages(request):
     return {
@@ -13,3 +13,13 @@ def cardList(request):
     return {
         'cardList': Cards.objects.all()
     }
+
+def commentList(request):
+    return {
+        'commentList': Comments.objects.all()
+    }	
+	
+def sortedPackageList(request):
+    return {
+        'sortedPackageList': Sorted_Package.objects.all()
+    }		

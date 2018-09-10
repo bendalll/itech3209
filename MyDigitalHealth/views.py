@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect
 from .forms import RegistrationForm, CreateCardPackage, CreateCardGroup, CreateCards, CreateComments
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from .models import Card_Packages, Card_Groups, Cards, Comments
+from .models import Card_Packages, Card_Groups, Cards, Comments, Sorted_Package
 from django.template.response import TemplateResponse
 from django.contrib import messages 
+from django.db.models import Q
 
 def index(request):
     """
@@ -28,43 +29,43 @@ def create(request):
     )
 	
 def cards(request):
-    if request.method =='POST':
-        form = CreateCardPackage(request.POST, instance=Card_Packages())
-        if form.is_valid():
-            titles = request.POST.getlist('title')
-            texts = request.POST.getlist('text')
-            groups = request.POST.getlist('group')
-            names = request.POST.getlist('name')
-            user = request.user
-            for name in names:
-                cardPackage = Card_Packages(name = name, user = user)
-                cardPackage.save()
-            for title in titles:
-                group = Card_Groups(card_package = cardPackage, title = title)
-                group.save()
-            for text in texts:
-                card = Cards(card_package = cardPackage, card_group = group, text = text)
-                card.save()
-            return render(
+	if request.method =='POST':
+		form = CreateCardPackage(request.POST, instance=Card_Packages())
+		if form.is_valid():
+			titles = request.POST.getlist('title')
+			texts = request.POST.getlist('text')
+			groups = request.POST.getlist('group')
+			names = request.POST.getlist('name')
+			user = request.user
+			for name in names:
+				cardPackage = Card_Packages(name = name, user = user)
+				cardPackage.save()
+			for title in titles:
+				group = Card_Groups(card_package = cardPackage, title = title)
+				group.save()
+			for text in texts:
+				card = Cards(card_package = cardPackage, text = text)
+				card.save()
+			return render(
 		    request,
             'index.html',
             )
-        else:
-            form = CreateCardPackage(instance=Card_Packages())
-            args = {'form': form}
-            return render(
-            request,
-            'project.html',
-            {'form': form}
-        )
-    else:
-        form = CreateCardPackage(instance=Card_Packages())
-        args = {'form': form}
-        return render(
-        request,
-        'project.html',
+		else:
+			form = CreateCardPackage(instance=Card_Packages())
+			args = {'form': form}
+			return render(
+			request,
+			'project.html',
+			{'form': form}
+		)
+	else:
+		form = CreateCardPackage(instance=Card_Packages())
+		args = {'form': form}
+		return render(
+		request,
+		'project.html',
 		{'form': form}
-    )
+	)
 	
 def register(request):
     if request.method =='POST':
@@ -114,7 +115,13 @@ def package(request):
 
 def packageList(request, package):
 	package = Card_Packages.objects.get(id__exact=package)
-	context = {'package': package}
+	user = request.user
+	if request.user.is_anonymous:
+		comments = Comments.objects.filter(card_package__exact= package)
+	else :	
+		comments = Comments.objects.filter(card_package__exact= package).filter(user__exact= user)
+	"commentsList = Comments.objects.filter( Q(card_package=package) & Q(user=user) )"
+	context = {'package': package, 'user': user, 'comments': comments}
 	return render(
 		request,
 		'packageList.html',
@@ -139,21 +146,61 @@ def edit(request, package):
 		context
     )	
 	
-def comments(request):
+def comments(request, package):
 	if request.method =='POST':
-		form = CreateComments(request.POST, instance=Comments())
+		commentID = request.POST.get('commentID')
 		name = request.POST.get('name')
-		cardPackage = Card_Packages.objects.get(name = name)
 		user = request.user
-		comment = request.POST.get('comment')
-		comments = Comments(card_package = cardPackage, user = user, comment = comment)
-		comments.save()
+		text = request.POST.get('comment')
+		cardPackage = Card_Packages.objects.get(id__exact=package)
+		
+		#test = []
+		
+		#cardListIDs = request.POST.getlist('cardListID')
+		#cardGroupIDs = request.POST.getlist('cardGroupID')
+		#for cardGroupID in cardGroupIDs:
+		#	group = Card_Groups()
+		#	group = Card_Groups.objects.get(id__exact=cardGroupID)
+		#	test.append(group)
+		#	for cardListID in cardListIDs:
+		#		card = Cards()
+		#		card = Cards.objects.get(id__exact=cardListID)
+		#		card.card_group = group
+		#		card.save()
+			
+		
+		
+		#test = None
+		#group = Card_Groups()
+		#cardList = Cards.objects.all()
+		#cardGroups = Card_Groups.objects.all() 
+		#cardsList = request.POST.getlist('cardsList')
+		#sortedCards = request.POST.getlist('sortedCards')
+		#cardGroupIDs = request.POST.getlist('cardGroupID')
+		#sort = Sorted_Package()
+		#for cardGroupIDs in cardGroups:
+			#test = Card_Groups.objects.get(title = cardGroupIDs ) 
+			#if cardGroupIDs == test:
+				#sort.card_package = cardPackage
+			
+				#sort.user = user
+				#sort.save()
+			#if sortedCard in cardList:
+			#	sort.cards.add(sortedCard)
+			#sort.card_group.add(group)
+		
+		comment = Comments()
+		comment.card_package = cardPackage
+		comment.user = user
+		comment.comment = text
+		comment.id = commentID
+		comment.save()
 		return render(
 		request,
-			'index.html',	
+			'index.html',
 		)
 	else:
-		form = CreateCardPackage(instance=Comments())
+		form = CreateComments(instance=Comments())
 		args = {'form': form}
 		return render(
 		request,
@@ -170,12 +217,24 @@ def editPackage(request, package):
 			texts = request.POST.getlist('text')
 			cardGroupIDs = request.POST.getlist('cardGroupID')
 			cardListIDs = request.POST.getlist('cardListID')
+			newGroups = request.POST.getlist('newGroup')
+			newCards = request.POST.getlist('newCard')
+			deleteGroups = request.POST.getlist('deleteGroup')
+			deleteCards = request.POST.getlist('deleteCard')
 			name = request.POST.get('name')
 			user = request.user
 			cardPackage.name = name
 			cardPackage.save()
 			group = Card_Groups()
+			test = Card_Groups()
 			card = Cards()
+		
+			for newGroup in newGroups:
+				group = Card_Groups(card_package = cardPackage, title = newGroup)
+				group.save()
+			for newCard in newCards:
+				card = Cards(card_package = cardPackage, text = newCard)
+				card.save()				
 			for cardGroupID, title in zip(cardGroupIDs, titles):
 				group.id = cardGroupID
 				group.card_package = cardPackage
@@ -184,9 +243,15 @@ def editPackage(request, package):
 			for cardListID, text in zip(cardListIDs, texts):
 				card.id = cardListID
 				card.card_package = cardPackage
-				card.card_group = group
 				card.text = text
 				card.save()
+			for deleteCard in deleteCards:
+				test = Cards.objects.get(id__exact= deleteCard)
+				test.delete()
+				
+			for deleteGroup in deleteGroups:
+				test1 = Card_Groups.objects.filter(card_package = cardPackage).filter(id__exact= deleteGroup)
+				test1.delete()	
 			return render(
 			request,
 			'admin.html',
@@ -197,7 +262,7 @@ def editPackage(request, package):
 			return render(
 			request,
 			'admin.html',
-		{'form': form}
+			{'form': form}
 		)
 	else:
 		form = CreateCardPackage(instance=Card_Packages())
@@ -219,3 +284,7 @@ def cardGroups(request):
 def cardList(request):
     cardList = Cards.objects.all() 
     return TemplateResponse(request, views.index, {'cardList': cardList})
+
+def commentList(request):
+    commentList = Comments.objects.all() 
+    return TemplateResponse(request, views.index, {'commentList': commentList})	
