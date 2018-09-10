@@ -129,7 +129,7 @@ def activity_save(request, package_id):
                 sortlist[card] = category.pk
 
             print(sortlist)
-    return redirect('open_package', package_id)
+    return redirect('home')
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
