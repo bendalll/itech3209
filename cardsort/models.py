@@ -12,24 +12,25 @@ class Package(models.Model):
     class Meta:
         verbose_name_plural = 'Packages'
 
-    @classmethod
-    def get_package_by_id(cls, package_id):
-        package = Package.objects.get(pk=package_id)
-        return package
-
-    @classmethod
-    def get_packages_by_owner(cls, owner):
-        packages_list = Package.objects.filter(owner_id=owner.id)
-        return packages_list
-
-    def get_package_categories(self):
+    def get_categories(self):
         categories = Category.objects.filter(package=self)
         return categories
 
-    @classmethod
-    def get_package_cards(cls, package_id):
-        cards = Card.objects.filter(pk=package_id)
+    def get_cards(self):
+        cards = Card.objects.filter(package=self)
         return cards
+
+    def to_dict(self):
+        """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
+        list_of_category_objects = Category.objects.filter(package=self)
+        list_of_card_objects = Card.objects.filter(package=self)
+
+        package = {'package_id': self.pk,
+                   'package_name': self.package_name,
+                   'categories': list_of_category_objects,
+                   'cards': list_of_card_objects,
+                   }
+        return package
 
 
 class Category(models.Model):
@@ -67,7 +68,7 @@ class UserCardsort(models.Model):
     comment_text = models.TextField(default='placeholder text')
 
     def __str__(self):
-        return self.user_id
+        return "Saved information for user ", self.user_id
         # TODO make this more meaningful
 
     class Meta:

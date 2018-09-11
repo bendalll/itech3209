@@ -1,8 +1,9 @@
 {% extends "base_generic.html" %}
+
 {% block heading %}
     <h1>Cardsort: {{ package.package_name }}</h1>
 {% endblock %}
-{% block content %}
+{% block package %}
     {% load static %}
     <script src="{% static 'cardsort.js' %}"></script>
     <div class="container">

@@ -21,7 +21,7 @@ def all_cards(request):
 
 def admin_own_packages(request):
     owner = request.user
-    own_packages = Package.get_packages_by_owner(owner)
+    own_packages = Package.objects.filter(owner=owner)
     return own_packages
 
 

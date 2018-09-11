@@ -5,7 +5,7 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from cardsort.forms import create_blank_form, validate_and_create_package, edit_package_form, get_whole_package
+from cardsort.forms import validate_and_save_package, EditPackageForm, NewPackageForm
 from .forms import RegistrationForm
 from cardsort.models import Package, UserCardsort
 from .context_processors import admin_own_packages, user_assigned_packages
@@ -13,14 +13,9 @@ from .context_processors import admin_own_packages, user_assigned_packages
 
 def index(request):
     """ View function for home page of site. """
-    # Number of visits to this view, as counted in the session variable.
-    num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits'] = num_visits+1
-    # Render the HTML template index.html with the data in the context variable
     return render(
         request,
         'index.html',
-        context={'num_visits': num_visits},  # num_visits appended
     )
 
 
@@ -61,30 +56,37 @@ def register(request):
         )
 
 
+@staff_member_required(None, redirect_field_name='next', login_url='login')
 def create_package(request):
     """ Administrator functionality to create new Packages with related Cards and Categories """
     if request.method == 'POST':
-        new_package = validate_and_create_package(request)
+        new_package = validate_and_save_package(request)
         return HttpResponseRedirect('administration')
 
     else:
-        form = create_blank_form(2, 6)
+        form = NewPackageForm(2, 3).to_dict()
 
         return render(
             request,
-            'create.html',
+            'create_edit.html',
             context=form
         )
 
 
-def package_open(request, package_id):
-    """ Display the package as a cardsort activity for the user to complete """
-    context = get_whole_package(package_id)
-    return render(
-        request,
-        'active.html',
-        context
-    )
+@staff_member_required(None, redirect_field_name='next', login_url='login')
+def edit_package(request, package_id):
+    """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
+    if request.method == 'POST':
+        new_package = validate_and_save_package(request, package_id=package_id)
+        messages.info(request, 'Changes saved.')
+        return redirect('administration')
+    else:
+        filled_form = EditPackageForm(package_id).to_dict()
+        return render(
+            request,
+            'create_edit.html',
+            context=filled_form
+        )
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -99,12 +101,12 @@ def package_administration(request):
     )
 
 
-def package(request):
-    all_packages = Package.objects.all()
-    context = {'all_packages': all_packages}
+def package_open(request, package_id):
+    """ Display the package as a cardsort activity for the user to complete """
+    context = Package.objects.get(pk=package_id).to_dict()
     return render(
         request,
-        'packages_dropdown_list.html',
+        'active.html',
         context
     )
 
@@ -121,33 +123,12 @@ def activity_save(request, package_id):
         if UserCardsort.objects.filter(package=package, user=request.user).exists():
             UserCardsort.objects.get(package=package, user=request.user).delete()
 
-        print(package.get_package_categories())
-
-        for category in package.get_package_categories():
+        for category in package.get_categories():
             new_sortlist = data['card_ids_for_' + str(category.pk)].split(',')
             for card in new_sortlist:
                 sortlist[card] = category.pk
 
-            print(sortlist)
     return redirect('home')
-
-
-@staff_member_required(None, redirect_field_name='next', login_url='login')
-def edit_package(request, package_id):
-    """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
-    if request.method == 'POST':
-        # Just delete the current package and create it all again
-        Package.objects.get(pk=package_id).delete()
-        new_package = validate_and_create_package(request)
-        messages.info(request, 'Package saved.')
-        return redirect('admin')
-    else:
-        filled_form = edit_package_form(package_id)
-        return render(
-            request,
-            'create_package.html',
-            context=filled_form
-        )
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -226,7 +207,7 @@ Code that I don't know if it is used-->
 
 def card_packages(request):
     available_packages = Package.objects.all()
-    return TemplateResponse(request, 'index.html', {'packages': available_packages})
+    return TemplateResponse(request, 'navbar.html', {'packages': available_packages})
 
 
 # TODO: Move this to a different place but code is here for now
