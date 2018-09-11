@@ -1,14 +1,12 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from cardsort.forms import validate_and_save_package, EditPackageForm, NewPackageForm
+from cardsort.forms import NewPackageForm, EditPackageForm, validate_and_save_package
 from .forms import RegistrationForm
 from cardsort.models import Package, UserCardsort
-from .context_processors import admin_own_packages, user_assigned_packages
 
 
 def index(request):
@@ -92,7 +90,7 @@ def edit_package(request, package_id):
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def package_administration(request):
     """ Generate and display the Administration page with a list of the packages the admin has created """
-    own_packages = admin_own_packages(request)
+    own_packages = Package.objects.filter(owner=request.user)
     context = {'own_packages': own_packages}
     return render(
         request,
@@ -191,28 +189,10 @@ def delete_package(request, package_id):
         instance = Package.objects.get(pk=package_id)
         # TODO: try/catch delete errors here
         instance.delete()
-        own_packages = admin_own_packages(request)
+        own_packages = Package.objects.filter(owner=request.user)
         context = {'own_packages': own_packages, 'message': 'Delete successful'}
         return render(
             request,
             'package_administration.html',
             context
         )
-
-
-"""
-Code that I don't know if it is used-->
-"""
-
-
-def card_packages(request):
-    available_packages = Package.objects.all()
-    return TemplateResponse(request, 'navbar.html', {'packages': available_packages})
-
-
-# TODO: Move this to a different place but code is here for now
-# Function to get the cards to populate the dropdown list
-def get_cards_for_dropdown(request):
-    packages = user_assigned_packages(request)
-    return packages
-    # TODO: create package/user relationship
