@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
 from .forms import RegistrationForm
+from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
 from cardsort.models import Package, UserCardsort
 
 

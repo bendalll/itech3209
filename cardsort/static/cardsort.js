@@ -14,6 +14,7 @@ $( function()
 
 // Global variables to count numbers of cards and categories
 // Initially the form consists of 4 cards and 2 categories
+// **This is bad. Should count the number of child <li> or something and add to**
 var num_cards = 2;
 var num_categories = 2;
 
@@ -30,8 +31,7 @@ function cloneItem(type)
      */
     let item_number = 0; // currently used so later code will fail gracefully if param is somehow incorrect
     if(type === 'card') {
-        item_number = num_cards;
-        num_cards += 1;
+        item_number = $('#id_' + type + '_list')[0].childElementCount;
     }
     else if (type === 'category') {
         item_number = num_categories;

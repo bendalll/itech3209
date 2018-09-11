@@ -21,7 +21,7 @@
                 {{ cards_formset.management_form }}
                     <ul id="id_card_list">
                         {% for card_form in cards_formset %}
-                            <li>{{ card_form }}<button type="button" class="btn btn-default">Remove</button></li>
+                            <li>{{ card_form }}<a href="" class="btn btn-default">Remove</a></li>
                         {% endfor %}
                     </ul>
                 <input type="button" value="Add Another Card" class="btn btn-default" onclick="cloneItem('card')"/>
@@ -39,7 +39,6 @@
         </div>
         <div class="row" id="buttons">
             {% if package_id %}
-                <h1>Package ID is: {{ package_id }}</h1>
             <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
             {% endif %}
             <input type="submit" value="Save and Close" class="btn btn-default"/>

@@ -60,7 +60,7 @@ def create_card_formset(**kwargs):
 
 
 class NewPackageForm(forms.Form):
-    """ *UNUSED IN EXAMPLE CODE*
+    """
     Class to create a blank form for making a package, with the forms / formsets as attributes of the BlankForm object
     """
     def __init__(self, num_categories=2, num_cards=4):
@@ -138,7 +138,6 @@ class SubmittedForm(forms.Form):
             edited_package.save()
 
             category_data = self.categories_formset.cleaned_data
-            print(category_data)
             for category in category_data:
                 edited_category = Category.objects.get(pk=category['id'].pk)  # Don't know why ['id'] is required
                 edited_category.category_name = category['category_name']
