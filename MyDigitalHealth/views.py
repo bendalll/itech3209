@@ -5,8 +5,8 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from cardsort.forms import RegistrationForm, create_blank_form, validate_and_create_package, edit_package_form, \
-    get_whole_package
+from cardsort.forms import create_blank_form, validate_and_create_package, edit_package_form, get_whole_package
+from .forms import RegistrationForm
 from cardsort.models import Package, UserCardsort
 from .context_processors import admin_own_packages, user_assigned_packages
 
@@ -68,7 +68,7 @@ def create_package(request):
         return HttpResponseRedirect('administration')
 
     else:
-        form = create_blank_form()
+        form = create_blank_form(2, 6)
 
         return render(
             request,

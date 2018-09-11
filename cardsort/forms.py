@@ -1,34 +1,7 @@
 from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
-
 from cardsort.models import Package, Category, Card, UserCardsort
-
-
-class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password1',
-            'password2'
-        )
-
-    def save(self, commit=True):
-        user = super(RegistrationForm, self).save(commit=False)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-            return user
 
 
 class PackageForm(forms.ModelForm):
@@ -47,8 +20,15 @@ class CategoryForm(forms.ModelForm):
         )
 
 
-# note: if changing 'extra' also change the cardsort.js global var num_categories
-CategoriesFormSet = modelformset_factory(Category, fields=('category_name',), extra=2)
+def create_category_formset(**kwargs):
+    CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=kwargs['extra'])
+    if 'package' in kwargs:
+        new_category_formset = CategoryFormset(queryset=Category.objects.filter(package=kwargs['package']),
+                                               prefix='category')
+    else:
+        new_category_formset = CategoryFormset(queryset=Category.objects.none(),
+                                               prefix='category')
+    return new_category_formset
 
 
 class CardForm(forms.ModelForm):
@@ -57,6 +37,15 @@ class CardForm(forms.ModelForm):
         fields = (
             'card_text',
         )
+
+
+def create_card_formset(**kwargs):
+    CardFormset = modelformset_factory(Card, fields=('card_text',), extra=kwargs['extra'])
+    if 'package' in kwargs:
+        new_card_formset = CardFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
+    else:
+        new_card_formset = CardFormset(queryset=Card.objects.none(), prefix='category')
+    return new_card_formset
 
 
 # note: if changing 'extra' also change the cardsort.js global var num_cards
@@ -72,21 +61,29 @@ class UserCardsortForm(forms.ModelForm):
         )
 
 
-def create_blank_form():
+def create_blank_form(num_categories, num_cards):
     """
     :return: a dict that can be passed as context to a template, which will render the forms to create a whole package
     including package name, categories, and cards
     """
     package_form = PackageForm()
-    categories_formset = CategoriesFormSet(queryset=Category.objects.none(), prefix='category')
-    cards_formset = CardsFormSet(queryset=Card.objects.none(), prefix='card')
+    categories_formset = create_category_formset(extra=num_categories)
+    cards_formset = create_card_formset(extra=num_cards)
 
     return {'package_form': package_form,
             'categories_formset': categories_formset,
             'cards_formset': cards_formset}
 
 
-def edit_package_form(package_id):
+class BlankForm(forms.Form):
+    def __init__(self, num_categories, num_cards):
+        super().__init__()
+        self.package_form = PackageForm()
+        self.categories_formset = create_category_formset(extra=num_categories)
+        self.cards_formset = create_card_formset(extra=num_cards)
+
+
+def edit_package_form(package_id, **kwargs):
     """
     :return: a dict that can be passed as context to a template, which will render the forms pre-populated with the
     existing package's information, for editing
@@ -94,23 +91,25 @@ def edit_package_form(package_id):
     try:
         package = Package.objects.get(pk=package_id)
         package_form = PackageForm(instance=package)
-        categories_formset = CategoriesFormSet(queryset=Category.objects.filter(package=package), prefix='category')
+        categories_formset = create_category_formset(package=package, extra=kwargs['extra'])
         cards_formset = CardsFormSet(queryset=Card.objects.filter(package=package), prefix='card')
 
     except ObjectDoesNotExist:
-        print("Something went very wrong here")
+        print("The package you're looking for doesn't exist?")
         return {}
 
     return {'package_form': package_form,
             'categories_formset': categories_formset,
             'cards_formset': cards_formset,
-            'exists_flag': True,
-            'package_id': package_id}  # processing flag to indicate package already exists
+            'exists_flag': True,  # processing flag to indicate that the package already exists
+            'package_id': package_id}
 
 
 def validate_and_create_package(request):
     package_form = PackageForm(request.POST)
-    categories_formset = CategoriesFormSet(request.POST, request.FILES, prefix='category')
+    categories_formset = modelformset_factory(Category, fields=('category_name',))(request.POST,
+                                                                                   request.FILES,
+                                                                                   prefix='category')
     cards_formset = CardsFormSet(request.POST, request.FILES, prefix='card')
     if package_form.is_valid() and categories_formset.is_valid() and cards_formset.is_valid():
         new_package = create_package(package_form.cleaned_data,
