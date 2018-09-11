@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from cardsort.forms import NewPackageForm, EditPackageForm, validate_and_save_package
+from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
 from .forms import RegistrationForm
 from cardsort.models import Package, UserCardsort
 
@@ -58,7 +58,10 @@ def register(request):
 def create_package(request):
     """ Administrator functionality to create new Packages with related Cards and Categories """
     if request.method == 'POST':
-        new_package = validate_and_save_package(request)
+        form = SubmittedForm(request)
+        if form.is_valid():
+            form.save()
+        # new_package = validate_and_save_package(request)
         return HttpResponseRedirect('administration')
 
     else:
@@ -75,8 +78,13 @@ def create_package(request):
 def edit_package(request, package_id):
     """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
     if request.method == 'POST':
-        new_package = validate_and_save_package(request, package_id=package_id)
-        messages.info(request, 'Changes saved.')
+        print("Package ID is: ", request.POST['package_id'])
+        form = SubmittedForm(request)
+        if form.is_valid():
+            form.save()
+            messages.info(request, 'Changes saved.')
+        else:
+            messages.error(request, "An error occurred when saving")
         return redirect('administration')
     else:
         filled_form = EditPackageForm(package_id).to_dict()

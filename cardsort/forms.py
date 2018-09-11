@@ -27,7 +27,7 @@ def create_category_formset(**kwargs):
     if 'extra' in kwargs:
         CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=kwargs['extra'])
     else:
-        CategoryFormset = modelformset_factory(Category, fields=('category_name',))
+        CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=0)
 
     if 'package' in kwargs:
         new_category_formset = CategoryFormset(queryset=Category.objects.filter(package=kwargs['package']),
@@ -47,7 +47,7 @@ def create_card_formset(**kwargs):
     if 'extra' in kwargs:
         CardFormset = modelformset_factory(Card, fields=('card_text',), extra=kwargs['extra'])
     else:
-        CardFormset = modelformset_factory(Card, fields=('card_text',))
+        CardFormset = modelformset_factory(Card, fields=('card_text',), extra=0)
 
     if 'package' in kwargs:
         new_card_formset = CardFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
@@ -59,96 +59,22 @@ def create_card_formset(**kwargs):
     return new_card_formset
 
 
-def validate_and_save_package(request, **kwargs):
-    """
-    Take POST data and create forms/formsets to validate, then use cleaned valid data to create new objects
-    :param request:
-    :param kwargs: if an existing package is passed in via package_id, existing package is edited instead of creating
-    a new package
-    :return: the newly created or edited package
-    """
-    package_form = PackageNameForm(request.POST)
-    categories_formset = create_category_formset(request=request)
-    cards_formset = create_card_formset(request=request)
-    if package_form.is_valid() and categories_formset.is_valid() and cards_formset.is_valid():
-        if 'package_id' in kwargs:
-            package = save_edited_package(kwargs['package_id'],
-                                          package_form.cleaned_data,
-                                          categories_formset.cleaned_data,
-                                          cards_formset.cleaned_data)
-        else:
-            package = create_new_package(package_form.cleaned_data,
-                                         categories_formset.cleaned_data,
-                                         cards_formset.cleaned_data,
-                                         request.user)
-        return package
-    else:
-        return "Form data invalid?"
-
-
-def create_new_package(package_form_cleaned, categories_form_cleaned, cards_form_cleaned, owner):
-    """
-    Create a new Package and associated Card and Category objects using cleaned form data
-    :param package_form_cleaned: the POST data from the form after cleaned()
-    :param categories_form_cleaned: the POST data from the form after cleaned();
-        a dict with each form submitted with a category_name and id (None)
-    :param cards_form_cleaned: as above categories_form_cleaned but for cards
-    :param owner: the request.user; logged in admin who will own the card package once created
-    :return: a new package, already saved
-    """
-    package_name = package_form_cleaned['package_name']
-    new_package = Package(package_name=package_name, owner=owner)
-    new_package.save()
-
-    for each in categories_form_cleaned:
-        category_name = each['category_name']
-        new_category = Category(category_name=category_name, package=new_package)
-        new_category.save()
-
-    for each in cards_form_cleaned:
-        card_text = each['card_text']
-        new_card = Card(card_text=card_text, package=new_package)
-        new_card.save()
-
-    return new_package
-
-
-def save_edited_package(package_id, package_form_cleaned, categories_form_cleaned, cards_form_cleaned):
-    """
-    Retrieve a Package and associated Card and Category objects and save over using cleaned form data
-    :param package_id: the ID of the package that was edited
-    :param package_form_cleaned: the POST data from the form after cleaned()
-    :param categories_form_cleaned: the POST data from the form after cleaned();
-        a dict with each form submitted with a category_name and id (None)
-    :param cards_form_cleaned: as above categories_form_cleaned but for cards
-    :return: a new package, already saved
-    """
-    edited_package = Package.objects.get(pk=package_id)
-    edited_package.package_name = package_form_cleaned['package_name']
-    edited_package.save()
-
-    for each in categories_form_cleaned:
-        edited_category = Category.objects.get(pk=each['id'].pk)  # don't know why the id is the whole object!
-        edited_category.category_name = each['category_name']
-        edited_category.save()
-
-    for each in cards_form_cleaned:
-        edited_card = Card.objects.get(pk=each['id'].pk)  # as above
-        edited_card.card_text = each['card_text']
-        edited_card.save()
-
-    return edited_package
-
-
 class NewPackageForm(forms.Form):
     """ *UNUSED IN EXAMPLE CODE*
     Class to create a blank form for making a package, with the forms / formsets as attributes of the BlankForm object
     """
-    def __init__(self, num_categories, num_cards):
+    def __init__(self, num_categories=2, num_cards=4):
+        """
+        :param num_categories: initial number of categories to include with form; default as 2
+        :param num_cards: initial number of cards to include with form; default as 4
+        """
         super().__init__()
         self.package_form = PackageNameForm()
         self.categories_formset = create_category_formset(extra=num_categories)
         self.cards_formset = create_card_formset(extra=num_cards)
+
+    def __str__(self):
+        return "Form to create a new package"
 
     def to_dict(self):
         """ Get the Form as a dict that is easy to pass through as context for template to render """
@@ -161,7 +87,7 @@ class NewPackageForm(forms.Form):
 class EditPackageForm(forms.Form):
     """
     Currently not used. Create a pre-filled form object that can be rendered to edit an existing package
-    Required: validate package_id before init!
+    Required: validate package_id before init?
     """
     def __init__(self, package_id):
         super().__init__()
@@ -169,50 +95,78 @@ class EditPackageForm(forms.Form):
         self.package_form = PackageNameForm(instance=package)
         self.categories_formset = create_category_formset(package=package)
         self.cards_formset = create_card_formset(package=package)
-        self.exists_flag = True
         self.package_id = package_id
+
+    def __str__(self):
+        return "Edit form for ", self.package_form.package_name
 
     def to_dict(self):
         """ Get the Form as a dict that is easy to pass through as context for template to render """
         package = {'package_form': self.package_form,
                    'categories_formset': self.categories_formset,
                    'cards_formset': self.cards_formset,
-                   'exists_flag': self.exists_flag,
                    'package_id': self.package_id}
         return package
 
 
-#  Unused code
-# def edit_package_form(package_id, num_categories=0, num_cards=0):
-#     """
-#     :return: a dict that can be passed as context to a template, which will render the forms pre-populated with the
-#     existing package's information, for editing
-#     """
-#     try:
-#         package = Package.objects.get(pk=package_id)
-#     except ObjectDoesNotExist:
-#         print("These aren't the droids you're looking for")
-#         return {}
-#
-#     package_form = PackageNameForm(instance=package)
-#     categories_formset = create_category_formset(package=package, extra=num_categories)
-#     cards_formset = create_card_formset(package=package, extra=num_cards)
-#
-#     return {'package_form': package_form,
-#             'categories_formset': categories_formset,
-#             'cards_formset': cards_formset,
-#             'exists_flag': True,  # processing flag to indicate that the package already exists
-#             'package_id': package_id}
-#
-# def create_blank_form(num_categories=2, num_cards=6):
-#     """
-#     :return: a dict that can be passed as context to a template, which will render the forms to create a whole package
-#     including package name, categories, and cards
-#     """
-#     package_form = PackageNameForm()
-#     categories_formset = create_category_formset(extra=num_categories)
-#     cards_formset = create_card_formset(extra=num_cards)
-#
-#     return {'package_form': package_form,
-#             'categories_formset': categories_formset,
-#             'cards_formset': cards_formset}
+class SubmittedForm(forms.Form):
+    """ Class used to create a new package or save an edited package by validating form data """
+    def __init__(self, request):
+        super().__init__()
+        self.package_form = PackageNameForm({'package_name': request.POST['package_name']})
+        self.categories_formset = create_category_formset(request=request)
+        self.cards_formset = create_card_formset(request=request)
+        self.owner = request.user
+        if 'package_id' in request.POST:
+            self.package_id = request.POST['package_id']
+
+    def is_valid(self):
+        """ Validate each of the included forms in the collected form object """
+        if self.package_form.is_valid() and self.categories_formset.is_valid() and self.cards_formset.is_valid():
+            return True
+        else:
+            return False
+
+    def save(self):
+        """
+        If the package was being edited, retrieve the existing items and update them; otherwise, create new ones
+        :return: the new or edited package
+        """
+        if hasattr(self, 'package_id'):  # TODO: better way to do this?
+            edited_package = Package.objects.get(pk=self.package_id)
+            edited_package.package_name = self.package_form.cleaned_data['package_name']
+            edited_package.save()
+
+            category_data = self.categories_formset.cleaned_data
+            print(category_data)
+            for category in category_data:
+                edited_category = Category.objects.get(pk=category['id'].pk)  # Don't know why ['id'] is required
+                edited_category.category_name = category['category_name']
+                edited_category.save()
+
+            for card in self.cards_formset.cleaned_data:
+                edited_card = Card.objects.get(pk=card['id'].pk)  # as above
+                edited_card.card_text = card['card_text']
+                edited_card.save()
+
+            package = edited_package
+
+        else:
+            new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
+            new_package.save()
+
+            for categories in self.categories_formset.cleaned_data:
+                for category in categories:
+                    category_name = category['category_name']
+                    new_category = Category(category_name=category_name, package=new_package)
+                    new_category.save()
+
+            for card in self.cards_formset.cleaned_data:
+                card_text = card['card_text']
+                new_card = Card(card_text=card_text, package=new_package)
+                new_card.save()
+
+            package = new_package
+
+        # Return either the new package or edited package
+        return package
