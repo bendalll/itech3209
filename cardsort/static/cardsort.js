@@ -29,14 +29,8 @@ function cloneItem(type)
     AND: that the formset is rendered so each form is an </li> within a </ul>,
     AND: that the #id of the </ul> is 'id_card_list' or 'id_category_list' as appropriate
      */
-    let item_number = 0; // currently used so later code will fail gracefully if param is somehow incorrect
-    if(type === 'card') {
-        item_number = $('#id_' + type + '_list')[0].childElementCount;
-    }
-    else if (type === 'category') {
-        item_number = num_categories;
-        num_categories += 1;
-    }
+    let parent_list = $('#id_' + type + '_list');
+    let item_number = parent_list[0].childElementCount;
 
     let new_item = $('#id_' + type + '_list li:last').clone(true);
     new_item.find(':input').each(function()
@@ -57,7 +51,7 @@ function cloneItem(type)
     total++;
     $(id_total_forms).val(total);
 
-    $('#id_' + type + "_list").append(new_item);
+    parent_list.append(new_item);
 }
 
 
