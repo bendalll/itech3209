@@ -38,6 +38,10 @@
             </div>
         </div>
         <div class="row" id="buttons">
+            {% if package_id %}
+                <h1>Package ID is: {{ package_id }}</h1>
+            <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
+            {% endif %}
             <input type="submit" value="Save and Close" class="btn btn-default"/>
         </div>
     </form>
