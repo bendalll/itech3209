@@ -115,11 +115,10 @@ class SubmittedForm(forms.Form):
             new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
             new_package.save()
 
-            for categories in self.categories_formset.cleaned_data:
-                for category in categories:
-                    category_name = category['category_name']
-                    new_category = Category(category_name=category_name, package=new_package)
-                    new_category.save()
+            for category in self.categories_formset.cleaned_data:
+                category_name = category['category_name']
+                new_category = Category(category_name=category_name, package=new_package)
+                new_category.save()
 
             for card in self.cards_formset.cleaned_data:
                 card_text = card['card_text']
