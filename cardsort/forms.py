@@ -94,38 +94,25 @@ class SubmittedForm(forms.Form):
         :return: the new or edited package
         """
         if hasattr(self, 'package_id'):  # TODO: better way to do this?
-            edited_package = Package.objects.get(pk=self.package_id)
-            edited_package.package_name = self.package_form.cleaned_data['package_name']
-            edited_package.save()
-
-            category_data = self.categories_formset.cleaned_data
-            for category in category_data:
-                edited_category = Category.objects.get(pk=category['id'].pk)  # Don't know why ['id'] is required
-                edited_category.category_name = category['category_name']
-                edited_category.save()
-
-            for card in self.cards_formset.cleaned_data:
-                edited_card = Card.objects.get(pk=card['id'].pk)  # as above
-                edited_card.card_text = card['card_text']
-                edited_card.save()
-
-            package = edited_package
-
+            existing_package = Package.objects.get(pk=self.package_id)
+            existing_package.delete()
+            new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
+            new_package.save()
         else:
             new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
             new_package.save()
 
-            for category in self.categories_formset.cleaned_data:
-                category_name = category['category_name']
-                new_category = Category(category_name=category_name, package=new_package)
-                new_category.save()
+        for category in self.categories_formset.cleaned_data:
+            category_name = category['category_name']
+            new_category = Category(category_name=category_name, package=new_package)
+            new_category.save()
 
-            for card in self.cards_formset.cleaned_data:
-                card_text = card['card_text']
-                new_card = Card(card_text=card_text, package=new_package)
-                new_card.save()
+        for card in self.cards_formset.cleaned_data:
+            card_text = card['card_text']
+            new_card = Card(card_text=card_text, package=new_package)
+            new_card.save()
 
-            package = new_package
+        package = new_package
 
         # Return either the new package or edited package
         return package
