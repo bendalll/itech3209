@@ -20,45 +20,6 @@ class UserCardsortForm(forms.ModelForm):
         )
 
 
-def create_category_formset(**kwargs):
-    """ Function to create and return a model formset of Category Forms tailored to the context of the calling code """
-
-    # Filter for 'extra' here to avoid always having to specify extra=0
-    if 'extra' in kwargs:
-        CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=kwargs['extra'])
-    else:
-        CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=0)
-
-    if 'package' in kwargs:
-        new_category_formset = CategoryFormset(queryset=Category.objects.filter(package=kwargs['package']),
-                                               prefix='category')
-    elif 'request' in kwargs:
-        new_category_formset = CategoryFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='category')
-    else:
-        new_category_formset = CategoryFormset(queryset=Category.objects.none(), prefix='category')
-
-    return new_category_formset
-
-
-def create_card_formset(**kwargs):
-    """ Function to create and return and model formset of Card Forms tailored to the context of the calling code """
-
-    # Filter for 'extra' here to avoid always having to specify extra=0
-    if 'extra' in kwargs:
-        CardFormset = modelformset_factory(Card, fields=('card_text',), extra=kwargs['extra'])
-    else:
-        CardFormset = modelformset_factory(Card, fields=('card_text',), extra=0)
-
-    if 'package' in kwargs:
-        new_card_formset = CardFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
-    elif 'request' in kwargs:
-        new_card_formset = CardFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='card')
-    else:
-        new_card_formset = CardFormset(queryset=Card.objects.none(), prefix='card')
-
-    return new_card_formset
-
-
 class NewPackageForm(forms.Form):
     """
     Class to create a blank form for making a package, with the forms / formsets as attributes of the BlankForm object
@@ -169,3 +130,42 @@ class SubmittedForm(forms.Form):
 
         # Return either the new package or edited package
         return package
+
+
+def create_category_formset(**kwargs):
+    """ Function to create and return a model formset of Category Forms tailored to the context of the calling code """
+
+    # Filter for 'extra' here to avoid always having to specify extra=0
+    if 'extra' in kwargs:
+        CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=kwargs['extra'])
+    else:
+        CategoryFormset = modelformset_factory(Category, fields=('category_name',), extra=0)
+
+    if 'package' in kwargs:
+        new_category_formset = CategoryFormset(queryset=Category.objects.filter(package=kwargs['package']),
+                                               prefix='category')
+    elif 'request' in kwargs:
+        new_category_formset = CategoryFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='category')
+    else:
+        new_category_formset = CategoryFormset(queryset=Category.objects.none(), prefix='category')
+
+    return new_category_formset
+
+
+def create_card_formset(**kwargs):
+    """ Function to create and return and model formset of Card Forms tailored to the context of the calling code """
+
+    # Filter for 'extra' here to avoid always having to specify extra=0
+    if 'extra' in kwargs:
+        CardFormset = modelformset_factory(Card, fields=('card_text',), extra=kwargs['extra'])
+    else:
+        CardFormset = modelformset_factory(Card, fields=('card_text',), extra=0)
+
+    if 'package' in kwargs:
+        new_card_formset = CardFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
+    elif 'request' in kwargs:
+        new_card_formset = CardFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='card')
+    else:
+        new_card_formset = CardFormset(queryset=Card.objects.none(), prefix='card')
+
+    return new_card_formset
