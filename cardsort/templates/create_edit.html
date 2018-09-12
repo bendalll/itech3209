@@ -31,7 +31,7 @@
                 {{ categories_formset.management_form }}
                 <ul id="id_category_list">
                     {%  for category in categories_formset %}
-                        <li>{{ category }}<button type="button" class="btn btn-default">Remove</button></li>
+                        <li>{{ category }}<a href="" class="btn btn-default">Remove</a></li>
                     {% endfor %}
                 </ul>
             <input type="button" value="Add A Category" class="btn btn-default" onclick="cloneItem('category')"/>
