@@ -12,13 +12,6 @@ $( function()
 });
 
 
-// Global variables to count numbers of cards and categories
-// Initially the form consists of 4 cards and 2 categories
-// **This is bad. Should count the number of child <li> or something and add to**
-var num_cards = 2;
-var num_categories = 2;
-
-
 // Create-package functions
 function cloneItem(type)
 {
