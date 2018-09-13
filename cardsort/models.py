@@ -62,13 +62,20 @@ class UserCardsort(models.Model):
     card-category associations"""
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # change to CASCADE if delete save when delete user
-    sortlist = {
+    comment_text = models.TextField(default='placeholder text')
+    links = {
         models.ForeignKey(Card, on_delete=models.CASCADE): models.ForeignKey(Category, on_delete=models.CASCADE)
     }
-    comment_text = models.TextField(default='placeholder text')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.package = kwargs['package']
+        self.user = kwargs['user']
+        self.comment_text = kwargs['comment_text']
+        self.links = kwargs['links']
 
     def __str__(self):
-        return "Saved information for user ", self.user_id
+        return "Saved sort for user %s, package %s" % (self.user, self.package)
         # TODO make this more meaningful
 
     class Meta:

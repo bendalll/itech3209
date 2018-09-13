@@ -78,7 +78,6 @@ def create_package(request):
 def edit_package(request, package_id):
     """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
     if request.method == 'POST':
-        print("Package ID is: ", request.POST['package_id'])
         form = SubmittedForm(request)
         if form.is_valid():
             form.save()
@@ -122,18 +121,31 @@ def activity_save(request, package_id):
     if request.method == "POST":
         data = request.POST
         package = Package.objects.get(pk=package_id)
-        cards_unassigned = data['card_ids_unassigned'].split(',')
-        sortlist = {}
 
-        # Check if save thing exists
+        # Check if save thing exists and delete it
         if UserCardsort.objects.filter(package=package, user=request.user).exists():
             UserCardsort.objects.get(package=package, user=request.user).delete()
+
+        sortlist = {}
+        cards_unassigned = data['card_ids_unassigned'].split(',')
+        for card in cards_unassigned:
+            if card != "":
+                sortlist[card] = False
 
         for category in package.get_categories():
             new_sortlist = data['card_ids_for_' + str(category.pk)].split(',')
             for card in new_sortlist:
-                sortlist[card] = category.pk
+                if card != "":
+                    sortlist[card] = category.pk
 
+        new_comment = data['comment']
+
+        print("It comes in as: ", sortlist)
+
+        user_cardsort = UserCardsort(package=package, user=request.user, links=sortlist, comment_text=new_comment)
+        user_cardsort.save()
+
+        print("It comes out as: ", user_cardsort.links)
     return redirect('home')
 
 
