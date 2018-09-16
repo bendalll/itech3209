@@ -19,7 +19,7 @@ def commentList(request):
         'commentList': Comments.objects.all()
     }	
 	
-def sortedPackageList(request):
+def sortedList(request):
     return {
-        'sortedPackageList': Sorted_Package.objects.all()
+        'sortedList': Sorted_Package.objects.all()
     }		
