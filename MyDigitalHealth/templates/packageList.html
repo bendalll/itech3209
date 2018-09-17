@@ -6,8 +6,33 @@
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
+		
+		
+		
+		
+		<li class="list-group-item active">Cards</li>
+			<ul id="sortable" class="list-group connection">
 			{% for sortedList in sortedList %}
+				<ul class="list-group connection cardGroups" value="{{sortedList.card_group.pk}}">
+					{% for sortedCards in sortedList.cards.all %}
+						{% for sortCards in sortCards %}
+							{% if sortedCards.id != sortCards.pk   %}
+							<li class="list-group-item" value="{{sortCards.pk}}">{{sortCards }}</li>
+							<input type="hidden" name="cardListID" value="{{sortCards.pk}}">	
+							{% endif %}
+						{% endfor %}
+					
+				
+					{% endfor %}
+			{% endfor %}
+			</ul>	</ul>			
+		
+		
+		
+		{% for sortedList in sortedList %}
+			{% if sortedList.user == user %}	
 				{% if sortedList.card_package.id == package.pk %}
+				
 					<div class="cards" value="{{sortedList.card_group.pk}}">
 					<li class="list-group-item active" value="{{ sortedList.card_group.title}}">{{ sortedList.card_group}}</li>
 					<input id ="sortedCardGroupID" type="hidden" name="sortedCardGroupID" value="{{sortedList.card_group.pk}}">	
@@ -16,11 +41,19 @@
 						<li class="list-group-item" value="{{sortedCards.pk}}">{{sortedCards }}</li>
 						<input type="hidden" name="sortedCardsID" value="{{sortedCards.pk}}">	
 					{% endfor %}
+					{% for cardGroups in cardGroups %}		
+						{% if cardGroups.card_package.id == package.pk %}
+							
+							
+								
+						{% endif %}
+					{% endfor %}
 					</ul>
 					</div>
 				{% endif %}	
 					</div>
-			{% endfor %}	
+			{% endif %}	
+		{% endfor %}	
 			
 			</br></br></br></br></br></br>
 			<form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
