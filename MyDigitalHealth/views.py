@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from .forms import RegistrationForm
 from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
-from cardsort.models import Package, UserCardsort
+from cardsort.models import Package, UserCardsort, SortedCategory
 
 
 def index(request):
@@ -108,7 +108,23 @@ def package_administration(request):
 
 def package_open(request, package_id):
     """ Display the package as a cardsort activity for the user to complete """
-    context = Package.objects.get(pk=package_id).to_dict()
+    if UserCardsort.objects.get(package=package_id, user=request.user):
+        package = Package.objects.get(pk=package_id)
+
+        user_save = UserCardsort.objects.get(package=package_id, user=request.user)
+
+        bleh = user_save.sorted_category.all()
+        print(bleh[0].cards.all())
+
+
+
+        context = {'package_id': package_id,
+                   'package_name': package.package_name,
+                   'categories': bleh,
+                   'cards': "xth",
+                   }
+    else:
+        context = Package.objects.get(pk=package_id).to_dict()
     return render(
         request,
         'active.html',
@@ -117,35 +133,36 @@ def package_open(request, package_id):
 
 
 def activity_save(request, package_id):
-    # TODO: this should create a UserCardsort object with the positions of cards in categories from request.POST
+    """ Save card > category associations and user comment in the database """
     if request.method == "POST":
         data = request.POST
+
         package = Package.objects.get(pk=package_id)
 
         # Check if save thing exists and delete it
         if UserCardsort.objects.filter(package=package, user=request.user).exists():
-            UserCardsort.objects.get(package=package, user=request.user).delete()
-
-        sortlist = {}
-        cards_unassigned = data['card_ids_unassigned'].split(',')
-        for card in cards_unassigned:
-            if card != "":
-                sortlist[card] = False
-
-        for category in package.get_categories():
-            new_sortlist = data['card_ids_for_' + str(category.pk)].split(',')
-            for card in new_sortlist:
-                if card != "":
-                    sortlist[card] = category.pk
+            UserCardsort.objects.filter(package=package, user=request.user).delete()
 
         new_comment = data['comment']
 
-        print("It comes in as: ", sortlist)
-
-        user_cardsort = UserCardsort(package=package, user=request.user, links=sortlist, comment_text=new_comment)
+        user_cardsort = UserCardsort(package=package, user=request.user, comment_text=new_comment)
         user_cardsort.save()
 
-        print("It comes out as: ", user_cardsort.links)
+        # we don't actually do anything with this
+        cards_unassigned = data['card_ids_unassigned'].split(',')
+
+        for category in package.get_categories():
+            sorted_cards = data['card_ids_for_' + str(category.pk)].split(',')
+            card_ids = []
+            for card_id in sorted_cards:
+                if card_id != "":
+                    card_ids.append(card_id)
+
+            new_sort = SortedCategory(category=category, card_ids=card_ids)
+            new_sort.save()
+            user_cardsort.sorted_category.add(new_sort)
+
+        user_cardsort.save()
     return redirect('home')
 
 
