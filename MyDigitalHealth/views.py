@@ -7,6 +7,7 @@ from .models import Card_Packages, Card_Groups, Cards, Comments, Sorted_Package
 from django.template.response import TemplateResponse
 from django.contrib import messages 
 from django.db.models import Q
+from itertools import chain
 
 def index(request):
     """
@@ -117,14 +118,25 @@ def packageList(request, package):
 	package = Card_Packages.objects.get(id__exact=package)
 	user = request.user
 	
-	sortCards = Cards.objects.filter(card_package=package)
-
+	sortGroups = Card_Groups.objects.filter(card_package=package).values_list('id', flat=True)
+	sortCards = Cards.objects.filter(card_package=package).values_list('id', flat=True)
+	sortPackage = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user)
+	sortPackageUser = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).exists()
+	sortPackageGroups = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('card_group', flat=True)
+	sortPackageCards = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('cards', flat=True)
+	filteredGroups = [x for x in sortGroups if x not in sortPackageGroups]
+	filteredGroupsList = None
+	filteredCards = [x for x in sortCards if x not in sortPackageCards]
+	filteredCardsList = None
+	for filteredGroups in filteredGroups:
+		filteredGroupsList = Card_Groups.objects.filter(card_package=package).filter(id=filteredGroups)	
+	for filteredCards in filteredCards:
+		filteredCardsList = Cards.objects.filter(card_package=package).filter(id=filteredCards)
 	if request.user.is_anonymous:
 		comments = Comments.objects.filter(card_package__exact= package)
 	else :	
 		comments = Comments.objects.filter(card_package__exact= package).filter(user__exact= user)
-	"commentsList = Comments.objects.filter( Q(card_package=package) & Q(user=user) )"
-	context = {'package': package, 'user': user, 'comments': comments, 'sortCards': sortCards}
+	context = {'package': package, 'user': user, 'comments': comments, 'sortPackage': sortPackage, 'sortPackageUser': sortPackageUser, 'filteredGroupsList': filteredGroupsList, 'filteredCardsList': filteredCardsList}
 	return render(
 		request,
 		'packageList.html',
