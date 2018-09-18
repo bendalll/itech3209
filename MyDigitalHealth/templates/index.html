@@ -4,6 +4,6 @@
 	<div>
 		<h3>Project 92 - HTML Interactive Content Elements for Health Purposes</h3>
 		<p><h4>Welcome{% if user.is_authenticated %} {{ user.get_username }}</h4>
-        <p>You have last visited on {{ user.last_login }}</p>{% endif %}</p>
+        <p>You last visited on {{ user.last_login }}</p>{% endif %}</p>
 	</div>
 {% endblock %}
