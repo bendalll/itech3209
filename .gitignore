@@ -9,3 +9,4 @@ MyProject/__pycache__/*
 MyDigitalHealth/migrations/__pycache__/*
 **/__pycache__/*
 MyDigitalHealth/migrations/*
+cardsort/migrations/*
