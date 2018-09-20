@@ -7,7 +7,7 @@ from .models import Card_Packages, Card_Groups, Cards, Comments, Sorted_Package
 from django.template.response import TemplateResponse
 from django.contrib import messages 
 from django.db.models import Q
-from itertools import chain
+import itertools
 
 def index(request):
     """
@@ -120,23 +120,28 @@ def packageList(request, package):
 	
 	sortGroups = Card_Groups.objects.filter(card_package=package).values_list('id', flat=True)
 	sortCards = Cards.objects.filter(card_package=package).values_list('id', flat=True)
-	sortPackage = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user)
-	sortPackageUser = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).exists()
-	sortPackageGroups = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('card_group', flat=True)
-	sortPackageCards = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('cards', flat=True)
-	filteredGroups = [x for x in sortGroups if x not in sortPackageGroups]
-	filteredGroupsList = None
-	filteredCards = [x for x in sortCards if x not in sortPackageCards]
 	filteredCardsList = None
-	for filteredGroups in filteredGroups:
-		filteredGroupsList = Card_Groups.objects.filter(card_package=package).filter(id=filteredGroups)	
-	for filteredCards in filteredCards:
-		filteredCardsList = Cards.objects.filter(card_package=package).filter(id=filteredCards)
+	filteredGroupsList = None
 	if request.user.is_anonymous:
 		comments = Comments.objects.filter(card_package__exact= package)
+		sortPackageUser = Sorted_Package.objects.filter(card_package=package)
+		sortPackageGroups = Sorted_Package.objects.filter(card_package=package).values_list('card_group', flat=True)
+		sortPackageCards = Sorted_Package.objects.filter(card_package=package).values_list('cards', flat=True)		
+		sortPackage = Sorted_Package.objects.filter(card_package=package)
 	else :	
 		comments = Comments.objects.filter(card_package__exact= package).filter(user__exact= user)
-	context = {'package': package, 'user': user, 'comments': comments, 'sortPackage': sortPackage, 'sortPackageUser': sortPackageUser, 'filteredGroupsList': filteredGroupsList, 'filteredCardsList': filteredCardsList}
+		sortPackageUser = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).exists()	
+		sortPackageGroups = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('card_group', flat=True)
+		sortPackageCards = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('cards', flat=True)
+		sortPackage = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user)
+		filteredGroups = [x for x in sortGroups if x not in sortPackageGroups]
+		filteredCards = [x for x in sortCards if x not in sortPackageCards]
+
+		for filteredGroups in filteredGroups:
+			filteredGroupsList = Card_Groups.objects.filter(card_package=package).filter(id=filteredGroups)	
+		for filteredCards in filteredCards:
+			filteredCardsList = Cards.objects.filter(card_package=package).filter(id=filteredCards)		
+	context = {'package': package, 'user': user, 'comments': comments,'comments': comments, 'sortPackage': sortPackage, 'sortPackageUser': sortPackageUser, 'filteredGroupsList': filteredGroupsList, 'filteredCardsList': filteredCardsList}
 	return render(
 		request,
 		'packageList.html',
@@ -168,17 +173,40 @@ def comments(request, package):
 		text = request.POST.get('comment')
 		cardPackage = Card_Packages.objects.get(id__exact=package)
 		cardsList = request.POST.getlist('cardsList')
+		sortPackages = request.POST.getlist('sortPackages')
 		sortedCardsInts = list(filter(None, request.POST.getlist('sortedCards')))
 		cardGroupIDs = request.POST.getlist('cardGroupID')
-		for cardGroupID, sortedCardsInt in zip(cardGroupIDs,sortedCardsInts):
+		sortCardGroupIDs = request.POST.getlist('sortCardGroupID')
+		sortedCardLists = list(filter(None, request.POST.getlist('sortedCardList')))
+		sorted = Sorted_Package()
+		test1= request.POST.getlist('sortedCardList')
+		test = None
+		test1 = None
+		test2 = None
+		test3 = None
+		for sortPackage, sortedCardList in zip(sortPackages,sortedCardLists):
+			sortedSplitCardPackage = sortedCardList.split(",")
+			sortedGroup = sortedSplitCardPackage[0]
+			sortedCard = sortedSplitCardPackage[1:]
+			sorted = Sorted_Package.objects.get(id__exact=sortPackage)
+			sorted.card_group = Card_Groups.objects.get(id__exact=sortedGroup)
+			sorted.user = user
+			sorted.cards.clear()
+			sorted.save()
+			for sortedCard in sortedCard:
+				sorted.cards.add(Cards.objects.get(id__exact=sortedCard))
+
+		for sortedCardsInt in sortedCardsInts:
 			sort = Sorted_Package()
 			sort.card_package = cardPackage 
 			sort.user = user
-			sort.card_group = Card_Groups.objects.get(id__exact=cardGroupID)
-			sort.save()
-			splitCards = sortedCardsInt.split(",")
-			for splitCards in splitCards:
-				sort.cards.add(Cards.objects.get(id__exact=splitCards))
+			splitCardPackage = sortedCardsInt.split(",")
+			sortGroup = splitCardPackage[0]
+			sortCard = splitCardPackage[1:]	
+			sort.card_group = Card_Groups.objects.get(id__exact=sortGroup)
+			sort.save()	
+			for sortCard in sortCard:
+				sort.cards.add(Cards.objects.get(id__exact=sortCard))
 		
 		comment = Comments()
 		comment.card_package = cardPackage
@@ -188,7 +216,7 @@ def comments(request, package):
 		comment.save()
 		return render(
 		request,
-			'index.html',
+			'index.html',		
 		)
 	else:
 		form = CreateComments(instance=Comments())
