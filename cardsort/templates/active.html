@@ -9,20 +9,16 @@
     <div class="container">
         <form class="form" method="post" action="{% url 'save' package_id %}" onsubmit="return processCards()">
             {% csrf_token %}
-        <div class="cards row align-items-center">
-            <h3 class="list-group-item active">Cards</h3>
-            <ul id="sortable" class="list-group connection">
-                <input type="hidden" id="cards" name="card_ids_unassigned"/>
-            {% for card in cards %}
-                <li class="list-group-item" id="{{ card.pk }}">{{ card.card_text }}</li>
-            {% endfor %}
-            </ul>
-        </div>
         {% for category in categories %}
         <div class="cards">
-            <h3 class="list-group-item active">{{ category.category.category_name }}</h3>
+            <h3 class="list-group-item active">{{ category.category_name }}</h3>
             <ul class="list-group connection">
                 <input type="hidden" id="category_{{ category.pk }}" name="card_ids_for_{{ category.pk }}"/>
+                {% for card in cards %}
+                    {% if card.category.pk == category.pk %}
+                    <li class="list-group-item" id="{{ card.pk }}">{{ card.card_text }}</li>
+                    {% endif %}
+                {% endfor %}
             </ul>
         </div>
         {% endfor %}
