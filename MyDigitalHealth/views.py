@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from .forms import RegistrationForm
 from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
-from cardsort.models import Package, UserCardsort, SortedCategory
+from cardsort.models import Package, UserSavedPackage, Category, AssignedPackage
 
 
 def index(request):
@@ -36,21 +36,22 @@ def register(request):
                 request,
                 'index.html',
             )
-        else:  # TODO return error
+        else:
+            messages.error("Form validation error")
             form = RegistrationForm()
-            args = {'form': form}
+            context = {'form': form}
             return render(
                 request,
                 'register.html',
-                {'form': form}
+                context
             )
-    else:  # TODO return error
+    else:
         form = RegistrationForm()
-        args = {'form': form}
+        context = {'form': form}
         return render(
             request,
             'register.html',
-            {'form': form}
+            context
         )
 
 
@@ -61,12 +62,11 @@ def create_package(request):
         form = SubmittedForm(request)
         if form.is_valid():
             form.save()
-        # new_package = validate_and_save_package(request)
+        else:
+            messages.error(request, 'Package could not be saved')  # send an error her as required
         return HttpResponseRedirect('administration')
-
     else:
         form = NewPackageForm(2, 3).to_dict()
-
         return render(
             request,
             'create_edit.html',
@@ -97,7 +97,7 @@ def edit_package(request, package_id):
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def package_administration(request):
     """ Generate and display the Administration page with a list of the packages the admin has created """
-    own_packages = Package.objects.filter(owner=request.user)
+    own_packages = Package.objects.filter(owner=request.user, assignedpackage__isnull=True)
     context = {'own_packages': own_packages}
     return render(
         request,
@@ -108,69 +108,53 @@ def package_administration(request):
 
 def package_open(request, package_id):
     """ Display the package as a cardsort activity for the user to complete """
-    if UserCardsort.objects.get(package=package_id, user=request.user):
-        package = Package.objects.get(pk=package_id)
-
-        user_save = UserCardsort.objects.get(package=package_id, user=request.user)
-
-        bleh = user_save.sorted_category.all()
-        print(bleh[0].cards.all())
-
-
-
-        context = {'package_id': package_id,
-                   'package_name': package.package_name,
-                   'categories': bleh,
-                   'cards': "xth",
-                   }
+    if UserSavedPackage.objects.filter(base_package=package_id, user=request.user).exists():
+        user_save = UserSavedPackage.objects.get(base_package=package_id, user=request.user)
+        print(user_save)
+        assigned_package = AssignedPackage.objects.get(pk=user_save.assigned_package.pk)
+        context = assigned_package.to_dict()
+        # context['def_cat'] = Category.objects.get(id=0)
+        print("Package open returns context: ", context)
+        return render(
+            request,
+            'active.html',
+            context
+        )
     else:
-        context = Package.objects.get(pk=package_id).to_dict()
-    return render(
-        request,
-        'active.html',
-        context
-    )
+        messages.error(request, "Sorry, this package is not assigned to this user")
+        return render(
+            request,
+            'index.html',
+        )
 
 
 def activity_save(request, package_id):
     """ Save card > category associations and user comment in the database """
     if request.method == "POST":
         data = request.POST
+        print(data)
 
         package = Package.objects.get(pk=package_id)
+        user_save = UserSavedPackage.objects.filter(package=package)
 
-        # Check if save thing exists and delete it
-        if UserCardsort.objects.filter(package=package, user=request.user).exists():
-            UserCardsort.objects.filter(package=package, user=request.user).delete()
+        user_save.comment_text = data['comment']
 
-        new_comment = data['comment']
-
-        user_cardsort = UserCardsort(package=package, user=request.user, comment_text=new_comment)
-        user_cardsort.save()
-
-        # we don't actually do anything with this
-        cards_unassigned = data['card_ids_unassigned'].split(',')
+        unassigned_cards = data['card_ids_unassigned'].split(',')
 
         for category in package.get_categories():
-            sorted_cards = data['card_ids_for_' + str(category.pk)].split(',')
-            card_ids = []
-            for card_id in sorted_cards:
-                if card_id != "":
-                    card_ids.append(card_id)
+            assigned_cards = data['card_ids_for_' + str(category.pk)].split(',')
+            for card in assigned_cards:
+                card.category = category
 
-            new_sort = SortedCategory(category=category, card_ids=card_ids)
-            new_sort.save()
-            user_cardsort.sorted_category.add(new_sort)
-
-        user_cardsort.save()
+        user_save.save()
     return redirect('home')
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
-def assign_choose_user(request, package_id):
-    active_package = Package.objects.get(pk=package_id)
+def assign_choose_user(request, base_package_id):
+    base_package = Package.objects.get(pk=base_package_id)
     user_list = User.objects.all()
-    context = {'active_package': active_package,
+    context = {'base_package': base_package,
                'user_list': user_list
                }
     return render(
@@ -181,44 +165,20 @@ def assign_choose_user(request, package_id):
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
-def assign_package_to_user(request, package_id, user_id):
-    """ Function to assign the active package to the provided user - # TODO? creates instance of UserCardsort """
-    # get the package by id
-    active_package = Package.objects.get(pk=package_id)
-    # get the user by id
+def assign_package_to_user(request, base_package_id, user_id):
+    """ Function to assign the active package to the provided user"""
+    base_package = Package.objects.get(pk=base_package_id)
     assigned_user = User.objects.get(pk=user_id)
-    # check if UserCardsort already exists
-    all_pack_assignments = UserCardsort.objects.all()
-    for cardsort in all_pack_assignments:
-        # if exists, return and say already assigned
-        # TODO: change this so that you can tell it's already assigned on the page, and don't have to make this call
-        if cardsort.package == active_package and cardsort.user == assigned_user:
-            context = {'message': "This package is already assigned to this user"}
-            return render(
-                request,
-                'assign_package.html',
-                context
-            )
-        # if not exist, create it and provide success message
-        else:
-            assignment = UserCardsort(package=active_package, user=assigned_user)
-            assignment.save()
-            context = {'assignment': assignment}
-            return render(
-                request,
-                'assign_package.html',
-                context
-            )
-    # Nothing exists there yet so have to make the first item and then this code won't be used
+    if UserSavedPackage.objects.filter(base_package=base_package, user=assigned_user).exists():
+        messages.info(request, "This package is already assigned to this user")
+        return redirect('assign', base_package_id)
     else:
-        assignment = UserCardsort(package=active_package, user=assigned_user)
+        # Duplicate the Package, Categories, and Cards, so they are for this user only
+        new_package = base_package.assign()
+        assignment = UserSavedPackage(base_package=base_package, assigned_package=new_package, user=assigned_user)
         assignment.save()
-        context = {'assignment': assignment}
-        return render(
-            request,
-            'assign_package.html',
-            context
-        )
+        messages.info(request, "Package successfully assigned to user")
+        return redirect('assign', base_package_id)
 
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
@@ -226,10 +186,5 @@ def delete_package(request, package_id):
         instance = Package.objects.get(pk=package_id)
         # TODO: try/catch delete errors here
         instance.delete()
-        own_packages = Package.objects.filter(owner=request.user)
-        context = {'own_packages': own_packages, 'message': 'Delete successful'}
-        return render(
-            request,
-            'package_administration.html',
-            context
-        )
+        messages.info("Package deleted")
+        return redirect('administration')
