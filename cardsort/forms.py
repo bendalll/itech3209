@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from cardsort.models import Package, Category, Card, UserCardsort
+from cardsort.models import Package, Category, Card, UserSavedPackage
 
 
 class PackageNameForm(forms.ModelForm):
@@ -11,11 +11,10 @@ class PackageNameForm(forms.ModelForm):
         )
 
 
-class UserCardsortForm(forms.ModelForm):
+class UserSaveForm(forms.ModelForm):
     class Meta:
-        model = UserCardsort
+        model = UserSavedPackage
         fields = (
-            'comment_text',
             'user',
         )
 

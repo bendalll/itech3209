@@ -32,6 +32,43 @@ class Package(models.Model):
                    }
         return package
 
+    def assign(self):
+        """ Method to duplicate the package as an AssignedPackage """
+        assigned_package = AssignedPackage(package_name=self.package_name, owner=self.owner, comment_text="")
+        assigned_package.save()
+        # Base Packages have no blank "Cards" default category, so we need to add it here
+        first_category = Category(category_name="Cards", package=assigned_package)
+        first_category.save()
+        for category in self.get_categories():
+            new_category = Category(category_name=category.category_name, package=assigned_package)
+            new_category.save()
+        for card in self.get_cards():
+            # Assign all cards to the default first_category
+            new_card = Card(card_text=card.card_text, package=assigned_package, category=first_category)
+            new_card.save()
+        return assigned_package
+
+
+class AssignedPackage(Package):
+    """ Represents a Package in a state where it is owned by a user """
+    comment_text = models.TextField(default='')
+
+    class Meta:
+        verbose_name_plural = 'Assigned Packages'
+
+    def __str__(self):
+        return self.package_name
+
+    def to_dict(self):
+        """ Used to return a saved package object as a dict for easy context rendering """
+        assigned_package = {'package_id': self.pk,
+                            'package_name': self.package_name,
+                            'categories': self.get_categories(),
+                            'cards': self.get_cards(),
+                            'comment': self.comment_text
+                            }
+        return assigned_package
+
 
 class Category(models.Model):
     """ Represents a category within a package into which Cards are sorted """
@@ -44,11 +81,16 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+    def get_cards(self):
+        cards = Card.objects.filter(category=self)
+        return cards
+
 
 class Card(models.Model):
     """ Represents a card within a package which is sorted into a category"""
     card_text = models.CharField(max_length=200)
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.card_text
@@ -57,58 +99,14 @@ class Card(models.Model):
         verbose_name_plural = 'Cards'
 
 
-class SortedCategory(models.Model):
-    """ Class to represent a link between a card and a category """
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    cards = models.ManyToManyField(Card)
-
-    def __init__(self, pk_for_self, category_id, *args, **kwargs):
-        super().__init__()
-        self.pk = pk_for_self
-        self.category = Category.objects.get(pk=category_id)
-        self.save()
-        if 'card_ids' in kwargs:
-            for card_id in kwargs['card_ids']:
-                card = Card.objects.get(pk=card_id)
-                self.cards.add(card)
-
-    def __str__(self):
-        return "Sorted cards for %s" % self.category.category_name
-        # TODO: this
-
-    def add_cards(self, card_ids):
-        for card_id in card_ids:
-            card = Card.objects.get(pk=card_id)
-            self.cards.add(card)
-
-
-class UserCardsort(models.Model):
-    """ Represents a saved version of a package, as assigned to a user, holding their comment data and sorted
-    card-category associations"""
-    package = models.ForeignKey(Package, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # change to CASCADE if delete save when delete user
-    comment_text = models.TextField(default='placeholder text')
-    sorted_category = models.ManyToManyField(SortedCategory)
-
-    def __str__(self):
-        return "Saved sort for user: %s package" % self.user
-
-    def to_dict(self):
-        """ Used to return a saved package object as a dict, with package name, list of categories,
-         and list of cards with the category they are saved in """
-
-        list_of_category_objects = self.sorted_category.all()
-        list_of_card_objects = Card.objects.filter(package=self)
-
-        # unassigned cards will be
-        # set > difference - set of categories vs package cards
-
-        package = {'package_id': self.package.pk,
-                   'package_name': self.package.package_name,
-                   'categories': list_of_category_objects,
-                   'cards': list_of_card_objects,
-                   }
-        return package
+class UserSavedPackage(models.Model):
+    """ Represents the instance of a package as assigned to a user """
+    base_package = models.ForeignKey(Package, on_delete=models.PROTECT, related_name="base_package")
+    assigned_package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name="user_package")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'Saved Packages'
+
+    def __str__(self):
+        return "Saved package %s for %s" % (self.assigned_package, self.user)

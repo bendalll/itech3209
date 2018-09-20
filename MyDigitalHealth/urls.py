@@ -13,8 +13,8 @@ urlpatterns = [
     path('edit_package/<package_id>/', views.edit_package, name='edit_package'),
     path('edit_package/<package_id>/', views.edit_package, name='edit_save'),
     path('package_open/<package_id>/', views.package_open, name='package_open'),
-    path('assign/<package_id>/', views.assign_choose_user, name="assign"),
-    path('assign_to/<package_id>/<user_id>/', views.assign_package_to_user, name='assign_to'),
+    path('assign/<base_package_id>/', views.assign_choose_user, name="assign"),
+    path('assign_to/<base_package_id>/<user_id>/', views.assign_package_to_user, name='assign_to'),
     path('delete/<package_id>/', views.delete_package, name='delete'),
     path('save/<package_id>/', views.activity_save, name='save'),
 ]
