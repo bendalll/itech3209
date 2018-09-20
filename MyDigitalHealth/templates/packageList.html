@@ -6,7 +6,7 @@
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
-
+ 
 			<form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
 			{% csrf_token %}
 			<div class="row align-items-start">
@@ -22,10 +22,10 @@
 					<input type="hidden" name="filteredCardID" value="{{filteredCardsList.pk}}">
 				{% endfor %}		
 			{% else %}			
-				{% for cardList in cardList %}
-						{% if cardList.card_package.id == package.pk  %}
-							<li class="list-group-item" value="{{cardList.pk}}">{{cardList.text }}</li>
-							<input type="hidden" name="cardListID" value="{{cardList.pk}}">	
+				{% for sortcardList in sortcardList %}
+						{% if sortcardList.card_package.id == package.pk  %}
+							<li class="list-group-item" value="{{sortcardList.pk}}">{{sortcardList.text }}</li>
+							<input type="hidden" name="cardListID" value="{{sortcardList.pk}}">	
 						{% endif %}
 				{% endfor %}	
 			{% endif %}
