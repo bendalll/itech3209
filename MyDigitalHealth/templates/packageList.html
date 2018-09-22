@@ -39,6 +39,7 @@
 						<li class="list-group-item active" value="{{filteredGroupsList.title}}">{{filteredGroupsList }}</li>
 						<input id ="filteredCardID" type="hidden" name="sortCardGroupID" value="{{filteredGroupsList.pk}}">	
 						<ul class="list-group connection cardGroups" value="{{filteredGroupsList.pk}}">
+						<li  type="hidden" value="{{ filteredGroupsList.pk}}"></li>
 						</ul>
 					</div>
 				{% endfor %}
