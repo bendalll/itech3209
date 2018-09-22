@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from .forms import RegistrationForm
 from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
-from cardsort.models import Package, UserSavedPackage, Category, AssignedPackage
+from cardsort.models import Package, UserSavedPackage, Category, AssignedPackage, Card
 
 
 def index(request):
@@ -110,11 +110,8 @@ def package_open(request, package_id):
     """ Display the package as a cardsort activity for the user to complete """
     if UserSavedPackage.objects.filter(base_package=package_id, user=request.user).exists():
         user_save = UserSavedPackage.objects.get(base_package=package_id, user=request.user)
-        print(user_save)
         assigned_package = AssignedPackage.objects.get(pk=user_save.assigned_package.pk)
         context = assigned_package.to_dict()
-        # context['def_cat'] = Category.objects.get(id=0)
-        print("Package open returns context: ", context)
         return render(
             request,
             'active.html',
@@ -132,21 +129,19 @@ def activity_save(request, package_id):
     """ Save card > category associations and user comment in the database """
     if request.method == "POST":
         data = request.POST
-        print(data)
-
-        package = Package.objects.get(pk=package_id)
-        user_save = UserSavedPackage.objects.filter(package=package)
-
-        user_save.comment_text = data['comment']
-
-        unassigned_cards = data['card_ids_unassigned'].split(',')
-
+        package = AssignedPackage.objects.get(pk=package_id)
         for category in package.get_categories():
             assigned_cards = data['card_ids_for_' + str(category.pk)].split(',')
-            for card in assigned_cards:
-                card.category = category
-
+            for card_id in assigned_cards:
+                if not card_id == "":
+                    card = Card.objects.get(pk=int(card_id))
+                    card.category = category
+                    card.save()
+        user_save = UserSavedPackage.objects.get(assigned_package=package)
+        package.comment_text = data['comment']
+        package.save()
         user_save.save()
+        messages.info(request, "Sort saved successfully!")
     return redirect('home')
 
 
@@ -183,8 +178,9 @@ def assign_package_to_user(request, base_package_id, user_id):
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def delete_package(request, package_id):
-        instance = Package.objects.get(pk=package_id)
-        # TODO: try/catch delete errors here
-        instance.delete()
-        messages.info("Package deleted")
-        return redirect('administration')
+    print("Got to here")
+    # TODO: try/catch errors here
+    instance = Package.objects.get(pk=package_id)
+    instance.delete()
+    messages.info(request, "Package deleted")
+    return redirect('administration')

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    type = "Base Package"
 
     def __str__(self):
         return self.package_name
@@ -53,11 +54,15 @@ class AssignedPackage(Package):
     """ Represents a Package in a state where it is owned by a user """
     comment_text = models.TextField(default='')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.type = "Assigned Package"
+
     class Meta:
         verbose_name_plural = 'Assigned Packages'
 
     def __str__(self):
-        return self.package_name
+        return "%s assigned to user" % self.package_name
 
     def to_dict(self):
         """ Used to return a saved package object as a dict for easy context rendering """

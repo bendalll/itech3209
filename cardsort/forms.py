@@ -93,27 +93,27 @@ class SubmittedForm(forms.Form):
         :return: the new or edited package
         """
         if hasattr(self, 'package_id'):  # TODO: better way to do this?
-            existing_package = Package.objects.get(pk=self.package_id)
-            existing_package.delete()
-            new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
-            new_package.save()
+            package = Package.objects.get(pk=self.package_id)
+            package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
+            package.save()
+            for category in package.get_categories():
+                category.delete()
+            for card in package.get_cards():
+                card.delete()
         else:
-            new_package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
-            new_package.save()
+            package = Package(package_name=self.package_form.cleaned_data['package_name'], owner=self.owner)
+            package.save()
 
         for category in self.categories_formset.cleaned_data:
             category_name = category['category_name']
-            new_category = Category(category_name=category_name, package=new_package)
+            new_category = Category(category_name=category_name, package=package)
             new_category.save()
 
         for card in self.cards_formset.cleaned_data:
             card_text = card['card_text']
-            new_card = Card(card_text=card_text, package=new_package)
+            new_card = Card(card_text=card_text, package=package)
             new_card.save()
 
-        package = new_package
-
-        # Return either the new package or edited package
         return package
 
 

@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block heading %}
-    <h1>Cardsort: {{ package_name }}</h1>
+    <h1>{{ package_name }}</h1>
 {% endblock %}
 {% block package %}
     {% load static %}
@@ -25,8 +25,9 @@
         <div class="row form-group">
             <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
             <textarea class="form-control" id="id_comment_text" name="comment"
-                      placeholder="Feel free to add any comments"></textarea>
-            <input type="submit" value="Save"/>
+                      placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
+            <input type="submit" value="Save" class="btn btn-default"/>
+            <a href="{% url 'index' %}" class="btn btn-default">Close</a>
         </div>
         </form>
     </div>
