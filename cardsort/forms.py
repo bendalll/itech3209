@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from cardsort.models import Package, Category, Card, UserSavedPackage
+from cardsort.models import Package, Category, Card
 
 
 class PackageNameForm(forms.ModelForm):
@@ -8,14 +8,6 @@ class PackageNameForm(forms.ModelForm):
         model = Package
         fields = (
             'package_name',
-        )
-
-
-class UserSaveForm(forms.ModelForm):
-    class Meta:
-        model = UserSavedPackage
-        fields = (
-            'user',
         )
 
 
@@ -129,10 +121,15 @@ def create_category_formset(**kwargs):
     if 'package' in kwargs:
         new_category_formset = CategoryFormset(queryset=Category.objects.filter(package=kwargs['package']),
                                                prefix='category')
+
     elif 'request' in kwargs:
         new_category_formset = CategoryFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='category')
+
     else:
         new_category_formset = CategoryFormset(queryset=Category.objects.none(), prefix='category')
+
+    for form in new_category_formset:
+        form.empty_permitted = False
 
     return new_category_formset
 
@@ -148,9 +145,14 @@ def create_card_formset(**kwargs):
 
     if 'package' in kwargs:
         new_card_formset = CardFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
+
     elif 'request' in kwargs:
         new_card_formset = CardFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='card')
+
     else:
         new_card_formset = CardFormset(queryset=Card.objects.none(), prefix='card')
+
+    for form in new_card_formset:
+        form.empty_permitted = False
 
     return new_card_formset

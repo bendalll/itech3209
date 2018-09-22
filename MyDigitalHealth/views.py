@@ -78,6 +78,7 @@ def create_package(request):
 def edit_package(request, package_id):
     """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
     if request.method == 'POST':
+        print(request.POST)
         form = SubmittedForm(request)
         if form.is_valid():
             form.save()

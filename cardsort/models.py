@@ -106,7 +106,7 @@ class Card(models.Model):
 
 class UserSavedPackage(models.Model):
     """ Represents the instance of a package as assigned to a user """
-    base_package = models.ForeignKey(Package, on_delete=models.PROTECT, related_name="base_package")
+    base_package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name="base_package")
     assigned_package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name="user_package")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
