@@ -171,7 +171,7 @@ def edit(request, package):
         request,
         'edit.html',
         context
-    )	
+    )
 
 
 def comments(request, package):
@@ -244,11 +244,6 @@ def editPackage(request, package):
             newCards = request.POST.getlist('newCard')
             deleteGroups = request.POST.getlist('deleteGroup')
             deleteCards = request.POST.getlist('deleteCard')
-            name = request.POST.get('name')
-            user = request.user
-            cardPackage.name = name
-            cardPackage.save()
-            group = Card_Groups()
             test = Card_Groups()
             card = Cards()
 
@@ -295,6 +290,21 @@ def editPackage(request, package):
             'admin.html',
             {'form': form}
         )
+
+
+def deletePackage(request, package_id):
+    """ Remove the package (as provided by package id) from the database """
+    # TODO: put this in a try/catch for db errors
+    package = Card_Packages.objects.get(pk=package_id)
+    package.delete()
+    # TODO: return some indicator of success or failure other than rendering the page again without that package
+    cardPackages = Card_Packages.objects.all()
+    context = {'cardPackages': cardPackages}
+    return render(
+        request,
+        'admin.html',
+        context
+    )
 
 
 def cardPackages(request):
