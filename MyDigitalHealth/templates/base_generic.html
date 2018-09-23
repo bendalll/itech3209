@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   {% block title %}<title>Bluebird Digital Technologies</title>{% endblock %}
 	<!-- Responsive Web Design -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,10 +33,13 @@
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-
+<<<<<<< HEAD
 		{% if request.user.is_staff %}
-		    <li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
-		    <li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
+=======
+		{% if request.user|has_group:"Staff" %}
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
+		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
+		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
 		{% endif %}
 		<!-- Card Package Dropdown -->
 			<li class="dropdown">

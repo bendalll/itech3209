@@ -2,27 +2,42 @@
 
 {% block content %}
 	{% load static %}
+<<<<<<< HEAD
+	 {% load templatetags %}
+	<script src="{% static 'scripts/view.js'%}"></script>
+	<!-- Bootstrap Container -->
+	<div class="container">
+			<div class="row align-items-start">
+			<div class="col">
+			<h2>Card Package: {{ package.name}} {% if request.user.is_staff %}
+
+			{% endif %}</h2>
+			</div>
+=======
 	{% load templatetags %}
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
-        <form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
-            {% csrf_token %}
-            <div class="row align-items-start">
-                <h3>Please fill out the form below.</h3>
-            </div>
-
-            <div class="cards row align-items-center">
-                <li class="list-group-item active">Cards</li>
-                <ul id="sortable" class="list-group connection">
-        			{% for cardList in cardList %}
-					    {% if cardList.card_package.id == package.pk  %}
-					        <li class="list-group-item">{{ cardList.text}}</li>
-					    {% endif %}
-			        {% endfor %}
-			    </ul>
+ 
+			<form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
+			{% csrf_token %}
+			<div class="row align-items-start">
+			<h3>Please fill out the form below.</h3>
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 			</div>
-			{% for cardGroups in cardGroups %}
+			
+			<div class="cards row align-items-center">
+			<li class="list-group-item active">Cards</li>
+			<ul id="sortable" class="list-group connection">
+<<<<<<< HEAD
+			{% for cardList in cardList %}
+					{% if cardList.card_package.id == package.pk  %}
+					<li class="list-group-item">{{ cardList.text}}</li>
+					{% endif %}
+			{% endfor %}
+			</ul>			
+			</div>	
+			{% for cardGroups in cardGroups %}		
 					{% if cardGroups.card_package.id == package.pk %}
 					<div class="cards">
 					<li class="list-group-item active">{{ cardGroups }}</li>
@@ -41,8 +56,9 @@
 				<form>
 			</div>
 			{% endif %}
-	</div>
+	</div>	
 {% endblock %}
+=======
 			{% if sortPackageUser == True %}
 				{% for filteredCardsList in filteredCardsList %}
 					<li class="list-group-item" value="{{filteredCardsList.pk}}">{{filteredCardsList}}</li>
@@ -117,3 +133,4 @@
 			<form>
 	</div>	
 {% endblock %}
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
