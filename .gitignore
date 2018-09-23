@@ -3,3 +3,5 @@
 /.gitignore
 /.coverage
 /__pycache__/
+.idea/*
+*.pyc
