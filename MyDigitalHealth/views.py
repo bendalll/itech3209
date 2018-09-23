@@ -206,6 +206,7 @@ def comments(request, package):
             splitCardPackage = sortedCardsInt.split(",")
             sortGroup = splitCardPackage[0]
             sortCard = splitCardPackage[1:]
+            print(sortGroup)
             sort.card_group = Card_Groups.objects.get(id__exact=sortGroup)
             sort.save()
             for sortCard in sortCard:
