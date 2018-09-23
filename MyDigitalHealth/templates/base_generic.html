@@ -33,7 +33,11 @@
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
+<<<<<<< HEAD
 		{% if request.user.is_staff %}
+=======
+		{% if request.user|has_group:"Staff" %}
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
 		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
 		{% endif %}
@@ -55,7 +59,7 @@
 		{% else %}	
 		<!-- Sign Up -->
 		<li><a href="{% url 'register' %} " style="color:#969696"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-		<li><a href="{% url 'login' %} " style="color:#969696"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+		<li><a href="{% url 'login' %}?next={{request.path}} " style="color:#969696"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		{% endif %}
 		</ul>
 	</div>

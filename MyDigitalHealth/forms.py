@@ -49,16 +49,29 @@ class CreateCards(forms.ModelForm):
     class Meta:
         model = Cards
         fields = (
+<<<<<<< HEAD
             'card_package',
             'text',
         )
 
 
+=======
+			'card_package',
+			'text', 
+			)
+			
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 class CreateComments(forms.ModelForm):
     class Meta:
         model = Comments
         fields = (
+<<<<<<< HEAD
             'card_package',
             'user',
             'comment',
         )
+=======
+			'card_package',
+			'comment',
+			)
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4

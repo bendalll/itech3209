@@ -2,6 +2,7 @@
 
 {% block content %}
 	{% load static %}
+<<<<<<< HEAD
 	 {% load templatetags %}
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
@@ -12,11 +13,23 @@
 
 			{% endif %}</h2>
 			</div>
+=======
+	{% load templatetags %}
+	<script src="{% static 'scripts/view.js'%}"></script>
+	<!-- Bootstrap Container -->
+	<div class="container">
+ 
+			<form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
+			{% csrf_token %}
+			<div class="row align-items-start">
+			<h3>Please fill out the form below.</h3>
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 			</div>
 			
 			<div class="cards row align-items-center">
 			<li class="list-group-item active">Cards</li>
 			<ul id="sortable" class="list-group connection">
+<<<<<<< HEAD
 			{% for cardList in cardList %}
 					{% if cardList.card_package.id == package.pk  %}
 					<li class="list-group-item">{{ cardList.text}}</li>
@@ -45,3 +58,79 @@
 			{% endif %}
 	</div>	
 {% endblock %}
+=======
+			{% if sortPackageUser == True %}
+				{% for filteredCardsList in filteredCardsList %}
+					<li class="list-group-item" value="{{filteredCardsList.pk}}">{{filteredCardsList}}</li>
+					<input type="hidden" name="filteredCardID" value="{{filteredCardsList.pk}}">
+				{% endfor %}		
+			{% else %}			
+				{% for sortcardList in sortcardList %}
+						{% if sortcardList.card_package.id == package.pk  %}
+							<li class="list-group-item" value="{{sortcardList.pk}}">{{sortcardList.text }}</li>
+							<input type="hidden" name="cardListID" value="{{sortcardList.pk}}">	
+						{% endif %}
+				{% endfor %}	
+			{% endif %}
+			</ul>			
+			</div>	
+			<div id="cardGroupsDiv">
+			{% if sortPackageUser == True %}
+				{% for filteredGroupsList in filteredGroupsList %}
+					<div class="cards" value="{{filteredGroupsList.pk}}" id="{{filteredGroupsList.pk}}">
+						<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+						<li class="list-group-item active" value="{{filteredGroupsList.title}}">{{filteredGroupsList }}</li>
+						<input id ="filteredCardID" type="hidden" name="sortCardGroupID" value="{{filteredGroupsList.pk}}">	
+						<ul class="list-group connection cardGroups" value="{{filteredGroupsList.pk}}">
+						<li  type="hidden" value="{{ filteredGroupsList.pk}}"></li>
+						</ul>
+					</div>
+				{% endfor %}
+			
+				{% for sortPackage in sortPackage %}
+					<div class="cards" value="{{sortPackage.card_group.pk}}" id="{{sortPackage.card_group.pk}}">
+						<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+						<li class="list-group-item active" value="{{ sortPackage.card_group.title}}">{{ sortPackage.card_group}}</li>
+						<input id ="sortedCardGroupID" type="hidden" name="sortCardGroupID" value="{{sortPackage.card_group.pk}}">	
+						<ul class="list-group connection sortedCardGroups" value="{{sortPackage.card_group.pk}}">
+						<li  type="hidden" value="{{ sortPackage.card_group.pk}}"></li>
+						{% for sortedCards in sortPackage.cards.all %}
+							<li class="list-group-item" value="{{sortedCards.pk}}">{{sortedCards }}</li>
+						{% endfor %}
+						</ul>
+					</div>
+				{% endfor %}	
+			{% else %}	
+				{% for cardGroups in cardGroups %}		
+						{% if cardGroups.card_package.id == package.pk %}
+						<div class="cards" value="{{cardGroups.pk}}">
+						<li class="list-group-item active" value="{{cardGroups.title}}">{{cardGroups }}</li>
+						<input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{cardGroups.pk}}">	
+						<ul class="list-group connection cardGroups" value="{{cardGroups.pk}}">
+						<li  type="hidden" value="{{cardGroups.pk}}"></li>
+						</ul>
+						</div>
+						{% endif %}
+				{% endfor %}
+			{% endif %}
+			</div>
+			
+			{% if user.is_authenticated %}
+			<div class="row form-group">
+
+				<input id ="cardPackageName" type="hidden" name="name" value="{{package.name}}">			
+					{% for comments in comments %}
+						<textarea class="form-control" id="commentText" name="comment">{{comments.comment}}</textarea>
+						<input id ="commentID" type="hidden" name="commentID" value="{{comments.pk}}">	
+						{% empty %}
+						<textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
+					{% endfor %}
+				<input id ="cardsList" type="hidden" name="cardsList" >		
+				<input type="submit" value="Save" />	
+				
+			</div>
+			{% endif %}
+			<form>
+	</div>	
+{% endblock %}
+>>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
