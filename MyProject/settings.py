@@ -67,8 +67,6 @@ TEMPLATES = [
                 'MyDigitalHealth.context_processors.cardPackages',
 				'MyDigitalHealth.context_processors.cardGroups',
 				'MyDigitalHealth.context_processors.cardList',
-				'MyDigitalHealth.context_processors.commentList',
-				'MyDigitalHealth.context_processors.sortedList',
             ],
         },
     },

@@ -2,15 +2,8 @@
 
 {% block content %}
 	{% load static %}
-<<<<<<< HEAD
 	<!-- Bootstrap Container -->
 	<div class="container">
-=======
-	{% load templatetags %}
-	<script src="{% static 'scripts/edit.js'%}"></script>
-	<!-- Bootstrap Container -->
-	<div class="container" >
->>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 	<form class="form-signin" method="post" action="{% url 'editPackage' package.pk %}">
 	{% csrf_token %}
 	<h2 class="form-signin-heading">Edit Card Package: {{ package.name}} </h2>
@@ -20,7 +13,6 @@
 	<!-- Name of Card Package -->
 	<input type="text" id="nameOfCardPackage" class="form-control" value="{{ package.name}}" name="name">
 	</br>
-<<<<<<< HEAD
 
 	<label class="fb-text-label">Card Groups</label>	
 	{% for cardGroups in cardGroups %}		
@@ -38,36 +30,6 @@
 		{% endif %}
 	{% endfor %}
 	<input type="submit" value="Save" />
-=======
-	
-	<label class="fb-text-label">Card Groups</label>	<button class="btn btn-default" type="button" id="addGroup">Add</button>	
-	<div id="cardGroups">
-	
-	{% for cardGroups in cardGroups %}		
-		{% if cardGroups.card_package.id == package.pk %}		
-			<p>Delete {{ cardGroups.title}}?
-			<input type="checkbox" class="deleteGroups" value="{{ cardGroups.pk}}"> 	</p>
-			<input type="text" id="cardGroups" class="form-control" value="{{ cardGroups.title}}" name="title"> 
-			<input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{ cardGroups.pk}}">
-		{% endif %}
-	{% endfor %}
-	</div>
-	</br>
-	
-	<label class="fb-text-label">Cards</label>		<button  class="btn btn-default" type="button" id="addCard">Add</button>	
-	<div id="cardsList">
-	{% for cardList in cardList %}
-		{% if cardList.card_package.id == package.pk  %}
-			Delete {{ cardList.text}}?
-			<input type="checkbox" class="deleteCards" value="{{ cardList.pk}}"> 	
-			<input type="text" id="cardList" class="form-control" value="{{ cardList.text}}" name="text">
-			<input id ="cardListID" type="hidden" name="cardListID" value="{{ cardList.pk}}">
-		{% endif %}
-	{% endfor %}
-	</div>
-	</br>
-	<input id="submit" type="submit" value="Save" />
->>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 	</form>
 	</div>	
 {% endblock %}

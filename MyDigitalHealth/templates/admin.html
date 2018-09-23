@@ -12,10 +12,7 @@
 			{% if cardPackages.user == request.user %}
 			<li><a href="{% url 'packageList' cardPackages.pk %}">{{ cardPackages.name }}</a>
 				<a href="{% url 'edit' cardPackages.pk %} " class="btn btn-default">Edit</a>
-<<<<<<< HEAD
                 <a href="{% url 'deletePackage' cardPackages.pk %}" class="btn btn-default">Delete</a>
-=======
->>>>>>> ff00133193e3c787ae015e55abe615962e6a04b4
 			</li>
 			{% endif %}	
 		{% endfor %}

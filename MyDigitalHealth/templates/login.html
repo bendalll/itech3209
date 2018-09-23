@@ -6,7 +6,7 @@
 	<!-- Login Form -->
 	<!-- Form Heading -->
 	<h2 class="form-signin-heading">Please Sign In</h2>
-	<form class="form-signin" method="post" action="">
+	<form class="form-signin" method="post" action="{% url 'login' %}">
 	{% csrf_token %}
 		<!-- Screen Reader Label -->
 		<label for="usr" class="sr-only">Username</label>
