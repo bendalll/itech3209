@@ -28,12 +28,12 @@
 	<!-- Dark Bootstrap Theme -->
 
 	<!-- Bootstrap Container -->
-	<div class="container-fluid" style='background-color: #313131'">
+	<div class="container-fluid" style='background-color: #313131'>
 		<!-- Navigation Bar Text -->
 		<ul class="nav navbar-nav">
 		<!-- Home -->
 		<li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-		{% if request.user|has_group:"Staff" %}
+		{% if request.user.is_staff %}
 		<li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
 		<li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
 		{% endif %}
