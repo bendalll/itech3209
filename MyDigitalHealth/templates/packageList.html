@@ -6,7 +6,7 @@
 	<script src="{% static 'scripts/view.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div class="container">
-        <form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' package.pk %}" >
+        <form  id="submitForm" class="form-signin" method="post" action="{% url 'comments' %}" >
             {% csrf_token %}
             <div class="row align-items-start">
                 <h3>Please fill out the form below.</h3>
@@ -114,6 +114,3 @@
 				
 			</div>
 			{% endif %}
-			<form>
-	</div>	
-{% endblock %}
