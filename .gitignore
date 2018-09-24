@@ -1,10 +1,9 @@
-**/htmlcov
-/htmlcov/
+*/htmlcov/*
 /.gitignore
 .coverage
 .coveragerc
 /__pycache__/
-.idea/
+.idea/*
 MyDigitalHealth/__pycache__/
 MyProject/__pycache__/
 *.pyc

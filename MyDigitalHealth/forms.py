@@ -59,6 +59,5 @@ class CreateComments(forms.ModelForm):
         model = Comments
         fields = (
             'card_package',
-            'user',
             'comment',
-        )
+            )
