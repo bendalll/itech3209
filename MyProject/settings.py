@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'MyDigitalHealth.apps.MydigitalhealthConfig', 
+    'colorfield',
+    'MyDigitalHealth.apps.MydigitalhealthConfig',
 ]
 
 MIDDLEWARE = [
