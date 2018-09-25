@@ -2,21 +2,15 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render
 from .forms import RegistrationForm, CreateCardPackage, CreateComments
 from .models import Card_Packages, Card_Groups, Cards, Comments, Sorted_Package
-from django.template.response import TemplateResponse
 
 
 def index(request):
     """
     View function for home page of site.
     """
-    # Number of visits to this view, as counted in the session variable.
-    num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits'] = num_visits+1
-    # Render the HTML template index.html with the data in the context variable
     return render(
         request,
         'index.html',
-        context={'num_visits': num_visits},  # num_visits appended
     )
 
 
@@ -55,7 +49,7 @@ def cards(request):
             return render(
                 request,
                 'project.html',
-                {'form': form}
+                args
             )
     else:
         form = CreateCardPackage(instance=Card_Packages())
@@ -63,7 +57,7 @@ def cards(request):
         return render(
             request,
             'project.html',
-            {'form': form}
+            args
         )
 
 
@@ -86,7 +80,7 @@ def register(request):
             return render(
                 request,
                 'register.html',
-                {'form': form}
+                args
             )
     else:
         form = RegistrationForm()
@@ -94,7 +88,7 @@ def register(request):
         return render(
             request,
             'register.html',
-            {'form': form}
+            args
         )
 
 
@@ -228,7 +222,7 @@ def comments(request, package):
         return render(
             request,
             'packageList.html',
-            {'form': form}
+            args
         )
 
 
@@ -281,7 +275,7 @@ def editPackage(request, package):
             return render(
                 request,
                 'admin.html',
-                {'form': form}
+                args
             )
     else:
         form = CreateCardPackage(instance=Card_Packages())
@@ -289,7 +283,7 @@ def editPackage(request, package):
         return render(
             request,
             'admin.html',
-            {'form': form}
+            args
         )
 
 
@@ -306,28 +300,3 @@ def deletePackage(request, package_id):
         'admin.html',
         context
     )
-
-
-def cardPackages(request):
-    cardPackages = Card_Packages.objects.all() 
-    return TemplateResponse(request, views.index, {'cardPackages': cardPackages})
-
-
-def cardGroups(request):
-    cardGroups = Card_Groups.objects.all() 
-    return TemplateResponse(request, views.index, {'cardGroups': cardGroups})
-
-
-def cardList(request):
-    cardList = Cards.objects.all() 
-    return TemplateResponse(request, views.index, {'cardList': cardList})
-
-
-def commentList(request):
-    commentList = Comments.objects.all() 
-    return TemplateResponse(request, views.index, {'commentList': commentList})	
-
-
-def sortedList(request):
-    sortedList = Sorted_Package.objects.all() 
-    return TemplateResponse(request, views.index, {'sortedList': sortedList})	
