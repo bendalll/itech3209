@@ -43,14 +43,6 @@ def cards(request):
                 request,
                 'index.html',
             )
-        else:
-            form = CreateCardPackage(instance=Card_Packages())
-            args = {'form': form}
-            return render(
-                request,
-                'create_package.html',
-                args
-            )
     else:
         form = CreateCardPackage(instance=Card_Packages())
         args = {'form': form}
@@ -74,14 +66,6 @@ def register(request):
                 request,
                 'index.html',
             )
-        else:
-            form = RegistrationForm()
-            args = {'form': form}
-            return render(
-                request,
-                'register.html',
-                args
-            )
     else:
         form = RegistrationForm()
         args = {'form': form}
@@ -90,24 +74,25 @@ def register(request):
             'register.html',
             args
         )
-
-
-def view(request):
-    cardPackages = Card_Packages.objects.all()
-    return render(
-        request,
-        'view.html',
-    )
-
-
-def package(request):
-    cardPackages = Card_Packages.objects.all()
-    context = {'cardPackages': cardPackages}
-    return render(
-        request,
-        'package.html',
-        context
-    )
+#
+#
+# def view(request):
+#     cardPackages = Card_Packages.objects.all()
+#     return render(
+#         request,
+#         'view.html',
+#
+#     )
+#
+#
+# def package(request):
+#     cardPackages = Card_Packages.objects.all()
+#     context = {'cardPackages': cardPackages}
+#     return render(
+#         request,
+#         'package.html',
+#         context
+#     )
 
 
 def packageList(request, package):
@@ -269,14 +254,6 @@ def editPackage(request, package):
                 request,
                 'admin.html',
             )
-        else:
-            form = CreateCardPackage(instance=Card_Packages())
-            args = {'form': form}
-            return render(
-                request,
-                'admin.html',
-                args
-            )
     else:
         form = CreateCardPackage(instance=Card_Packages())
         args = {'form': form}
@@ -292,7 +269,7 @@ def deletePackage(request, package_id):
     # TODO: put this in a try/catch for db errors
     package = Card_Packages.objects.get(pk=package_id)
     package.delete()
-    # TODO: return some indicator of success or failure other than rendering the page again without that package
+    # TODO: return some indicator of success or failure
     cardPackages = Card_Packages.objects.all()
     context = {'cardPackages': cardPackages}
     return render(
