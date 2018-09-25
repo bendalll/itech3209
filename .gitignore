@@ -2,9 +2,6 @@
 /.gitignore
 .coverage
 .coveragerc
-/__pycache__/
 .idea/*
-MyDigitalHealth/__pycache__/
-MyProject/__pycache__/
 *.pyc
 MyDigitalHealth/migrations/*
