@@ -33,6 +33,7 @@ class CreateCardPackage(forms.ModelForm):
         model = Card_Packages
         fields = (
             'name',
+            'main_color',
         )
 
 
