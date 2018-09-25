@@ -1,12 +1,7 @@
-**/htmlcov
-/htmlcov/
+*/htmlcov/*
 *.coverage
 *.coveragerc
-.idea/
-MyDigitalHealth/__pycache__/*
-MyProject/__pycache__/*
+.idea/*
 *.pyc
-MyDigitalHealth/migrations/__pycache__/*
-**/__pycache__/*
 MyDigitalHealth/migrations/*
 cardsort/migrations/*
