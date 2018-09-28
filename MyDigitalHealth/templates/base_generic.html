@@ -17,17 +17,20 @@
 	<script src="{% static 'scripts/jquery.ui.touch-punch.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'cardsort.css' %}">
 </head>
-<body>
-    {% include 'navbar.html' %}
-    <div class="messages">
+<body onload="showMessages()">
+
+<script>
+    function showMessages()
+    {
         {% if messages %}
-        <ul class="messages">
             {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                alert('{{ message }}');
             {% endfor %}
-        </ul>
         {% endif %}
-    </div>
+    }
+</script>
+    {% include 'navbar.html' %}
+
     <div class="container-fluid">
         {% block heading %}{% endblock %}
         {% block content %}{% endblock %}
