@@ -1,10 +1,12 @@
 from django.db import models
+from colorfield.fields import ColorField
 from django.contrib.auth.models import User
 
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    main_color = ColorField(default='#337ab7')
     type = "Base Package"
 
     def __str__(self):
