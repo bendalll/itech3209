@@ -6,6 +6,7 @@
     {% load static %}
     <script src="{% static 'cardsort.js' %}"></script>
     <div>
+    <!-- CHANGE THIS BECAUSE SAME FORM MEANS SAME VIEW! -->
     {% if exists_flag %}
     <form action="{% url 'edit_save' package_id %}" method="post" id="new_package">
     {% else %}
