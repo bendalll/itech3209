@@ -5,8 +5,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
 from .forms import RegistrationForm
-from cardsort.forms import NewPackageForm, EditPackageForm, SubmittedForm
-from cardsort.models import Package, UserSavedPackage, Category, AssignedPackage, Card
+from cardsort.forms import PackageForm, SubmittedForm
+from cardsort.models import Package, UserSavedPackage, AssignedPackage, Card
 
 
 def index(request):
@@ -66,7 +66,7 @@ def create_package(request):
             messages.error(request, 'Package could not be saved')  # send an error her as required
         return HttpResponseRedirect('administration')
     else:
-        form = NewPackageForm(2, 3).to_dict()
+        form = PackageForm(package_id=-1, num_categories=2, num_cards=3).to_dict()
         return render(
             request,
             'create_edit.html',
@@ -78,7 +78,6 @@ def create_package(request):
 def edit_package(request, package_id):
     """ Display the editing page with pre-filled data; if POST, save the edited package and redirect to admin page """
     if request.method == 'POST':
-        print(request.POST)
         form = SubmittedForm(request)
         if form.is_valid():
             form.save()
@@ -87,7 +86,7 @@ def edit_package(request, package_id):
             messages.error(request, "An error occurred when saving")
         return redirect('administration')
     else:
-        filled_form = EditPackageForm(package_id).to_dict()
+        filled_form = PackageForm(package_id).to_dict()
         return render(
             request,
             'create_edit.html',
