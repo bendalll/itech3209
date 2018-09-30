@@ -63,10 +63,10 @@ def create_package(request):
         if form.is_valid():
             form.save()
         else:
-            messages.error(request, 'Package could not be saved')  # send an error her as required
+            messages.error(request, 'Package could not be saved')  # send an error here as required
         return HttpResponseRedirect('administration')
     else:
-        form = PackageForm(package_id=-1, num_categories=2, num_cards=3).to_dict()
+        form = PackageForm(num_categories=2, num_cards=3).to_dict()
         return render(
             request,
             'create_edit.html',
@@ -178,7 +178,6 @@ def assign_package_to_user(request, base_package_id, user_id):
 
 @staff_member_required(None, redirect_field_name='next', login_url='login')
 def delete_package(request, package_id):
-    print("Got to here")
     # TODO: try/catch errors here
     instance = Package.objects.get(pk=package_id)
     instance.delete()

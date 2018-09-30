@@ -1,12 +1,11 @@
 from django.db import models
-from colorfield.fields import ColorField
 from django.contrib.auth.models import User
 
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
-    main_color = ColorField(default='#337ab7')
+    main_color = models.CharField(max_length=7, default='#337ab7')
     type = "Base Package"
 
     def __str__(self):
@@ -55,6 +54,7 @@ class Package(models.Model):
 class AssignedPackage(Package):
     """ Represents a Package in a state where it is owned by a user """
     comment_text = models.TextField(default='')
+    type = "Assigned Package"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
