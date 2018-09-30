@@ -3,4 +3,5 @@
 *.coveragerc
 .idea/*
 *.pyc
+MyDigitalHealth/migrations/*
 cardsort/migrations/*
