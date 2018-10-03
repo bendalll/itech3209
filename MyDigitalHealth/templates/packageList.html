@@ -71,12 +71,14 @@
             {% if user.is_authenticated %}
             <div class="row form-group">
                 <input id ="cardPackageName" type="hidden" name="name" value="{{package.name}}">
+                {% if package.comments_allowed %}
                     {% for comments in comments %}
                         <textarea class="form-control" id="commentText" name="comment">{{comments.comment}}</textarea>
                         <input id ="commentID" type="hidden" name="commentID" value="{{comments.pk}}">
                         {% empty %}
                         <textarea class="form-control" id="commentText" name="comment" placeholder="Feel free to add any comments"></textarea>
                     {% endfor %}
+                    {% endif %}
                 <input id ="cardsList" type="hidden" name="cardsList" >
                 <input type="submit" value="Save" />
             </div>

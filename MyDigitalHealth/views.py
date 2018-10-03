@@ -14,26 +14,22 @@ def index(request):
     )
 
 
-def create(request):
-    return render(
-        request,
-        'create_package.html',
-    )
-
-
 def cards(request):
     if request.method == 'POST':
-        print(request.POST)
         form = CreateCardPackage(request.POST, instance=Card_Packages())
         if form.is_valid():
             titles = request.POST.getlist('title')
             texts = request.POST.getlist('text')
-            groups = request.POST.getlist('group')
             names = request.POST.getlist('name')
             main_color = request.POST['main_color']
+            if 'comments_allowed' in request.POST and request.POST['comments_allowed'] is not False:
+                comments_allowed = True
+            else:
+                comments_allowed = False
             user = request.user
             for name in names:
-                cardPackage = Card_Packages(name=name, user=user, main_color=main_color)
+                cardPackage = Card_Packages(name=name, user=user, main_color=main_color,
+                                            comments_allowed=comments_allowed)
                 cardPackage.save()
             for title in titles:
                 group = Card_Groups(card_package=cardPackage, title=title)
