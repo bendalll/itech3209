@@ -13,13 +13,18 @@
             <!-- Name of Card Package -->
             <input type="text" class="form-control" id="nameOfCardPackage">
         </div>
-        <br />
+        <br/>
             <div>
                 <!--Color selection -->
                 <label class="fb-text-label">{{ form.main_color.label }}</label><br/>
-                <input type="color" onchange="changeHeadingColor()" value="#337ab7" id="id_main_color" />
+                {{ form.main_color }}
             </div>
         <br/>
+            <div>
+                <!-- Comments enable / disable -->
+                <label class="fb-text-label">{{ form.comments_allowed.label }}</label><br/>
+                {{ form.comments_allowed }}
+            </div>
         <!-- Bootstrap Row -->
         <!-- Used to dynamically populate the inputs for Cards and Groups after initial number-of-each entry -->
         <div  class="row" id="pageRows">
