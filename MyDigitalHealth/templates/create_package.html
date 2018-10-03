@@ -4,6 +4,8 @@
 	<script src="{% static 'scripts/project.js'%}"></script>
 	<!-- Bootstrap Container -->
 	<div  class="container-fluid" id="formCreator">
+        <form class="form-signin" method="post" action="{% url 'cards' %} ">
+            {% csrf_token %}
 	    <h1>Package Creator</h1>
         <div>
             <!-- Name of Card Package Heading -->
@@ -15,9 +17,7 @@
             <div>
                 <!--Color selection -->
                 <label class="fb-text-label">{{ form.main_color.label }}</label><br/>
-                <form method="post">
-                    {{ form.main_color }}
-                </form>
+                <input type="color" onchange="changeHeadingColor()" value="#337ab7" id="id_main_color" />
             </div>
         <br/>
         <!-- Bootstrap Row -->
@@ -42,8 +42,6 @@
         </div>
 
         <!-- Grouping Tables -->
-        <form class="form-signin" method="post" action="{% url 'cards' %} ">
-            {% csrf_token %}
             <div id="listOfCards">
                 <!-- Name of Card Package -->
                 <input id ="cardPackageName" type="hidden" name="name">
