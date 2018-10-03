@@ -6,6 +6,7 @@ class Package(models.Model):
     package_name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     main_color = models.CharField(max_length=7, default='#337ab7')
+    comments_enabled = models.BooleanField(default=True)
     type = "Base Package"
 
     def __str__(self):
@@ -29,6 +30,8 @@ class Package(models.Model):
 
         package = {'package_id': self.pk,
                    'package_name': self.package_name,
+                   'main_color': self.main_color,
+                   'comments_enabled': self.comments_enabled,
                    'categories': list_of_category_objects,
                    'cards': list_of_card_objects,
                    }
@@ -36,7 +39,8 @@ class Package(models.Model):
 
     def assign(self):
         """ Method to duplicate the package as an AssignedPackage """
-        assigned_package = AssignedPackage(package_name=self.package_name, owner=self.owner, comment_text="")
+        assigned_package = AssignedPackage(package_name=self.package_name, owner=self.owner, main_color=self.main_color,
+                                           comments_enabled=self.comments_enabled)
         assigned_package.save()
         # Base Packages have no blank "Cards" default category, so we need to add it here
         first_category = Category(category_name="Cards", package=assigned_package)
@@ -70,6 +74,8 @@ class AssignedPackage(Package):
         """ Used to return a saved package object as a dict for easy context rendering """
         assigned_package = {'package_id': self.pk,
                             'package_name': self.package_name,
+                            'main_color': self.main_color,
+                            'comments_enabled': self.comments_enabled,
                             'categories': self.get_categories(),
                             'cards': self.get_cards(),
                             'comment': self.comment_text

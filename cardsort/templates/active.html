@@ -3,9 +3,10 @@
 {% block heading %}
     <h1>{{ package_name }}</h1>
 {% endblock %}
-{% block package %}
+{% block content %}
     {% load static %}
     <script src="{% static 'cardsort.js' %}"></script>
+    <link href="{% url "css" package_id %}" rel="stylesheet" />
     <div class="container">
         <form class="form" method="post" action="{% url 'save' package_id %}" onsubmit="return processCards()">
             {% csrf_token %}
@@ -24,8 +25,10 @@
         {% endfor %}
         <div class="row form-group">
             <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
-            <textarea class="form-control" id="id_comment_text" name="comment"
-                      placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
+            {% if comments_enabled %}
+                <textarea class="form-control" id="id_comment_text" name="comment"
+                          placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
+            {% endif %}
             <input type="submit" value="Save" class="btn btn-default"/>
             <a href="{% url 'index' %}" class="btn btn-default">Close</a>
         </div>

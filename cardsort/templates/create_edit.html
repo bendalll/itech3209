@@ -2,15 +2,14 @@
 {% block heading %}
     <h1>Create A New Package</h1>
 {% endblock %}
-{% block package %}
+{% block content %}
     {% load static %}
     <script src="{% static 'cardsort.js' %}"></script>
     <div>
-    <!-- CHANGE THIS BECAUSE SAME FORM MEANS SAME VIEW! -->
-    {% if exists_flag %}
-    <form action="{% url 'edit_save' package_id %}" method="post" id="new_package">
+    {% if package_id == -1 %}
+        <form action="{% url 'create_package' %}" method="post" id="new_package">
     {% else %}
-    <form action="{% url 'create_package' %}" method="post" id="new_package">
+        <form action="{% url 'edit_package' package_id %}" method="post" id="new_package">
     {% endif %}
         {% csrf_token %}
         <div class="form-row" id="form_items">
@@ -43,6 +42,7 @@
             <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
             {% endif %}
             <input type="submit" value="Save and Close" class="btn btn-default"/>
+            <a href="{% url "administration" %}" class="btn btn-default">Close</a>
         </div>
     </form>
     </div>

@@ -16,6 +16,7 @@
 	{% load static %}
 	<script src="{% static 'scripts/jquery.ui.touch-punch.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'cardsort.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="../../cardsort/static/favicon.ico"/>
 </head>
 <body onload="showMessages()">
 
@@ -30,12 +31,11 @@
     }
 </script>
     {% include 'navbar.html' %}
-
     <div class="container-fluid">
         {% block heading %}{% endblock %}
-        {% block content %}{% endblock %}
-        {% block package %}{% endblock %}
-        {% block options %}{% endblock %}
+        <div class="container-fluid">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 </body>
 </html>
