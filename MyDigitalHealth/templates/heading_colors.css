@@ -1,0 +1,5 @@
+/* Tagged as !important to override bootstrap styling*/
+.active {
+    background-color: {{ main_color }} !important;
+    border-color: {{ main_color }} !important;
+}

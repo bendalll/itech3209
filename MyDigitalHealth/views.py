@@ -23,15 +23,17 @@ def create(request):
 
 def cards(request):
     if request.method == 'POST':
+        print(request.POST)
         form = CreateCardPackage(request.POST, instance=Card_Packages())
         if form.is_valid():
             titles = request.POST.getlist('title')
             texts = request.POST.getlist('text')
             groups = request.POST.getlist('group')
             names = request.POST.getlist('name')
+            main_color = request.POST['main_color']
             user = request.user
             for name in names:
-                cardPackage = Card_Packages(name=name, user=user)
+                cardPackage = Card_Packages(name=name, user=user, main_color=main_color)
                 cardPackage.save()
             for title in titles:
                 group = Card_Groups(card_package=cardPackage, title=title)
@@ -42,6 +44,15 @@ def cards(request):
             return render(
                 request,
                 'index.html',
+            )
+        else:
+            print("Form failed validation: ", form.errors)
+            form = CreateCardPackage(instance=Card_Packages())
+            args = {'form': form}
+            return render(
+                request,
+                'create_package.html',
+                args
             )
     else:
         form = CreateCardPackage(instance=Card_Packages())
@@ -276,4 +287,15 @@ def deletePackage(request, package_id):
         request,
         'admin.html',
         context
+    )
+
+
+def get_css(request, package_id):
+    package = Card_Packages.objects.get(pk=package_id)
+    main_color = package.main_color
+    return render(
+        request,
+        'heading_colors.css',
+        {'main_color': main_color},
+        content_type='text/css'
     )

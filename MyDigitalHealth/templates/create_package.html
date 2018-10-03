@@ -5,21 +5,23 @@
 	<!-- Bootstrap Container -->
 	<div  class="container-fluid" id="formCreator">
 	    <h1>Package Creator</h1>
-        <div id="testing">
+        <div>
             <!-- Name of Card Package Heading -->
             <label class="fb-text-label">Name of Card Package</label>
             <!-- Name of Card Package -->
             <input type="text" class="form-control" id="nameOfCardPackage">
         </div>
         <br />
-        <div>
-            <!--Color selection -->
-            <label class="fb-text-label">Colour of Package Headers</label>
-            <br/>
-            <input type="color" id="main_color">
-        </div>
+            <div>
+                <!--Color selection -->
+                <label class="fb-text-label">{{ form.main_color.label }}</label><br/>
+                <form method="post">
+                    {{ form.main_color }}
+                </form>
+            </div>
         <br/>
         <!-- Bootstrap Row -->
+        <!-- Used to dynamically populate the inputs for Cards and Groups after initial number-of-each entry -->
         <div  class="row" id="pageRows">
         </div>
         <div  class="row" id="buttons">
@@ -45,16 +47,15 @@
             <div id="listOfCards">
                 <!-- Name of Card Package -->
                 <input id ="cardPackageName" type="hidden" name="name">
+                <!-- Initially hide sortable cards -->
                 <div class="cards" id="cards" style="display: none">
-                    <!-- Initially hide sortable cards -->
-                    <input type="hidden" name="group" value="Groups"><!-- Not used -->
                     <ul class="list-group">
                         <!-- Heading of Cards -->
                         <li class="list-group-item active">Cards</li>
                         <!-- Sortable Cards -->
                         <li id="sortable" class="connection"></li>
-                        <input type="submit" value="Save" />
                     </ul>
+                    <input type="submit" value="Save" />
                 </div>
             </div>
         </form>

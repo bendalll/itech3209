@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import TextInput
+
 from .models import Card_Packages, Card_Groups, Cards, Comments
 
 
@@ -35,6 +37,12 @@ class CreateCardPackage(forms.ModelForm):
             'name',
             'main_color',
         )
+        labels = {
+            'main_color': "Colour of Group Headings"
+        }
+        widgets = {
+            'main_color': TextInput(attrs={'type': 'color'})
+        }
 
 
 class CreateCardGroup(forms.ModelForm):

@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout', LogoutView.as_view(template_name='index.html'), name='logout'),
-    path('create', views.create, name='create'),
+    path('create', views.cards, name='create'),
     path('register', views.register, name='register'),
     path('cards', views.cards, name='cards'),
     # path('view', views.view, name='view'),
@@ -17,4 +17,5 @@ urlpatterns = [
     path('edit/<package>/', views.edit, name='edit'),
     path('editPackage/<package>/', views.editPackage, name='editPackage'),
     path('deletePackage/<package_id>', views.deletePackage, name='deletePackage'),
+    path('css/<package_id>', views.get_css, name='css'),
 ]
