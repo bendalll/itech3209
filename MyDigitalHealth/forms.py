@@ -36,12 +36,13 @@ class CreateCardPackage(forms.ModelForm):
         fields = (
             'name',
             'main_color',
+            'comments_allowed',
         )
         labels = {
             'main_color': "Colour of Group Headings"
         }
         widgets = {
-            'main_color': TextInput(attrs={'type': 'color'})
+            'main_color': TextInput(attrs={'type': 'color', 'onchange': 'changeHeadingColor()'})
         }
 
 
