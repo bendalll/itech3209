@@ -21,6 +21,7 @@ def cards(request):
             titles = request.POST.getlist('title')
             texts = request.POST.getlist('text')
             names = request.POST.getlist('name')
+            userDefined = request.POST.get('userDefined', '')
             main_color = request.POST['main_color']
             if 'comments_allowed' in request.POST and request.POST['comments_allowed'] is not False:
                 comments_allowed = True
@@ -28,7 +29,7 @@ def cards(request):
                 comments_allowed = False
             user = request.user
             for name in names:
-                cardPackage = Card_Packages(name=name, user=user, main_color=main_color,
+                cardPackage = Card_Packages(name=name, user=user, user_defined_groups = userDefined, main_color=main_color,
                                             comments_allowed=comments_allowed)
                 cardPackage.save()
             for title in titles:
@@ -103,40 +104,40 @@ def register(request):
 
 
 def packageList(request, package):
-    package = Card_Packages.objects.get(id__exact=package)
-    user = request.user
-    sortcardList = Cards.objects.all()
-    sortGroups = Card_Groups.objects.filter(card_package=package).values_list('id', flat=True)
-    sortCards = Cards.objects.filter(card_package=package).values_list('id', flat=True)
-    filteredCardsList = None
-    filteredGroupsList = None
-    if request.user.is_anonymous:
-        comments = Comments.objects.filter(card_package__exact= package)
-        sortPackageUser = Sorted_Package.objects.filter(card_package=package)
-        sortPackageGroups = Sorted_Package.objects.filter(card_package=package).values_list('card_group', flat=True)
-        sortPackageCards = Sorted_Package.objects.filter(card_package=package).values_list('cards', flat=True)
-        sortPackage = Sorted_Package.objects.filter(card_package=package)
-    else:
-        comments = Comments.objects.filter(card_package__exact= package).filter(user__exact= user)
-        sortPackageUser = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).exists()
-        sortPackageGroups = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('card_group', flat=True)
-        sortPackageCards = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('cards', flat=True)
-        sortPackage = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user)
+	package = Card_Packages.objects.get(id__exact=package)
+	user = request.user
+	sortcardList = Cards.objects.all() 
+	sortGroupsIDs = Card_Groups.objects.filter(card_package=package).values_list('id', flat=True)
+	sortGroups = Card_Groups.objects.filter(card_package=package)
+	sortedPackage = Sorted_Package.objects.filter(card_package=package).exclude(user_titles=None)
+	sortCards = Cards.objects.filter(card_package=package).values_list('id', flat=True)
+	filteredCardsList = None
+	filteredGroupsList = None
+	if request.user.is_anonymous:
+		comments = Comments.objects.filter(card_package__exact= package)
+		sortPackageUser = Sorted_Package.objects.filter(card_package=package)
+		sortPackageGroups = Sorted_Package.objects.filter(card_package=package).values_list('card_group', flat=True)
+		sortPackageCards = Sorted_Package.objects.filter(card_package=package).values_list('cards', flat=True)		
+		sortPackage = Sorted_Package.objects.filter(card_package=package).exclude(user_titles=None)
+	else :	
+		comments = Comments.objects.filter(card_package__exact= package).filter(user__exact= user)
+		sortPackageUser = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).exists()	
+		sortPackageGroups = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('card_group', flat=True)
+		sortPackageCards = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user).values_list('cards', flat=True)
+		sortPackage = Sorted_Package.objects.filter(card_package=package).filter(user__exact = user)
+		
+		filteredGroups = [x for x in sortGroupsIDs if x not in sortPackageGroups]
+		filteredCards = [x for x in sortCards if x not in sortPackageCards]
 
-        filteredGroups = [x for x in sortGroups if x not in sortPackageGroups]
-        filteredCards = [x for x in sortCards if x not in sortPackageCards]
-
-        for filteredGroups in filteredGroups:
-            filteredGroupsList = Card_Groups.objects.filter(card_package=package).filter(id=filteredGroups)
-        for filteredCards in filteredCards:
-            filteredCardsList = Cards.objects.filter(card_package=package).filter(id=filteredCards)
-    context = {'package': package, 'user': user, 'comments': comments, 'sortcardList': sortcardList,
-               'sortPackage': sortPackage, 'sortPackageUser': sortPackageUser, 'filteredGroupsList': filteredGroupsList,
-               'filteredCardsList': filteredCardsList}
-    return render(
-        request,
-        'packageList.html',
-        context
+		for filteredGroups in filteredGroups:
+			filteredGroupsList = Card_Groups.objects.filter(card_package=package).filter(id=filteredGroups)	
+		for filteredCards in filteredCards:
+			filteredCardsList = Cards.objects.filter(card_package=package).filter(id=filteredCards)		
+	context = {'package': package, 'user': user, 'comments': comments,'sortcardList': sortcardList,'sortPackage': sortPackage, 'sortedPackage': sortedPackage, 'sortGroups': sortGroups, 'sortPackageUser': sortPackageUser, 'filteredGroupsList': filteredGroupsList, 'filteredCardsList': filteredCardsList}
+	return render(
+		request,
+		'packageList.html',
+		context
     )
 
 
@@ -161,61 +162,93 @@ def edit(request, package):
 
 
 def comments(request, package):
-    if request.method =='POST':
-        commentID = request.POST.get('commentID')
-        user = request.user
-        text = request.POST.get('comment')
-        cardPackage = Card_Packages.objects.get(id__exact=package)
-        cardsList = request.POST.getlist('cardsList')
-        sortPackages = request.POST.getlist('sortPackages')
-        sortedCardsInts = list(filter(None, request.POST.getlist('sortedCards')))
-        cardGroupIDs = request.POST.getlist('cardGroupID')
-        sortCardGroupIDs = request.POST.getlist('sortCardGroupID')
-        sortedCardLists = list(filter(None, request.POST.getlist('sortedCardList')))
-        sorted = Sorted_Package()
-        for sortPackage, sortedCardList in zip(sortPackages,sortedCardLists):
-            sortedSplitCardPackage = sortedCardList.split(",")
-            sortedGroup = sortedSplitCardPackage[0]
-            sortedCard = sortedSplitCardPackage[1:]
-            sorted = Sorted_Package.objects.get(id__exact=sortPackage)
-            sorted.card_group = Card_Groups.objects.get(id__exact=sortedGroup)
-            sorted.user = user
-            sorted.cards.clear()
-            sorted.save()
-            for sortedCard in sortedCard:
-                sorted.cards.add(Cards.objects.get(id__exact=sortedCard))
+	if request.method =='POST':
+		commentID = request.POST.get('commentID')
+		user = request.user
+		text = request.POST.get('comment')
+		cardPackage = Card_Packages.objects.get(id__exact=package)
+		cardsList = request.POST.getlist('cardsList')
+		sortPackages = request.POST.getlist('sortPackages')
+		userDefinedGroups = request.POST.getlist('userDefinedGroup')
+		sortedCardsInts = list(filter(None, request.POST.getlist('sortedCards')))
+		cardGroupIDs = request.POST.getlist('cardGroupID')
+		sortCardGroupIDs = request.POST.getlist('sortCardGroupID')
+		sortedCardLists = list(filter(None, request.POST.getlist('sortedCardList')))
+		sorted = Sorted_Package()
+		
+		if (cardPackage.user_defined_groups == True):
+			#Edit User Defined Card Package
+			for sortPackage, sortedCardList, userDefinedGroups in zip(sortPackages,sortedCardLists,userDefinedGroups):
+				sortedSplitCardPackage = sortedCardList.split(",")
+				sortedGroup = sortedSplitCardPackage[0]
+				sortedCard = sortedSplitCardPackage[1:]
+				sorted = Sorted_Package.objects.get(id__exact=sortPackage)
+				sorted.card_group = Card_Groups.objects.get(id__exact=sortedGroup)
+				sorted.user = user
+				sorted.user_titles = userDefinedGroups
+				sorted.cards.clear()
+				sorted.save()
+				for sortedCard in sortedCard:
+					sorted.cards.add(Cards.objects.get(id__exact=sortedCard))
+			
+			#Save User Defined Card Package
+			for sortedCardsInt, userDefinedGroups in zip(sortedCardsInts,userDefinedGroups):
+				sort = Sorted_Package()
+				sort.card_package = cardPackage 
+				sort.user = user
+				splitCardPackage = sortedCardsInt.split(",")
+				sortGroup = splitCardPackage[0]
+				sortCard = splitCardPackage[1:]	
+				sort.card_group = Card_Groups.objects.get(id__exact=sortGroup)
+				sort.user_titles = userDefinedGroups
+				sort.save()	
+				for sortCard in sortCard:
+					sort.cards.add(Cards.objects.get(id__exact=sortCard))
+		else:
+			#Edit Card Package
+			for sortPackage, sortedCardList in zip(sortPackages,sortedCardLists):
+				sortedSplitCardPackage = sortedCardList.split(",")
+				sortedGroup = sortedSplitCardPackage[0]
+				sortedCard = sortedSplitCardPackage[1:]
+				sorted = Sorted_Package.objects.get(id__exact=sortPackage)
+				sorted.card_group = Card_Groups.objects.get(id__exact=sortedGroup)
+				sorted.user = user
+				sorted.cards.clear()
+				sorted.save()
+				for sortedCard in sortedCard:
+					sorted.cards.add(Cards.objects.get(id__exact=sortedCard))
+			
+			#Save Card Package
+			for sortedCardsInt in sortedCardsInts:
+				sort = Sorted_Package()
+				sort.card_package = cardPackage 
+				sort.user = user
+				splitCardPackage = sortedCardsInt.split(",")
+				sortGroup = splitCardPackage[0]
+				sortCard = splitCardPackage[1:]	
+				sort.card_group = Card_Groups.objects.get(id__exact=sortGroup)
+				sort.save()	
+				for sortCard in sortCard:
+					sort.cards.add(Cards.objects.get(id__exact=sortCard))		
 
-        for sortedCardsInt in sortedCardsInts:
-            sort = Sorted_Package()
-            sort.card_package = cardPackage
-            sort.user = user
-            splitCardPackage = sortedCardsInt.split(",")
-            sortGroup = splitCardPackage[0]
-            sortCard = splitCardPackage[1:]
-            print(sortGroup)
-            sort.card_group = Card_Groups.objects.get(id__exact=sortGroup)
-            sort.save()
-            for sortCard in sortCard:
-                sort.cards.add(Cards.objects.get(id__exact=sortCard))
-
-        comment = Comments()
-        comment.card_package = cardPackage
-        comment.user = user
-        comment.comment = text
-        comment.id = commentID
-        comment.save()
-        return render(
-            request,
-            'index.html',
-        )
-    else:
-        form = CreateComments(instance=Comments())
-        args = {'form': form}
-        return render(
-            request,
-            'packageList.html',
-            args
-        )
+		comment = Comments()
+		comment.card_package = cardPackage
+		comment.user = user
+		comment.comment = text
+		comment.id = commentID
+		comment.save()
+		return render(
+		request,
+			'index.html',		
+		)
+	else:
+		form = CreateComments(instance=Comments())
+		args = {'form': form}
+		return render(
+		request,
+		'packageList.html',
+		{'form': form}
+	)	
 
 
 def editPackage(request, package):
