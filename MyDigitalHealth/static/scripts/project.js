@@ -112,7 +112,8 @@ $( function()
         var numberOfGroups = $("#numberOfGroups").val().trim();
         //Number of Cards to Create
         var numberOfCards = $("#numberOfCards").val().trim();
-
+        var userDefined =  document.getElementById('userDefined')
+        
         //Create form for Group Headings
         var groupForm = document.createElement('form');
         //Create form for Cards
@@ -144,9 +145,19 @@ $( function()
                 groupLabel = $("<label></label>");
                 $(groupLabel).attr("class","fb-text-label").text("Group " + (i + 1) + " Heading");
                 //Create input attributes
-                groupInput = $("<input></input>");
-                $(groupInput).attr("class","form-control");
-                groupInput.type = "text";
+				if(userDefined.checked)
+				{
+					groupInput = $("<input readonly>");
+					$(groupInput).attr("class","form-control");	
+					$(groupInput).attr("value","User Defined Title");	
+				}
+				else
+				{
+					//Create input attributes 
+					groupInput = $("<input></input>");
+					$(groupInput).attr("class","form-control");	
+					groupInput.type = "text";
+				}
                 //Add label and input attributes to </div>
                 $(groupDiv).append(groupLabel, groupInput);
                 //Add </div> to webpage
@@ -207,6 +218,15 @@ $( function()
         //Append Group Headings </div> and Card </div> to pageRows </div>
         $("#pageRows").append(group, card);
         $("#buttons").append(buttonDiv);
+		var userDefinedTitles = document.getElementById('userDefinedTitles')
+		if(userDefined.checked)
+		{
+			$(userDefinedTitles).attr("value","True");	
+		}
+		else
+		{
+			$(userDefinedTitles).attr("value","False");	
+		}        
     });
 });
 
