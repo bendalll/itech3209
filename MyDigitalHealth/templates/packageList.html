@@ -29,44 +29,83 @@
                 {% endif %}
                 </ul>
             </div>
-            <div id="cardGroupsDiv">
-            {% if sortPackageUser == True %}
-                {% for filteredGroupsList in filteredGroupsList %}
-                    <div class="cards" value="{{filteredGroupsList.pk}}" id="{{filteredGroupsList.pk}}">
-                        <input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >
-                        <li class="list-group-item active" value="{{filteredGroupsList.title}}">{{filteredGroupsList }}</li>
-                        <input id ="filteredCardID" type="hidden" name="sortCardGroupID" value="{{filteredGroupsList.pk}}">
-                        <ul class="list-group connection cardGroups" value="{{filteredGroupsList.pk}}">
-                        </ul>
-                    </div>
-                {% endfor %}
-                {% for sortPackage in sortPackage %}
-                    <div class="cards" value="{{sortPackage.card_group.pk}}" id="{{sortPackage.card_group.pk}}">
-                        <input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >
-                        <li class="list-group-item active" value="{{ sortPackage.card_group.title}}">{{ sortPackage.card_group}}</li>
-                        <input id ="sortedCardGroupID" type="hidden" name="sortCardGroupID" value="{{sortPackage.card_group.pk}}">
-                        <ul class="list-group connection sortedCardGroups" value="{{sortPackage.card_group.pk}}">
-                        <li  type="hidden" value="{{ sortPackage.card_group.pk}}"></li>
-                        {% for sortedCards in sortPackage.cards.all %}
-                            <li class="list-group-item" value="{{sortedCards.pk}}">{{sortedCards }}</li>
-                        {% endfor %}
-                        </ul>
-                    </div>
-                {% endfor %}
-            {% else %}
-                {% for cardGroups in cardGroups %}
-                    {% if cardGroups.card_package.id == package.pk %}
-                        <div class="cards" value="{{cardGroups.pk}}">
-                        <li class="list-group-item active" value="{{cardGroups.title}}">{{cardGroups }}</li>
-                        <input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{cardGroups.pk}}">
-                        <ul class="list-group connection cardGroups" value="{{cardGroups.pk}}">
-                        <li  type="hidden" value="{{cardGroups.pk}}"></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-            </div>
+		<div id="cardGroupsDiv">
+		{% if sortPackageUser == True %}
+			{% if package.user_defined_groups == True %}
+				{% for filteredGroupsList in filteredGroupsList %}
+					<div class="cards" value="{{filteredGroupsList.pk}}" id="{{filteredGroupsList.pk}}">
+					<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+					<li class="list-group-item active" value="{{filteredGroupsList.title}}">{{filteredGroupsList }}</li>
+					<input id ="filteredCardID" type="hidden" name="sortCardGroupID" value="{{filteredGroupsList.pk}}">	
+					<ul class="list-group connection cardGroups" value="{{filteredGroupsList.pk}}">
+						<li  type="hidden" value="{{ filteredGroupsList.pk}}"></li>
+					</ul>
+					</div>
+				{% endfor %}
+				<!-- Card Groups -->
+				{% for sortPackage in sortPackage %}
+					<div class="cards" value="{{sortPackage.card_group.pk}}" id="{{sortPackage.card_group.pk}}">
+						<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+						<li><input class="list-group-item active" name="userDefinedGroup" value="{{ sortPackage.user_titles}}"></li>
+						<input id ="sortedCardGroupID" type="hidden" name="sortCardGroupID" value="{{sortPackage.card_group.pk}}">	
+						<ul class="list-group connection sortedCardGroups" value="{{sortPackage.card_group.pk}}">
+						<li  type="hidden" value="{{ sortPackage.card_group.pk}}"></li>
+						{% for sortedCards in sortPackage.cards.all %}
+							<li class="list-group-item" value="{{sortedCards.pk}}">{{sortedCards }}</li>
+						{% endfor %}
+						</ul>
+					</div>
+				{% endfor %}	
+				{% else %}	
+					{% for filteredGroupsList in filteredGroupsList %}
+						<div class="cards" value="{{filteredGroupsList.pk}}" id="{{filteredGroupsList.pk}}">
+							<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+							<li class="list-group-item active" value="{{filteredGroupsList.title}}">{{filteredGroupsList }}</li>
+							<input id ="filteredCardID" type="hidden" name="sortCardGroupID" value="{{filteredGroupsList.pk}}">	
+							<ul class="list-group connection cardGroups" value="{{filteredGroupsList.pk}}">
+								<li  type="hidden" value="{{ filteredGroupsList.pk}}"></li>
+							</ul>
+						</div>
+					{% endfor %}
+					<!-- Card Groups -->
+					{% for sortPackage in sortPackage|dictsort:"user_titles" %}
+						<div class="cards" value="{{sortPackage.card_group.pk}}" id="{{sortPackage.card_group.pk}}">
+							<input  type="hidden" name="sortPackages" value="{{sortPackage.pk}}" >	
+							<li class="list-group-item active" value="{{ sortPackage.card_group.title}}">{{ sortPackage.card_group}}</li>
+							<input id ="sortedCardGroupID" type="hidden" name="sortCardGroupID" value="{{sortPackage.card_group.pk}}">	
+							<ul class="list-group connection sortedCardGroups" value="{{sortPackage.card_group.pk}}">
+							<li  type="hidden" value="{{ sortPackage.card_group.pk}}"></li>
+							{% for sortedCards in sortPackage.cards.all %}
+								<li class="list-group-item" value="{{sortedCards.pk}}">{{sortedCards }}</li>
+							{% endfor %}
+							</ul>
+						</div>
+					{% endfor %}	
+				{% endif %}		
+			{% else %}	
+				{% if package.user_defined_groups == True %}
+					{% for sortGroups in sortGroups %}			
+							<div class="cards" value="{{sortGroups.pk}}">
+							<li><input class="list-group-item active" name="userDefinedGroup" placeholder="Please Enter A Title"></li>
+							<input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{sortGroups.pk}}">	
+							<ul class="list-group connection cardGroups" value="{{sortGroups.pk}}">
+								<li type="hidden" value="{{sortGroups.pk}}"></li>
+							</ul>
+							</div>	
+					{% endfor %}
+				{% else %}	
+					{% for sortGroups in sortGroups %}		
+						<div class="cards" value="{{sortGroups.pk}}">
+						<li class="list-group-item active" value="{{sortGroups.title}}">{{sortGroups}}</li>
+						<input id ="cardGroupID" type="hidden" name="cardGroupID" value="{{sortGroups.pk}}">	
+						<ul class="list-group connection cardGroups" value="{{sortGroups.pk}}">
+						<li type="hidden" value="{{sortGroups.pk}}"></li>
+						</ul>
+						</div>
+					{% endfor %}
+				{% endif %}	
+			{% endif %}
+			</div>
 
             {% if user.is_authenticated %}
             <div class="row form-group">

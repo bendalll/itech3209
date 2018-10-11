@@ -41,7 +41,9 @@
             <label class="fb-text-label">Number of Cards</label>
             <!-- Number of Card Input -->
             <input type="number" class="form-control" id="numberOfCards">
-            <br/>   
+	    <!-- User Defined Titles -->
+	    <label class="fb-text-label">User Defined Titles <input type="checkbox" id="userDefined" </label>
+	    </br>
             <!-- Create Groups and Cards Button -->
             <button type="button" id="createElements">Create</button>
         </div>
@@ -52,6 +54,7 @@
                 <input id ="cardPackageName" type="hidden" name="name">
                 <!-- Initially hide sortable cards -->
                 <div class="cards" id="cards" style="display: none">
+		<input type="hidden" id="userDefinedTitles" name="userDefined">
                     <ul class="list-group">
                         <!-- Heading of Cards -->
                         <li class="list-group-item active">Cards</li>
