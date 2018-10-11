@@ -23,6 +23,12 @@
 /* Navigation Bar Color */
 .navbar-inverse
 {
-    background-color: #313131;
-    z-index: -1;
+	background-color: #313131;
+	z-index: -1;
+}
+	
+::placeholder 
+{ 
+   color: white;
+   opacity: 1; 
 }
