@@ -7,7 +7,8 @@ class Card_Packages(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     main_color = models.CharField(max_length=7, default='#337ab7')
     comments_allowed = models.BooleanField(default=True)
-
+    user_defined_groups = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.name
 
@@ -28,7 +29,7 @@ class Card_Groups(models.Model):
 
 class Cards(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-    card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, default='1')
+	card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=200)
 
     def __str__(self):
@@ -52,7 +53,8 @@ class Comments(models.Model):
 
 class Sorted_Package(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-    card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, default='1')
+	card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
+	user_titles = models.CharField(max_length=200, blank=True, null=True)    
     cards = models.ManyToManyField(Cards)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
