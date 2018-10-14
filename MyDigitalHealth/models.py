@@ -15,6 +15,14 @@ class Card_Packages(models.Model):
     class Meta:
         verbose_name_plural = 'Card_Packages'
 
+    def get_groups(self):
+        groups = Card_Groups.objects.filter(card_package=self)
+        return groups
+
+    def get_cards(self):
+        cards = Cards.objects.filter(card_package=self)
+        return cards
+
 
 class Card_Groups(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
@@ -29,7 +37,7 @@ class Card_Groups(models.Model):
 
 class Cards(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-	card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
+    card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=200)
 
     def __str__(self):
@@ -53,8 +61,8 @@ class Comments(models.Model):
 
 class Sorted_Package(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-	card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
-	user_titles = models.CharField(max_length=200, blank=True, null=True)    
+    card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
+    user_titles = models.CharField(max_length=200, blank=True, null=True)
     cards = models.ManyToManyField(Cards)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
