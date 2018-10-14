@@ -1,0 +1,49 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% load static %}
+	{% load templatetags %}
+	<script src="{% static 'scripts/cardsort.js'%}"></script>
+    <link href="{% url 'css' package_id %}" rel="stylesheet">
+	<div class="container">
+    <h3>Please fill out the form below</h3>
+        <form class="form" method="post" action="{% url 'active' package_id %}" onsubmit="return processCards()">
+            {% csrf_token %}
+        <div class="cards">
+            <li class="list-group-item active">Cards</li>
+            <ul class="list-group connection">
+                <input type="hidden" id="group_unassigned" name="card_ids_for_unassigned"/>
+                {% for card in cards %}
+                    {% if card.card_group.pk is None %}
+                    <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% for card_group in card_groups %}
+        <div class="cards">
+            <li class="list-group-item active">{{ card_group.title }}</li>
+            <ul class="list-group connection">
+                <input type="hidden" id="group_{{ card_group.pk }}" name="card_ids_for_{{ card_group.pk }}"/>
+                {% for card in cards %}
+                    {% if card.card_group.pk == card_group.pk %}
+                    <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        <div class="container row form-group">
+            <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
+            {% if comments_allowed %}
+                <textarea class="form-control" id="id_comment_text" name="comment"
+                          placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
+            {% endif %}
+        </div>
+        <div>
+            <input type="submit" value="Save and Close" class="btn btn-default"/>
+            <a href="{% url 'index' %}" class="btn btn-default">Close</a>
+        </div>
+        </form>
+    </div>
+{% endblock %}
