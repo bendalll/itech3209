@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<div class="container">
+        <h2 class="form-signin-heading">Administration</h2>
+        <h3 class="form-signin-heading">My Packages</h3>
+        <ul>
+            {% for package in card_packages %}
+                {% if package.user == request.user %}
+                <li><a href="{% url 'active' package.pk %}">{{ package.name }}</a>
+                    <a href="{% url 'edit' package.pk %} " class="btn btn-default">Edit</a>
+                    <form class="form" style="display: inline" method="post" action="{% url 'delete' package.pk %}"
+                        onsubmit="return confirm('Are you sure you want to delete {{ package.name }}?');">
+                        {% csrf_token %}
+                        <input type="submit" value="Delete" class="btn btn-default" />
+                    </form>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+	</div>
+{% endblock %}
