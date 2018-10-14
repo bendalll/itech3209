@@ -1,0 +1,55 @@
+/* Card List */
+.connection
+{
+    min-height: 100px;
+    list-style-type:none;
+}
+
+/* Card Containers */
+.cards
+{
+    width: 30%;
+    min-height: 20px;
+    list-style-type: none;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+}
+
+.ui-sortable {
+    cursor: move;
+}
+
+/* Navigation Bar Color */
+.navbar-inverse
+{
+	background-color: #313131;
+	z-index: -1;
+}
+	
+::placeholder 
+{ 
+   color: white;
+   opacity: 1; 
+}
+
+ul
+{
+    padding: 0;
+    margin: 0;
+}
+li
+{
+    list-style: none;
+}
+
+.btn
+{
+    margin-bottom: 10px;
+}
+
+.float-bottom-right
+{
+    float: right;
+    display: inline-block;
+}
