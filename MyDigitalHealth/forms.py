@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import TextInput, modelformset_factory, CheckboxInput
 
-from .models import Card_Packages, Card_Groups, Cards, Comments
+from .models import Card_Packages, Card_Groups, Cards
 
 
 class RegistrationForm(UserCreationForm):
@@ -49,15 +49,6 @@ class PackageBaseForm(forms.ModelForm):
             'name': TextInput(attrs={'class': 'form-control'}),
             'user_defined_groups': CheckboxInput(attrs={'onchange': 'toggleGroupsInput()'})
         }
-
-
-class CommentsForm(forms.ModelForm):
-    class Meta:
-        model = Comments
-        fields = (
-            'card_package',
-            'comment',
-            )
 
 
 def create_groups_formset(**kwargs):
@@ -147,13 +138,13 @@ class PackageForm(forms.Form):
             preparation for validation """
             request = kwargs['request']
             # Create a form with the POST data, to be validated
-            if 'comments_enabled' in request.POST:  # checkbox value does not come in as true/false
-                comments_enabled = True
+            if 'comments_allowed' in request.POST:  # checkbox value does not come in as true/false
+                comments_allowed = True
             else:
-                comments_enabled = False
+                comments_allowed = False
             self.package_base_form = PackageBaseForm({'name': request.POST['name'],
                                                       'main_color': request.POST['main_color'],
-                                                      'comments_enabled': comments_enabled})
+                                                      'comments_allowed': comments_allowed})
             self.groups_formset = create_groups_formset(request=request)
             self.cards_formset = create_cards_formset(request=request)
             self.user = request.user
