@@ -50,7 +50,7 @@ def create_package(request):
             context = form.to_dict()
             return render(
                 request,
-                'create_package.html',
+                'create_edit_package.html',
                 context
             )
     else:
@@ -58,7 +58,7 @@ def create_package(request):
         context = form.to_dict()
         return render(
             request,
-            'create_package.html',
+            'create_edit_package.html',
             context
         )
 
@@ -130,7 +130,7 @@ def edit(request, package_id):
         context = form.to_dict()
         return render(
             request,
-            'create_package.html',
+            'create_edit_package.html',
             context
         )
 
