@@ -210,7 +210,7 @@ class PackageForm(forms.Form):
 
         if int(self.package_id) == self.NEW_PACKAGE_FLAG:  # TODO: better way to do this?
             package = Card_Packages(name=self.package_base_form.cleaned_data['name'],
-                                    user=self.user,
+                                    owner=self.user,
                                     main_color=self.package_base_form.cleaned_data['main_color'],
                                     comments_allowed=comments_allowed)
             package.save()
