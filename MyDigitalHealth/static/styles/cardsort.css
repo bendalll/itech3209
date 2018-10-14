@@ -40,7 +40,7 @@ ul
 }
 li
 {
-    list-style: none;
+    list-style-type: none;
 }
 
 .btn
@@ -52,4 +52,13 @@ li
 {
     float: right;
     display: inline-block;
+}
+
+.admin-list
+{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding: 6px 12px;
+    color: black;
+    line-height: 1.1;
+    font-size: 20px;
 }
