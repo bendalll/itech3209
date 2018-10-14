@@ -65,7 +65,7 @@ function appendCard()
             $(tableDiv).append(createUl);
             //Append elements to page
             $("#listOfCards").append(tableDiv);
-            document.getElementById("cardPackageName").value = document.getElementById("nameOfCardPackage").value;
+            document.getElementById("cardPackageName").value = document.getElementById("id_name").value;
             changeHeadingColor();
         }
     }
@@ -112,7 +112,7 @@ $( function()
         var numberOfGroups = $("#numberOfGroups").val().trim();
         //Number of Cards to Create
         var numberOfCards = $("#numberOfCards").val().trim();
-        var userDefined =  document.getElementById('userDefined')
+        var userDefined =  document.getElementById('id_user_defined_groups');
         
         //Create form for Group Headings
         var groupForm = document.createElement('form');
