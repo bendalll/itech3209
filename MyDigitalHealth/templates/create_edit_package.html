@@ -2,12 +2,11 @@
 {% block content %}	
 	{% load static %}
 	<script src="{% static 'scripts/cardsort.js'%}"></script>
-	<script>window.onload = toggleGroupsInput();</script>
     <div class="container-fluid">
     {% if package_id == -1 %}
         <form action="{% url 'create' %}" method="post" id="new_package">
     {% else %}
-        <form action="{% url 'create' %}" method="post" id="new_package">
+        <form action="{% url 'edit' package_id %}" method="post" id="edit_package">
     {% endif %}
         {% csrf_token %}
         <div class="container-fluid">
@@ -48,11 +47,11 @@
             </div>
         </div>
         <div class="float-bottom-right" id="buttons">
-                {% if package_id %}
+            {% if package_id %}
                 <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
-                {% endif %}
-                <input type="submit" value="Save and Close" class="btn btn-default"/>
-                <input type="button" value="Save and Preview" class="btn btn-default" onclick=""/>
+            {% endif %}
+            <input type="submit" value="Save and Close" class="btn btn-default"/>
+            <input type="button" value="Save and Preview" class="btn btn-default" onclick=""/>
         </div>
         </form>
     </div>
