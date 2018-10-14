@@ -137,14 +137,23 @@ class PackageForm(forms.Form):
             """ Checks whether the form is being created with POST data, and so populates it with that data in
             preparation for validation """
             request = kwargs['request']
+
             # Create a form with the POST data, to be validated
+
             if 'comments_allowed' in request.POST:  # checkbox value does not come in as true/false
                 comments_allowed = True
             else:
                 comments_allowed = False
+
+            if 'user_defined_groups' in request.POST: # checkbox value does not come in as true/false
+                user_defined_groups = True
+            else:
+                user_defined_groups = False
+
             self.package_base_form = PackageBaseForm({'name': request.POST['name'],
                                                       'main_color': request.POST['main_color'],
-                                                      'comments_allowed': comments_allowed})
+                                                      'comments_allowed': comments_allowed,
+                                                      'user_defined_groups': user_defined_groups})
             self.groups_formset = create_groups_formset(request=request)
             self.cards_formset = create_cards_formset(request=request)
             self.user = request.user
@@ -207,18 +216,26 @@ class PackageForm(forms.Form):
             comments_allowed = True
         else:
             comments_allowed = False
+        # HTML checkbox returns "ON" or nothing at all in dict [CHROME] so cannot be passed directly to boolean field
+        if 'user_defined_groups' in self.package_base_form.cleaned_data \
+                and self.package_base_form.cleaned_data['user_defined_groups'] is not False:
+            user_defined_groups = True
+        else:
+            user_defined_groups = False
 
         if int(self.package_id) == self.NEW_PACKAGE_FLAG:  # TODO: better way to do this?
             package = Card_Packages(name=self.package_base_form.cleaned_data['name'],
                                     owner=self.user,
                                     main_color=self.package_base_form.cleaned_data['main_color'],
-                                    comments_allowed=comments_allowed)
+                                    comments_allowed=comments_allowed,
+                                    user_defined_groups=user_defined_groups)
             package.save()
         else:
             package = Card_Packages.objects.get(pk=self.package_id)
             package.name = self.package_base_form.cleaned_data['name']
             package.main_color = self.package_base_form.cleaned_data['main_color']
             package.comments_allowed = comments_allowed
+            package.user_defined_groups = user_defined_groups
             package.save()
             # easiest to delete all the existing data and create it again
             for group in package.get_groups():
