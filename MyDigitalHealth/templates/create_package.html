@@ -1,69 +1,59 @@
 {% extends "base_generic.html" %}
 {% block content %}	
 	{% load static %}
-	<script src="{% static 'scripts/project.js'%}"></script>
-	<!-- Bootstrap Container -->
-	<div  class="container-fluid" id="formCreator">
-        <form class="form-signin" method="post" action="{% url 'cards' %} ">
-            {% csrf_token %}
-	    <h1>Package Creator</h1>
-        <div>
-            <!-- Name of Card Package Heading -->
-            <label class="fb-text-label">Name of Card Package</label>
-            <!-- Name of Card Package -->
-            <input type="text" class="form-control" id="nameOfCardPackage">
-        </div>
-        <br/>
-            <div>
-                <!--Color selection -->
-                <label class="fb-text-label">{{ form.main_color.label }}</label><br/>
-                {{ form.main_color }}
-            </div>
-        <br/>
-            <div>
-                <!-- Comments enable / disable -->
-                <label class="fb-text-label">{{ form.comments_allowed.label }}</label><br/>
-                {{ form.comments_allowed }}
-            </div>
-        <!-- Bootstrap Row -->
-        <!-- Used to dynamically populate the inputs for Cards and Groups after initial number-of-each entry -->
-        <div  class="row" id="pageRows">
-        </div>
-        <div  class="row" id="buttons">
-        </div>
-        <!-- Number of Groups and Cards Form-->
-        <div class="form-group" id ="create">
-            <!-- Number of Groups Heading -->
-            <label class="fb-text-label">Number of Groups</label>
-            <!-- Number of Groups Input -->
-            <input type="number" class="form-control" id="numberOfGroups">
-            <!-- Number of Card Heading -->
-            <label class="fb-text-label">Number of Cards</label>
-            <!-- Number of Card Input -->
-            <input type="number" class="form-control" id="numberOfCards">
-	    <!-- User Defined Titles -->
-	    <label class="fb-text-label">User Defined Titles <input type="checkbox" id="userDefined" </label>
-	    </br>
-            <!-- Create Groups and Cards Button -->
-            <button type="button" id="createElements">Create</button>
-        </div>
-
-        <!-- Grouping Tables -->
-            <div id="listOfCards">
-                <!-- Name of Card Package -->
-                <input id ="cardPackageName" type="hidden" name="name">
-                <!-- Initially hide sortable cards -->
-                <div class="cards" id="cards" style="display: none">
-		<input type="hidden" id="userDefinedTitles" name="userDefined">
-                    <ul class="list-group">
-                        <!-- Heading of Cards -->
-                        <li class="list-group-item active">Cards</li>
-                        <!-- Sortable Cards -->
-                        <li id="sortable" class="connection"></li>
+	<script src="{% static 'scripts/cardsort.js'%}"></script>
+	<script>window.onload = toggleGroupsInput();</script>
+    <div class="container-fluid">
+    {% if package_id == -1 %}
+        <form action="{% url 'create' %}" method="post" id="new_package">
+    {% else %}
+        <form action="{% url 'create' %}" method="post" id="new_package">
+    {% endif %}
+        {% csrf_token %}
+        <div class="container-fluid">
+            <div id="form_items">
+                <div class="container-fluid">
+                    <h1>Package Creator</h1>
+                    <label class="fb-text-label">{{ package_base_form.name.label }}:</label><br/>
+                    {{ package_base_form.name }}<br/>
+                    <label class="fb-text-label">{{ package_base_form.main_color.label }}:</label>
+                    {{ package_base_form.main_color }}
+                    <br/><label class="fb-text-label">{{ package_base_form.comments_allowed.label }}:</label>
+                    {{ package_base_form.comments_allowed }}
+                    <br/><label class="fb-text-label">{{ package_base_form.user_defined_groups.label }}:</label>
+                    {{ package_base_form.user_defined_groups }}<br/>
+                </div>
+                <div class="col-sm-7">
+                    <h2 class="form-signin-heading">Cards</h2>
+                    {{ cards_formset.management_form }}
+                    <ul id="id_card_list">
+                        {% for card_form in cards_formset %}
+                            <li>{{ card_form }}<input type="button" value="Remove" class="btn btn-default"
+                                                      onclick="removeCard(this)"></li>
+                        {% endfor %}
                     </ul>
-                    <input type="submit" value="Save" />
+                    <input type="button" value="Add A Card" class="btn btn-default" onclick="cloneItem('card')"/>
+                </div>
+                <div class="col-sm-5">
+                    <h2 class="form-signin-heading">Groups</h2>
+                    {{ groups_formset.management_form }}
+                    <ul id="id_group_list">
+                        {%  for group in groups_formset %}
+                            <li>{{ group }}<input type="button" value="Remove" class="btn btn-default"
+                                                  onclick="removeGroup(this)"></li>
+                        {% endfor %}
+                    </ul>
+                <input type="button" value="Add A Group" class="btn btn-default" onclick="cloneItem('group')"/>
                 </div>
             </div>
+        </div>
+        <div class="float-bottom-right" id="buttons">
+                {% if package_id %}
+                <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
+                {% endif %}
+                <input type="submit" value="Save and Close" class="btn btn-default"/>
+                <input type="button" value="Save and Preview" class="btn btn-default" onclick=""/>
+        </div>
         </form>
     </div>
 {% endblock %}
