@@ -25,10 +25,10 @@
             <li class="list-group-item active">{{ card_group.title }}</li>
             <ul class="list-group connection">
                 <input type="hidden" id="group_{{ card_group.pk }}" name="card_ids_for_{{ card_group.pk }}"/>
-                {% for card in cards %}
-                    {% if card.card_group.pk == card_group.pk %}
+                {% for card in card_group.cards.all %}
+
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
-                    {% endif %}
+
                 {% endfor %}
             </ul>
         </div>

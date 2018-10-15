@@ -237,12 +237,15 @@ class PackageForm(forms.Form):
             package.comments_allowed = comments_allowed
             package.user_defined_groups = user_defined_groups
             package.save()
+
             # easiest to delete all the existing data and create it again
             for group in package.get_groups():
                 group.delete()
             for card in package.get_cards():
                 card.delete()
 
+        print(self.groups_formset.cleaned_data)
+        print(self.cards_formset.cleaned_data)
         for group in self.groups_formset.cleaned_data:
             title = group['title']
             new_group = Card_Groups(title=title, card_package=package)

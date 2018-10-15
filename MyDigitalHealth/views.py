@@ -1,7 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, PackageForm
-from .models import Card_Packages
+from .models import Card_Packages, Sorted_Packages, Cards, Sorted_Groups
 
 
 def index(request):
@@ -102,9 +102,41 @@ def edit_package(request, package_id):
 
 def cardsort_activity(request, package_id):
     if request.method == 'POST':
-        # TODO: THIS
-        print(request.POST)
+
         package = Card_Packages.objects.get(pk=package_id)
+
+        # Edit Existing Sorted_Packages Object if it exists
+        if Sorted_Packages.objects.filter(parent_package=package, user=request.user).exists():
+            sorted_package = Sorted_Packages.objects.get(parent_package=package, user=request.user)
+        else:
+            sorted_package = Sorted_Packages(parent_package=package, user=request.user)
+            sorted_package.save()
+
+        # Save the comment if one is in the POST.
+        if 'comment' in request.POST:
+            sorted_package.comment = request.POST['comment']
+
+        # Process the CSV strings for the card groups
+        for group in sorted_package.parent_package.get_groups():
+            group_text = request.POST['card_ids_for_'+ str(group.pk)]
+
+            if Sorted_Groups.objects.filter(sorted_package=sorted_package, parent_group=group):
+                sorted_group = Sorted_Groups.objects.get(sorted_package=sorted_package, parent_group=group)
+                sorted_group.cards.clear()  # Remove all existing Cards in the ManyToMany relationship
+            else:
+                sorted_group = Sorted_Groups(sorted_package=sorted_package,
+                                             parent_group=group,
+                                             title=group.title)
+                sorted_group.save()
+
+            # Iterate through each card pk and add it to the ManyToMany relationship.
+            for card_id in group_text.split(','):
+                if not card_id == '':       # TODO - Deal more gracefully with blank values
+                    card = Cards.objects.get(pk=card_id)
+                    sorted_group.cards.add(card)
+
+        sorted_package.save()
+
         context = package.to_dict()
         return render(
             request,
@@ -112,7 +144,13 @@ def cardsort_activity(request, package_id):
             context
         )
     else:
-        package = Card_Packages.objects.get(pk=package_id)
+
+        if Sorted_Packages.objects.filter(parent_package=package_id, user=request.user).exists():
+            package = Sorted_Packages.objects.get(parent_package=package_id, user=request.user)
+
+        else:
+            package = Card_Packages.objects.get(pk=package_id)
+
         context = package.to_dict()
         return render(
             request,

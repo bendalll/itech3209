@@ -38,18 +38,6 @@ class Card_Packages(models.Model):
         return package
 
 
-class Sorted_Packages(Card_Packages):
-    parent_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE, related_name='base_package')
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    comment = models.CharField(max_length=200, default='Placeholder')
-
-    def __str__(self):
-        return "Sorted" + self.name + " for " + self.user.username
-
-    class Meta:
-        verbose_name_plural = 'Sorted_Packages'
-
-
 class Card_Groups(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -63,14 +51,58 @@ class Card_Groups(models.Model):
 
 class Cards(models.Model):
     card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-    card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
+    #card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.text
+        return self.text + "(#" + str(self.pk) + ")"
 
     class Meta:
         verbose_name_plural = 'Cards'
+
+class Sorted_Groups(models.Model):
+    sorted_package = models.ForeignKey('Sorted_Packages', on_delete=models.CASCADE)
+    parent_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    cards = models.ManyToManyField(Cards)
+
+
+class Sorted_Packages(models.Model):
+    parent_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE, related_name="child_package")
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    comment = models.CharField(max_length=200, default='Placeholder')
+
+    #TODO - Maybe add a manyToMany Field to make the sorted group info accessible on this object?
+
+    def __str__(self):
+        return "Sorted" + self.name + " for " + self.user.username
+
+    def to_dict(self):
+        """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
+
+        list_of_group_objects = Sorted_Groups.objects.filter(sorted_package=self)
+        list_of_card_objects = Cards.objects.filter(card_package=self.parent_package)
+
+        # Create a set from the list of all cards in the parent package.
+        sortedcards = set(list_of_card_objects.all())
+
+        # Iterate through the sorted groups and remove any cards which are already assigned a group.
+        for group in list_of_group_objects:
+            sortedcards = sortedcards - set(group.cards.all())
+
+        package = {'package_id': self.parent_package.pk,
+                   'name': self.parent_package.name,
+                   'main_color': self.parent_package.main_color,
+                   'comments_allowed': self.parent_package.comments_allowed,
+                   'comment': self.comment,
+                   'card_groups': list_of_group_objects,
+                   'cards': list(sortedcards),
+                   }
+        return package
+
+    class Meta:
+        verbose_name_plural = 'Sorted_Packages'
+
 
 
 class Permissions(models.Model):
