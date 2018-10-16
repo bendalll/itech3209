@@ -4,7 +4,7 @@
   {% block title %}
       <title>Bluebird Digital Technologies</title>
   {% endblock %}
-	<!-- Responsive Web Design -->
+    <!-- Responsive Web Design -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- AJAX -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -17,13 +17,10 @@
 	<!-- Add additional Javascript in static file -->
 	{% load static %}
 	<script src="{% static 'scripts/jquery.ui.touch-punch.min.js' %}"></script>
-
-  <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'styles/cardsort.css' %}">
-  {% load templatetags %}
+    <link rel="icon" type="image/ico" href="{% static 'favicon.ico' %}"/>
+    <!-- Add additional CSS in static file -->
+    <link rel="stylesheet" href="{% static 'styles/cardsort.css' %}">
 </head>
-
 <body>
     <!-- Navigation Bar -->
 	<div class="container-fluid" style='background-color: #313131'>
