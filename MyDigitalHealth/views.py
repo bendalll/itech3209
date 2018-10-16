@@ -27,6 +27,7 @@ def register(request):
             )
         else:
             print("Login form was not valid")
+            # TODO: Ensure this returns something meaningful to the user
             form = RegistrationForm()
             args = {'form': form}
             return render(
@@ -55,6 +56,7 @@ def create_package(request):
             )
         else:
             print("Form failed validation: ", form.errors)
+            # TODO: Ensure this returns something meaningful to the user
             form = PackageForm()
             context = form.to_dict()
             return render(
