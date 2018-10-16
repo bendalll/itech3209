@@ -21,7 +21,7 @@
                     {% endfor %}
                 {% else %}
                     {% for sortcardList in sortcardList %}
-                        {% if sortcardList.card_package.id == package.pk  %}
+                        {% if sortcardList.package.id == package.pk  %}
                             <li class="list-group-item" value="{{sortcardList.pk}}">{{sortcardList.text }}</li>
                             <input type="hidden" name="cardListID" value="{{sortcardList.pk}}">
                         {% endif %}

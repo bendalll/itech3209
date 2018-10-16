@@ -76,7 +76,7 @@ def create_groups_formset(**kwargs):
         )
 
     if 'package' in kwargs:
-        new_category_formset = GroupsFormset(queryset=Group.objects.filter(card_package=kwargs['package']),
+        new_category_formset = GroupsFormset(queryset=Group.objects.filter(package=kwargs['package']),
                                              prefix='group')
     elif 'request' in kwargs:
         new_category_formset = GroupsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='group')
@@ -113,7 +113,7 @@ def create_cards_formset(**kwargs):
         )
 
     if 'package' in kwargs:
-        new_card_formset = CardsFormset(queryset=Card.objects.filter(card_package=kwargs['package']), prefix='card')
+        new_card_formset = CardsFormset(queryset=Card.objects.filter(package=kwargs['package']), prefix='card')
     elif 'request' in kwargs:
         new_card_formset = CardsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='card')
     else:
@@ -248,12 +248,12 @@ class PackageForm(forms.Form):
         print(self.cards_formset.cleaned_data)
         for group in self.groups_formset.cleaned_data:
             title = group['title']
-            new_group = Group(title=title, card_package=package)
+            new_group = Group(title=title, package=package)
             new_group.save()
 
         for card in self.cards_formset.cleaned_data:
             text = card['text']
-            new_card = Card(text=text, card_package=package)
+            new_card = Card(text=text, package=package)
             new_card.save()
 
         return package

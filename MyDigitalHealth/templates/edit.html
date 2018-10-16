@@ -20,7 +20,7 @@
 	<div id="cardGroups">
 	
 	{% for cardGroups in cardGroups %}		
-		{% if cardGroups.card_package.id == package.pk %}		
+		{% if cardGroups.package.id == package.pk %}
 			<p>Delete {{ cardGroups.title}}?
 			<input type="checkbox" class="deleteGroups" value="{{ cardGroups.pk}}"> 	</p>
 			<input type="text" id="cardGroups" class="form-control" value="{{ cardGroups.title}}" name="title"> 
@@ -33,7 +33,7 @@
 	<label class="fb-text-label">Cards</label>		<button  class="btn btn-default" type="button" id="addCard">Add</button>	
 	<div id="cardsList">
 	{% for cardList in cardList %}
-		{% if cardList.card_package.id == package.pk  %}
+		{% if cardList.package.id == package.pk  %}
 			Delete {{ cardList.text}}?
 			<input type="checkbox" class="deleteCards" value="{{ cardList.pk}}"> 	
 			<input type="text" id="cardList" class="form-control" value="{{ cardList.text}}" name="text">

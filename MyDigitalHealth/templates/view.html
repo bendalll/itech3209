@@ -14,7 +14,7 @@
 		<div>
 		{% for cardGroups in cardGroups %}		
 		<div id="test" class="cards">
-			{% if cardGroups.card_package.pk == cardPackages.id %}
+			{% if cardGroups.package.pk == cardPackages.id %}
 			<!-- Name of Card Groups -->
 			<ul class="list-group">
 			<li class="list-group-item active">{{ cardGroups.title }}</li>

@@ -73,8 +73,8 @@ def create_package(request):
 
 
 def package_administration(request):
-    card_packages = Package.objects.all()
-    context = {'card_packages': card_packages}
+    packages = Package.objects.all()
+    context = {'packages': packages}
     return render(
         request,
         'administration.html',
@@ -87,8 +87,8 @@ def edit_package(request, package_id):
         form = PackageForm(request=request)
         if form.is_valid():
             form.save_data()
-            card_packages = Package.objects.all()
-            context = {'card_packages': card_packages}
+            packages = Package.objects.all()
+            context = {'packages': packages}
             return render(
                 request,
                 'administration.html',
@@ -175,8 +175,8 @@ def delete_package(request, package_id):
     package = Package.objects.get(pk=package_id)
     package.delete()
     # TODO: return some indicator of success or failure
-    card_packages = Package.objects.all()
-    context = {'card_packages': card_packages}
+    packages = Package.objects.all()
+    context = {'packages': packages}
     return render(
         request,
         'administration.html',

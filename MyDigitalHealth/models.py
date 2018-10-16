@@ -16,17 +16,17 @@ class Package(models.Model):
         verbose_name_plural = 'Packages'
 
     def get_groups(self):
-        groups = Group.objects.filter(card_package=self)
+        groups = Group.objects.filter(package=self)
         return groups
 
     def get_cards(self):
-        cards = Card.objects.filter(card_package=self)
+        cards = Card.objects.filter(package=self)
         return cards
 
     def to_dict(self):
         """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
-        list_of_group_objects = Group.objects.filter(card_package=self)
-        list_of_card_objects = Card.objects.filter(card_package=self)
+        list_of_group_objects = Group.objects.filter(package=self)
+        list_of_card_objects = Card.objects.filter(package=self)
 
         package = {'package_id': self.pk,
                    'name': self.name,
@@ -61,16 +61,6 @@ class Card(models.Model):
         verbose_name_plural = 'Cards'
 
 
-class SortedGroup(models.Model):
-    sorted_package = models.ForeignKey('MyDigitalHealth.models.SortedPackage', on_delete=models.CASCADE)
-    parent_group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    cards = models.ManyToManyField(Card)
-
-    class Meta:
-        verbose_name_plural = "Sorted_Groups"
-
-
 class SortedPackage(models.Model):
     parent_package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name="child_package")
     user = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -85,7 +75,7 @@ class SortedPackage(models.Model):
         """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
 
         list_of_group_objects = SortedGroup.objects.filter(sorted_package=self)
-        list_of_card_objects = Card.objects.filter(card_package=self.parent_package)
+        list_of_card_objects = Card.objects.filter(package=self.parent_package)
 
         # Create a set from the list of all cards in the parent package.
         sorted_cards = set(list_of_card_objects.all())
@@ -108,7 +98,17 @@ class SortedPackage(models.Model):
         verbose_name_plural = 'Sorted_Packages'
 
 
+class SortedGroup(models.Model):
+    sorted_package = models.ForeignKey(SortedPackage, on_delete=models.CASCADE)
+    parent_group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    cards = models.ManyToManyField(Card)
+
+    class Meta:
+        verbose_name_plural = "Sorted_Groups"
+
+
 class Permission(models.Model):
     """ User Access Control for package assignation """
-    card_package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

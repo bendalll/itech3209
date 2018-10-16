@@ -8,7 +8,7 @@
         <h3 class="form-signin-heading">My Packages</h3><br/>
         <div class="container-fluid">
             <ul>
-                {% for package in card_packages %}
+                {% for package in packages %}
                     {% if package.owner == request.user %}
                     <li><a class="admin-list" href="{% url 'active' package.pk %}">{{ package.name }}</a>
                         <a href="{% url 'edit' package.pk %} " class="btn btn-default">Edit</a>
