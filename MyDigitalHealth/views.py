@@ -1,7 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, PackageForm
-from .models import Package, SortedPackage, Card, SortedGroup
+from .models import Package, SortedPackage, Card, SortedGroup, Permission
 
 
 def index(request):
@@ -174,9 +175,13 @@ def cardsort_activity(request, package_id):
 def delete_package(request, package_id):
     """ Remove the package from the database """
     # TODO: put this in a try/catch for db errors
-    package = Package.objects.get(pk=package_id)
-    package.delete()
+    try:
+        package = Package.objects.get(pk=package_id)
+        package.delete()
+    except KeyError:
+        messages.error(request, "Sorry, something went wrong and we couldn't find that package to delete it")
     # TODO: return some indicator of success or failure
+    # TODO: Remove this 'all packages' context
     packages = Package.objects.all()
     context = {'packages': packages}
     return render(
@@ -196,3 +201,14 @@ def get_css(request, package_id):
         {'main_color': main_color},
         content_type='text/css'
     )
+
+
+def get_assigned_packages(request):
+    """ Return a list of packages that have been assigned to the logged-in user """
+    # filter the permissions to retrieve the permitted packages
+    permissions = Permission.objects.filter(user=request.user)
+    packages = []
+    for permission in permissions:
+        permitted_package = Package.objects.get(id=permission.package_id)
+        packages.append(permitted_package)
+    print(packages)
