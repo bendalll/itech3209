@@ -25,6 +25,15 @@ def register(request):
                 request,
                 'index.html',
             )
+        else:
+            print("Login form was not valid")
+            form = RegistrationForm()
+            args = {'form': form}
+            return render(
+                request,
+                'register.html',
+                args
+            )
     else:
         form = RegistrationForm()
         args = {'form': form}
