@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import TextInput, modelformset_factory, CheckboxInput
 
-from .models import Card_Packages, Card_Groups, Cards
+from .models import Package, Group, Card
 
 
 class RegistrationForm(UserCreationForm):
@@ -32,7 +32,7 @@ class RegistrationForm(UserCreationForm):
 
 class PackageBaseForm(forms.ModelForm):
     class Meta:
-        model = Card_Packages
+        model = Package
         fields = (
             'name',
             'main_color',
@@ -60,7 +60,7 @@ def create_groups_formset(**kwargs):
     # Filter for 'extra' here to avoid always having to specify extra=0
     if 'extra' in kwargs:
         GroupsFormset = modelformset_factory(
-            Card_Groups,
+            Group,
             fields=('title',),
             labels=labels,
             widgets=widgets,
@@ -68,7 +68,7 @@ def create_groups_formset(**kwargs):
         )
     else:
         GroupsFormset = modelformset_factory(
-            Card_Groups,
+            Group,
             fields=('title',),
             labels=labels,
             widgets=widgets,
@@ -76,12 +76,12 @@ def create_groups_formset(**kwargs):
         )
 
     if 'package' in kwargs:
-        new_category_formset = GroupsFormset(queryset=Card_Groups.objects.filter(card_package=kwargs['package']),
+        new_category_formset = GroupsFormset(queryset=Group.objects.filter(card_package=kwargs['package']),
                                              prefix='group')
     elif 'request' in kwargs:
         new_category_formset = GroupsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='group')
     else:
-        new_category_formset = GroupsFormset(queryset=Card_Groups.objects.none(), prefix='group')
+        new_category_formset = GroupsFormset(queryset=Group.objects.none(), prefix='group')
 
     for form in new_category_formset:
         form.empty_permitted = False
@@ -97,7 +97,7 @@ def create_cards_formset(**kwargs):
     # Filter for 'extra' here to avoid always having to specify extra=0
     if 'extra' in kwargs:
         CardsFormset = modelformset_factory(
-            Cards,
+            Card,
             fields=('text',),
             labels=labels,
             widgets=widgets,
@@ -105,7 +105,7 @@ def create_cards_formset(**kwargs):
         )
     else:
         CardsFormset = modelformset_factory(
-            Cards,
+            Card,
             fields=('text',),
             labels=labels,
             widgets=widgets,
@@ -113,11 +113,11 @@ def create_cards_formset(**kwargs):
         )
 
     if 'package' in kwargs:
-        new_card_formset = CardsFormset(queryset=Cards.objects.filter(card_package=kwargs['package']), prefix='card')
+        new_card_formset = CardsFormset(queryset=Card.objects.filter(card_package=kwargs['package']), prefix='card')
     elif 'request' in kwargs:
         new_card_formset = CardsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='card')
     else:
-        new_card_formset = CardsFormset(queryset=Cards.objects.none(), prefix='card')
+        new_card_formset = CardsFormset(queryset=Card.objects.none(), prefix='card')
 
     for form in new_card_formset:
         form.empty_permitted = False
@@ -162,7 +162,7 @@ class PackageForm(forms.Form):
         elif 'package_id' in kwargs and kwargs['package_id'] != -1:
             """ Checks whether the form is being created to edit a given package, and so populates it with the package
             information so it can be edited """
-            package = Card_Packages.objects.get(pk=kwargs['package_id'])
+            package = Package.objects.get(pk=kwargs['package_id'])
             self.package_base_form = PackageBaseForm(instance=package)
             self.groups_formset = create_groups_formset(package=package)
             self.cards_formset = create_cards_formset(package=package)
@@ -224,14 +224,14 @@ class PackageForm(forms.Form):
             user_defined_groups = False
 
         if int(self.package_id) == self.NEW_PACKAGE_FLAG:  # TODO: better way to do this?
-            package = Card_Packages(name=self.package_base_form.cleaned_data['name'],
-                                    owner=self.user,
-                                    main_color=self.package_base_form.cleaned_data['main_color'],
-                                    comments_allowed=comments_allowed,
-                                    user_defined_groups=user_defined_groups)
+            package = Package(name=self.package_base_form.cleaned_data['name'],
+                              owner=self.user,
+                              main_color=self.package_base_form.cleaned_data['main_color'],
+                              comments_allowed=comments_allowed,
+                              user_defined_groups=user_defined_groups)
             package.save()
         else:
-            package = Card_Packages.objects.get(pk=self.package_id)
+            package = Package.objects.get(pk=self.package_id)
             package.name = self.package_base_form.cleaned_data['name']
             package.main_color = self.package_base_form.cleaned_data['main_color']
             package.comments_allowed = comments_allowed
@@ -248,12 +248,12 @@ class PackageForm(forms.Form):
         print(self.cards_formset.cleaned_data)
         for group in self.groups_formset.cleaned_data:
             title = group['title']
-            new_group = Card_Groups(title=title, card_package=package)
+            new_group = Group(title=title, card_package=package)
             new_group.save()
 
         for card in self.cards_formset.cleaned_data:
             text = card['text']
-            new_card = Cards(text=text, card_package=package)
+            new_card = Card(text=text, card_package=package)
             new_card.save()
 
         return package

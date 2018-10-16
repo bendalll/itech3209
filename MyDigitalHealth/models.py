@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Card_Packages(models.Model):
+class Package(models.Model):
     name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     main_color = models.CharField(max_length=7, default='#337ab7')
@@ -13,20 +13,20 @@ class Card_Packages(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Card_Packages'
+        verbose_name_plural = 'Packages'
 
     def get_groups(self):
-        groups = Card_Groups.objects.filter(card_package=self)
+        groups = Group.objects.filter(card_package=self)
         return groups
 
     def get_cards(self):
-        cards = Cards.objects.filter(card_package=self)
+        cards = Card.objects.filter(card_package=self)
         return cards
 
     def to_dict(self):
         """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
-        list_of_group_objects = Card_Groups.objects.filter(card_package=self)
-        list_of_card_objects = Cards.objects.filter(card_package=self)
+        list_of_group_objects = Group.objects.filter(card_package=self)
+        list_of_card_objects = Card.objects.filter(card_package=self)
 
         package = {'package_id': self.pk,
                    'name': self.name,
@@ -38,20 +38,20 @@ class Card_Packages(models.Model):
         return package
 
 
-class Card_Groups(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
+class Group(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name_plural = 'Card_Groups'
+        verbose_name_plural = 'Groups'
 
 
-class Cards(models.Model):
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
-    #card_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
+class Card(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    # group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=200)
 
     def __str__(self):
@@ -60,35 +60,39 @@ class Cards(models.Model):
     class Meta:
         verbose_name_plural = 'Cards'
 
-class Sorted_Groups(models.Model):
-    sorted_package = models.ForeignKey('Sorted_Packages', on_delete=models.CASCADE)
-    parent_group = models.ForeignKey(Card_Groups, on_delete=models.CASCADE)
+
+class SortedGroup(models.Model):
+    sorted_package = models.ForeignKey('MyDigitalHealth.models.SortedPackage', on_delete=models.CASCADE)
+    parent_group = models.ForeignKey(Group, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    cards = models.ManyToManyField(Cards)
+    cards = models.ManyToManyField(Card)
+
+    class Meta:
+        verbose_name_plural = "Sorted_Groups"
 
 
-class Sorted_Packages(models.Model):
-    parent_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE, related_name="child_package")
+class SortedPackage(models.Model):
+    parent_package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name="child_package")
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=200, default='Placeholder')
 
-    #TODO - Maybe add a manyToMany Field to make the sorted group info accessible on this object?
+    # TODO - Maybe add a manyToMany Field to make the sorted group info accessible on this object?
 
     def __str__(self):
-        return "Sorted" + self.name + " for " + self.user.username
+        return "Sorted package for " + self.user.username
 
     def to_dict(self):
         """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
 
-        list_of_group_objects = Sorted_Groups.objects.filter(sorted_package=self)
-        list_of_card_objects = Cards.objects.filter(card_package=self.parent_package)
+        list_of_group_objects = SortedGroup.objects.filter(sorted_package=self)
+        list_of_card_objects = Card.objects.filter(card_package=self.parent_package)
 
         # Create a set from the list of all cards in the parent package.
-        sortedcards = set(list_of_card_objects.all())
+        sorted_cards = set(list_of_card_objects.all())
 
         # Iterate through the sorted groups and remove any cards which are already assigned a group.
         for group in list_of_group_objects:
-            sortedcards = sortedcards - set(group.cards.all())
+            sorted_cards = sorted_cards - set(group.cards.all())
 
         package = {'package_id': self.parent_package.pk,
                    'name': self.parent_package.name,
@@ -96,7 +100,7 @@ class Sorted_Packages(models.Model):
                    'comments_allowed': self.parent_package.comments_allowed,
                    'comment': self.comment,
                    'card_groups': list_of_group_objects,
-                   'cards': list(sortedcards),
+                   'cards': list(sorted_cards),
                    }
         return package
 
@@ -104,8 +108,7 @@ class Sorted_Packages(models.Model):
         verbose_name_plural = 'Sorted_Packages'
 
 
-
-class Permissions(models.Model):
+class Permission(models.Model):
     """ User Access Control for package assignation """
-    card_package = models.ForeignKey(Card_Packages, on_delete=models.CASCADE)
+    card_package = models.ForeignKey(Package, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

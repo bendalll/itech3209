@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Card_Packages, Card_Groups, Cards, Sorted_Packages
+from .models import Package, Group, Card, SortedPackage
 
-admin.site.register(Card_Packages)
-admin.site.register(Card_Groups)
-admin.site.register(Cards)
-admin.site.register(Sorted_Packages)
+admin.site.register(Package)
+admin.site.register(Group)
+admin.site.register(Card)
+admin.site.register(SortedPackage)

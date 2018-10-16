@@ -1,5 +1,5 @@
-from .models import Card_Packages
+from .models import Package
 
 
 def cardPackages(request):
-    return {'cardPackages': Card_Packages.objects.all()}
+    return {'cardPackages': Package.objects.all()}
