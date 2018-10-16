@@ -32,7 +32,7 @@ class Package(models.Model):
                    'name': self.name,
                    'main_color': self.main_color,
                    'comments_allowed': self.comments_allowed,
-                   'card_groups': list_of_group_objects,
+                   'groups': list_of_group_objects,
                    'cards': list_of_card_objects,
                    }
         return package
@@ -89,7 +89,7 @@ class SortedPackage(models.Model):
                    'main_color': self.parent_package.main_color,
                    'comments_allowed': self.parent_package.comments_allowed,
                    'comment': self.comment,
-                   'card_groups': list_of_group_objects,
+                   'groups': list_of_group_objects,
                    'cards': list(sorted_cards),
                    }
         return package

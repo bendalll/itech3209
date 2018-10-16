@@ -14,18 +14,18 @@
             <ul class="list-group connection">
                 <input type="hidden" id="group_unassigned" name="card_ids_for_unassigned"/>
                 {% for card in cards %}
-                    {% if card.card_group.pk is None %}
+                    {% if card.group.pk is None %}
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
                     {% endif %}
                 {% endfor %}
             </ul>
         </div>
-        {% for card_group in card_groups %}
+        {% for group in groups %}
         <div class="cards">
-            <li class="list-group-item active">{{ card_group.title }}</li>
+            <li class="list-group-item active">{{ group.title }}</li>
             <ul class="list-group connection">
-                <input type="hidden" id="group_{{ card_group.pk }}" name="card_ids_for_{{ card_group.pk }}"/>
-                {% for card in card_group.cards.all %}
+                <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
+                {% for card in group.cards.all %}
 
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
 

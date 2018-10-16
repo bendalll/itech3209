@@ -76,17 +76,17 @@ def create_groups_formset(**kwargs):
         )
 
     if 'package' in kwargs:
-        new_category_formset = GroupsFormset(queryset=Group.objects.filter(package=kwargs['package']),
+        new_group_formset = GroupsFormset(queryset=Group.objects.filter(package=kwargs['package']),
                                              prefix='group')
     elif 'request' in kwargs:
-        new_category_formset = GroupsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='group')
+        new_group_formset = GroupsFormset(kwargs['request'].POST, kwargs['request'].FILES, prefix='group')
     else:
-        new_category_formset = GroupsFormset(queryset=Group.objects.none(), prefix='group')
+        new_group_formset = GroupsFormset(queryset=Group.objects.none(), prefix='group')
 
-    for form in new_category_formset:
+    for form in new_group_formset:
         form.empty_permitted = False
 
-    return new_category_formset
+    return new_group_formset
 
 
 def create_cards_formset(**kwargs):
