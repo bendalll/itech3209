@@ -91,29 +91,42 @@ function cloneItem(type)
 
 function removeGroup(group_element)
 {
-    // Remove the group from the group list
-    let group_li = group_element.parentElement;
-    $(group_li).remove();
+    let parent_list = $('#id_group_list');
+    let item_number = parent_list[0].childElementCount;
 
-    // Decrement the total number of forms on the page so correct number of forms will be submitted
-    let id_total_forms = '#id_group-TOTAL_FORMS';
-    let total = $(id_total_forms).val();
-    total--;
-    $(id_total_forms).val(total);
+    //Ensure we don't remove the last item in the list.
+    if ( item_number > 1) {
+        // Remove the group from the group list
+        let group_li = group_element.parentElement;
+        $(group_li).remove();
+
+        // Decrement the total number of forms on the page so correct number of forms will be submitted
+        let id_total_forms = '#id_group-TOTAL_FORMS';
+        let total = $(id_total_forms).val();
+        total--;
+        $(id_total_forms).val(total);
+    }
 }
 
 
 function removeCard(card_element)
 {
-    // Remove the group from the group list
-    let card_li = card_element.parentElement;
-    $(card_li).remove();
+    let parent_list = $('#id_card_list');
+    let item_number = parent_list[0].childElementCount;
 
-    // Decrement the total number of forms on the page so correct number of forms will be submitted
-    let id_total_forms = '#id_card-TOTAL_FORMS';
-    let total = $(id_total_forms).val();
-    total--;
-    $(id_total_forms).val(total);
+    //Ensure we don't remove the last item in the list.
+    if ( item_number > 1) {
+        // Remove the group from the group list
+        let card_li = card_element.parentElement;
+        $(card_li).remove();
+
+        // Decrement the total number of forms on the page so correct number of forms will be submitted
+        let id_total_forms = '#id_card-TOTAL_FORMS';
+        let total = $(id_total_forms).val();
+        total--;
+        $(id_total_forms).val(total);
+     }
+
 }
 
 
