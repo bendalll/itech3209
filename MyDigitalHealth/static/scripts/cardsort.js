@@ -36,8 +36,8 @@ function toggleGroupsInput()
     {
         text_inputs.each(function()
         {
-            // let text = "User will name this group";
-            // $(this).prop("value", text);
+            let text = "Click to Name";
+            $(this).prop("value", text);
             $(this).prop("readonly", true);
         });
     }
