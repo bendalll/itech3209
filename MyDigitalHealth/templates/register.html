@@ -10,36 +10,52 @@
 	{% csrf_token %}
 	{{ field.errors }}
 		<!-- Username Label -->
-		<label for="usr">Username</label>
-		<!-- Username Input -->
-		<input name="username" type="text" id="usr" class="form-control" placeholder="Username" required autofocus>
-		<!-- Username Label -->
-		<label for="first_name">First Name</label>
-		<!-- Username Input -->
-		<input name="first_name" type="text" id="first_name" class="form-control" placeholder="First Name" required autofocus>
-		<!-- Username Label -->
-		<label for="last_name">Last Name</label>
-		<!-- Username Input -->
-		<input name="last_name" type="text" id="last_name" class="form-control" placeholder="Last Name" required autofocus>
+		<div class="form-group {% if errormessage.username %}has-error{% endif %}">
+			<label for="usr">Username</label>
+			<!-- Username Input -->
+			<input name="username" type="text" id="usr" class="form-control" placeholder="Username" required autofocus>
+			<div class="error">{{errormessage.username}}</div>
+		</div>
+		<!-- Firstname Label -->
+		<div class="form-group {% if errormessage.first_name %}has-error{% endif %}">
+			<label for="first_name">First Name</label>
+			<!-- Firstname Input -->
+			<input name="first_name" type="text" id="first_name" class="form-control" placeholder="First Name" required autofocus>
+			<div class="error">{{errormessage.first_name}}</div>
+		</div>
+		<!-- Lastname Label -->
+		<div class="form-group {% if errormessage.last_name %}has-error{% endif %}">
+			<label for="last_name">Last Name</label>
+			<!-- Lastname Input -->
+			<input name="last_name" type="text" id="last_name" class="form-control" placeholder="Last Name" required autofocus>
+			<div class="error">{{errormessage.last_name}}</div>
+		</div>
 		<!-- Password Label -->
-		<label for="password1">Password</label>
-		<!-- Password Input -->
-		<input name="password1" type="password" id="password1" class="form-control" placeholder="Password" required>		
+		<div class="form-group {% if errormessage.password1 %}has-error{% endif %}">
+			<label for="password1">Password</label>
+			<!-- Password Input -->
+			<input name="password1" type="password" id="password1" class="form-control" placeholder="Password" required>
+			<div class="error">{{errormessage.password1}}</div>
+		</div>
 		<!-- Confirm Password Label -->
-		<label for="password2">Confirm Password</label>
-		<!-- Confirm Password Input -->
-		<input name="password2" type="password" id="password2" class="form-control" placeholder="Confirm Password" required>							
+		<div class="form-group {% if errormessage.password2 %}has-error{% endif %}">
+			<label for="password2">Confirm Password</label>
+			<!-- Confirm Password Input -->
+			<input name="password2" type="password" id="password2" class="form-control" placeholder="Confirm Password" required>
+			<div class="error">{{errormessage.password2}}</div>
+		</div>
+
 		<!-- Email Label -->
-		<label for="email">Email</label>
-		<!-- Email Input -->
-		<input name="email" type="text" id="email" class="form-control" placeholder="Email" required>	
-		            {% if messages %}
-                {% for message in messages %}
-                    alert(message);
-                {% endfor %}
-            {% endif %}
+		<div class="form-group {% if errormessage.email %}has-error{% endif %}">
+			<label for="email">Email</label>
+			<!-- Email Input -->
+			<input name="email" type="text" id="email" class="form-control" placeholder="Email" required>
+			<div class="error">{{errormessage.email}}</div>
+		</div>
+
 		<!-- Register Button -->
 		</br><input class="btn btn-lg btn-primary btn-block" type="submit" value="Register" />
 	</form>
+
 	</div>
 {% endblock %}

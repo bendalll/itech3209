@@ -27,10 +27,10 @@ def register(request):
                 'index.html',
             )
         else:
-            print("Login form was not valid")
-            # TODO: Ensure this returns something meaningful to the user
+
+            formErrors = form.errors #assign the form errors or they will be overwritten with the new form.
             form = RegistrationForm()
-            args = {'form': form}
+            args = {'form': form, 'errormessage': formErrors}
             return render(
                 request,
                 'register.html',
