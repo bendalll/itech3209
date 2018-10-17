@@ -47,6 +47,7 @@ def register(request):
 
 
 def create_package(request):
+
     if request.method == 'POST':
         form = PackageForm(request=request)
         if form.is_valid():
@@ -58,7 +59,6 @@ def create_package(request):
         else:
             print("Form failed validation: ", form.errors)
             # TODO: Ensure this returns something meaningful to the user
-            form = PackageForm()
             context = form.to_dict()
             return render(
                 request,
@@ -76,7 +76,7 @@ def create_package(request):
 
 
 def package_administration(request):
-    packages = Package.objects.all()
+    packages = Package.objects.filter(owner=request.user)
     context = {'packages': packages}
     return render(
         request,
@@ -88,9 +88,11 @@ def package_administration(request):
 def edit_package(request, package_id):
     if request.method == 'POST':
         form = PackageForm(request=request)
+        #print(request.POST)
+        #print(form.cards_formset)
         if form.is_valid():
             form.save_data()
-            packages = Package.objects.all()
+            packages = Package.objects.filter(owner=request.user)
             context = {'packages': packages}
             return render(
                 request,
