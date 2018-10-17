@@ -100,6 +100,20 @@ function removeGroup(group_element)
         let group_li = group_element.parentElement;
         $(group_li).remove();
 
+        let li_list = parent_list[0].children
+
+        // Refresh the IDs and Names for the items in the LIs so the form validation doesn't break.
+        for (i = 0; i < (item_number-1) ;i++) {
+
+            let group_input = li_list[i].children[0]
+            let group_hidden = li_list[i].children[1]
+            group_input.id = "id_group-"+i+"-title"
+            group_input.name = "group-"+i+"-title"
+            group_hidden.id = "id_group-"+i+"-id"
+            group_hidden.name = "group-"+i+"-id"
+
+        }
+
         // Decrement the total number of forms on the page so correct number of forms will be submitted
         let id_total_forms = '#id_group-TOTAL_FORMS';
         let total = $(id_total_forms).val();
@@ -119,6 +133,21 @@ function removeCard(card_element)
         // Remove the group from the group list
         let card_li = card_element.parentElement;
         $(card_li).remove();
+
+        let li_list = parent_list[0].children
+
+        // Refresh the IDs and Names for the items in the LIs so the form validation doesn't break.
+        for (i = 0; i < (item_number-1) ;i++) {
+
+            let card_input = li_list[i].children[0]
+            let card_hidden = li_list[i].children[1]
+            card_input.id = "id_card-"+i+"-text"
+            card_input.name = "card-"+i+"-text"
+            card_hidden.id = "id_card-"+i+"-id"
+            card_hidden.name = "card-"+i+"-id"
+
+        }
+
 
         // Decrement the total number of forms on the page so correct number of forms will be submitted
         let id_total_forms = '#id_card-TOTAL_FORMS';
