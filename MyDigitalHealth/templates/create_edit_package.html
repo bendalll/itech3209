@@ -46,6 +46,11 @@
                 </div>
             </div>
         </div>
+        <script>
+            //Run the toggleGroupsInput() as we load so the group field disable correctly.
+            toggleGroupsInput()
+        </script>
+
         <div class="float-bottom-right" id="buttons">
             {% if package_id %}
                 <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
