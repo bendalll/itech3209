@@ -22,32 +22,8 @@
     <link rel="stylesheet" href="{% static 'styles/cardsort.css' %}">
 </head>
 <body>
-    <!-- Navigation Bar -->
-	<div class="container-fluid" style='background-color: #313131'>
-		<ul class="nav navbar-nav">
-            <li><a href="{% url 'index' %} " style="color:#969696">Home</a></li>
-            {% if request.user.is_staff %}
-            <li><a href="{% url 'create' %} " style="color:#969696">Create</a></li>
-            <li><a href="{% url 'admin' %} " style="color:#969696">Administration</a></li>
-            {% endif %}
-            <!-- Card Package Dropdown -->
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#969696">Card Packages<span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                {% for package in cardPackages %}
-                    <li><a href="{% url 'active' package.pk %}">{{ package.name }}</a></li>
-                {% endfor %}
-                </ul>
-		</ul>
-		<ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'logout' %} " style="color:#969696"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-            {% else %}
-                <li><a href="{% url 'register' %} " style="color:#969696"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                <li><a href="{% url 'login' %}?next={{request.path}} " style="color:#969696"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-            {% endif %}
-		</ul>
-	</div>
+    {% include 'navbar.html' %}
+    <!-- Display messages if they have been generated -->
     <div class="container-fluid">
         <div>
             {% if messages %}
