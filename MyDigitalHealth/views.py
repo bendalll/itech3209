@@ -31,7 +31,7 @@ def register(request):
         else:
 
             form_errors = registration_form.errors  # assign the form errors or they will be overwritten with new form
-            messages.error(request,"Please fill out all the required fields correctly.")
+            messages.error(request, "Please fill out all the required fields correctly.")
             registration_form = RegistrationForm()
             args = {'form': registration_form, 'errormessage': form_errors}
             return render(
@@ -120,9 +120,49 @@ def edit_package(request, package_id):
 
 def package_permissions(request, package_id):
     package = Package.objects.get(pk=package_id)
-    user = User.objects.get(pk=request.POST['user_id'])
+    users = User.objects.all()
+    for user in users:
+        if Permission.objects.filter(package=package, user=user):
+            user.has_permission = True
+    context = {'users': users, 'package': package}
+    return render(
+        request,
+        'package_permissions.html',
+        context
+    )
 
-    def _return_page(request, package_id):
+
+def assign_package(request, package_id):
+    if request.method == "POST":
+        user = User.objects.get(pk=request.POST['user_id'])
+        package = Package.objects.get(pk=package_id)
+        if Permission.objects.filter(package=package, user=user).exists():
+            messages.error(request, "Package is already assigned to this user")
+            users = User.objects.all()
+            for user in users:
+                if Permission.objects.filter(package=package, user=user):
+                    user.has_permission = True
+            context = {'users': users, 'package': package}
+            return render(
+                request,
+                'package_permissions.html',
+                context
+            )
+        else:
+            assignment = Permission(package=package, user=user)
+            assignment.save()
+            package = Package.objects.get(pk=package_id)
+            users = User.objects.all()
+            for user in users:
+                if Permission.objects.filter(package=package, user=user):
+                    user.has_permission = True
+            context = {'users': users, 'package': package}
+            return render(
+                request,
+                'package_permissions.html',
+                context
+            )
+    else:
         package = Package.objects.get(pk=package_id)
         users = User.objects.all()
         for user in users:
@@ -135,27 +175,39 @@ def package_permissions(request, package_id):
             context
         )
 
-    # TODO: this is horrible - actual view handling is here
+
+def unassign_package(request, package_id):
     if request.method == "POST":
-        if request.POST['action'] == 'assign':
-            if Permission.objects.filter(package=package, user=user).exists():
-                messages.error(request, "Package is already assigned to this user")
-                _return_page(request, package_id)
-            else:
-                assignment = Permission(package=package, user=user)
-                assignment.save()
-                _return_page(request, package_id)
-        else:
-            try:
-                permission = Permission.objects.get(package=package, user=user)
-                permission.delete()
-                messages.success(request, "Package unassigned")
-            except KeyError:
-                messages.error(request, "Unable to unassign package from this user")
-                print("Well that didn't go to plan")
-            _return_page(request, package_id)
+        user = User.objects.get(pk=request.POST['user_id'])
+        package = Package.objects.get(pk=package_id)
+        try:
+            permission = Permission.objects.get(package=package, user=user)
+            permission.delete()
+        except KeyError:
+            messages.error(request, "Unable to unassign package from this user")
+            print("Well that didn't go to plan")
+        users = User.objects.all()
+        for user in users:
+            if Permission.objects.filter(package=package, user=user):
+                user.has_permission = True
+        context = {'users': users, 'package': package}
+        return render(
+            request,
+            'package_permissions.html',
+            context
+        )
     else:
-        _return_page(request, package_id)
+        package = Package.objects.get(pk=package_id)
+        users = User.objects.all()
+        for user in users:
+            if Permission.objects.filter(package=package, user=user):
+                user.has_permission = True
+        context = {'users': users, 'package': package}
+        return render(
+            request,
+            'package_permissions.html',
+            context
+        )
 
 
 def cardsort_activity(request, package_id):
@@ -193,7 +245,7 @@ def cardsort_activity(request, package_id):
         if 'comment' in request.POST:
             sorted_package.comment = request.POST['comment']
         sorted_package.save()
-        
+
         messages.success(request, "Changes to " + package.name + " saved.")
         context = package.to_dict()
         return render(
