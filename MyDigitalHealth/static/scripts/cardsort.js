@@ -66,13 +66,21 @@ function cloneItem(type)
     let item_number = parent_list[0].childElementCount;
 
     let new_item = $('#id_' + type + '_list li:last').clone(true);
+
     new_item.find(':text').each(function()
     {
         let name = $(this).attr('name').replace('-' + (item_number-1) + '-','-' + item_number + '-');
         let id = 'id_' + name;
         $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-        $(this).prop("value", null);
     });
+
+    new_item.find('input[type=hidden]').each(function()
+    {
+        let name = $(this).attr('name').replace('-' + (item_number-1) + '-','-' + item_number + '-');
+        let id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id});
+    });
+
     new_item.find('label').each(function()
     {
         let newFor = $(this).attr('for').replace('-' + (item_number-1) + '-','-' + item_number + '-');
