@@ -1,5 +1,15 @@
-from .models import Package
+from .models import Permission, Package
 
 
-def cardPackages(request):
-    return {'cardPackages': Package.objects.all()}
+def card_packages(request):
+    user = request.user
+    packages = []
+    permissions = Permission.objects.filter(user=user)
+    for permission in permissions:
+        packages.append(permission.package)
+
+    if user.is_staff:
+        own_packages = Package.objects.filter(owner=user)
+        for package in own_packages:
+            packages.append(package)
+    return {'card_packages': packages}
