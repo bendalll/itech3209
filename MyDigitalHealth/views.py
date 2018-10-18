@@ -95,8 +95,9 @@ def edit_package(request, package_id):
         if form.is_valid():
             form.save_data()
             own_packages = _admin_get_own_packages(request)
+            package_name = Package.objects.get(id=package_id).name
             context = {'own_packages': own_packages}
-            messages.success(request, "Package changes saved.")
+            messages.success(request, "Changes to "+package_name+" saved. All sorted cards have been reset.")
             return render(
                 request,
                 'administration.html',

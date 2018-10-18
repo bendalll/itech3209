@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import TextInput, modelformset_factory, CheckboxInput
 
-from .models import Package, Group, Card
+from .models import Package, Group, Card, SortedPackage, SortedGroup
 
 
 class RegistrationForm(UserCreationForm):
@@ -244,8 +244,12 @@ class PackageForm(forms.Form):
             for card in package.get_cards():
                 card.delete()
 
-        print(self.groups_formset.cleaned_data)
-        print(self.cards_formset.cleaned_data)
+            # TODO - Decide how to handle SortedPackages/SortedGroups after their parent is edited.
+            # Delete all SortedPackages related to this package.
+            for sorted_package in SortedPackage.objects.filter(parent_package=package.id):
+                sorted_package.delete()
+
+
         for group in self.groups_formset.cleaned_data:
             title = group['title']
             new_group = Group(title=title, package=package)
