@@ -119,41 +119,50 @@ def edit_package(request, package_id):
 
 
 def package_permissions(request, package_id):
-    # TODO: this is horrible
-    users = User.objects.all()
     package = Package.objects.get(pk=package_id)
-    for user in users:
-        if Permission.objects.filter(package=package, user=user):
-            user.has_permission = True
-    context = {'users': users, 'package': package}
+    user = User.objects.get(pk=request.POST['user_id'])
 
+    def _return_page(request, package_id):
+        package = Package.objects.get(pk=package_id)
+        users = User.objects.all()
+        for user in users:
+            if Permission.objects.filter(package=package, user=user):
+                user.has_permission = True
+        context = {'users': users, 'package': package}
+        return render(
+            request,
+            'package_permissions.html',
+            context
+        )
+
+    # TODO: this is horrible - actual view handling is here
     if request.method == "POST":
         if request.POST['action'] == 'assign':
-            assignment = Permission(package_id=package_id, user_id=request.POST['user_id'])
-            assignment.save()
+            if Permission.objects.filter(package=package, user=user).exists():
+                messages.error(request, "Package is already assigned to this user")
+                _return_page(request, package_id)
+            else:
+                assignment = Permission(package=package, user=user)
+                assignment.save()
+                _return_page(request, package_id)
         else:
             try:
-                permission = Permission.objects.get(package_id=package_id, user_id=request.POST['user_id'])
+                permission = Permission.objects.get(package=package, user=user)
                 permission.delete()
+                messages.success(request, "Package unassigned")
             except KeyError:
+                messages.error(request, "Unable to unassign package from this user")
                 print("Well that didn't go to plan")
-        return render(
-            request,
-            'package_permissions.html',
-            context
-        )
+            _return_page(request, package_id)
     else:
-        return render(
-            request,
-            'package_permissions.html',
-            context
-        )
+        _return_page(request, package_id)
 
 
 def cardsort_activity(request, package_id):
+    """ Display the package for sorting, or save the sorted card arrangements and user comment on POST """
     if request.method == 'POST':
-
         package = Package.objects.get(pk=package_id)
+
         # Edit Existing Sorted_Packages Object if it exists
         if SortedPackage.objects.filter(parent_package=package, user=request.user).exists():
             sorted_package = SortedPackage.objects.get(parent_package=package, user=request.user)
@@ -163,7 +172,6 @@ def cardsort_activity(request, package_id):
 
         # Process the CSV strings for the card groups
         for group in sorted_package.parent_package.get_groups():
-
             if SortedGroup.objects.filter(sorted_package=sorted_package, parent_group=group):
                 sorted_group = SortedGroup.objects.get(sorted_package=sorted_package, parent_group=group)
                 sorted_group.cards.clear()  # Remove all existing Cards in the ManyToMany relationship
@@ -174,20 +182,18 @@ def cardsort_activity(request, package_id):
                                            parent_group=group,
                                            title=group.title)
                 sorted_group.save()
+
             # Iterate through each card pk and add it to the ManyToMany relationship.
             for card_id in group_text.split(','):
                 if not card_id == '':       # TODO - Deal more gracefully with blank values
                     card = Card.objects.get(pk=card_id)
                     sorted_group.cards.add(card)
-<<<<<<< HEAD
 
         # Save the comment if one is in the POST.
         if 'comment' in request.POST:
             sorted_package.comment = request.POST['comment']
-
-=======
->>>>>>> 173b18d6886bb043eb7c5a755aea3a70d2485740
         sorted_package.save()
+        
         messages.success(request, "Changes to " + package.name + " saved.")
         context = package.to_dict()
         return render(
@@ -210,14 +216,13 @@ def cardsort_activity(request, package_id):
 
 def delete_package(request, package_id):
     """ Remove the package from the database """
-    # TODO: put this in a try/catch for db errors
     try:
         package = Package.objects.get(pk=package_id)
         temp_name = package.name
         package.delete()
         messages.success(request, "Package \'"+temp_name+"\' deleted successfully.")
     except KeyError:
-        messages.error(request, "Sorry, something went wrong and we couldn't find that package to delete it")
+        messages.error(request, "Sorry, something went wrong and we couldn't delete that package.")
     # except DatabaseError as e:
     #     messages.error(request, "Sorry, something went wrong and we could not delete that package. ERROR:"
     #                    + e.__cause__ )
@@ -231,7 +236,6 @@ def delete_package(request, package_id):
     #                    + e.__cause__ )
     #     print("ERROR: Integrity Error Deleting Package #" + package.id + "\n\r" + e.__cause__)
 
-    # TODO: return some indicator of success or failure
     own_packages = _admin_get_own_packages(request)
     context = {'own_packages': own_packages}
     return render(
