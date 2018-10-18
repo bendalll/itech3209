@@ -122,7 +122,6 @@ def cardsort_activity(request, package_id):
     if request.method == 'POST':
 
         package = Package.objects.get(pk=package_id)
-
         # Edit Existing Sorted_Packages Object if it exists
         if SortedPackage.objects.filter(parent_package=package, user=request.user).exists():
             sorted_package = SortedPackage.objects.get(parent_package=package, user=request.user)
@@ -130,18 +129,15 @@ def cardsort_activity(request, package_id):
             sorted_package = SortedPackage(parent_package=package, user=request.user)
             sorted_package.save()
 
-        # Save the comment if one is in the POST.
-        if 'comment' in request.POST:
-            sorted_package.comment = request.POST['comment']
-
         # Process the CSV strings for the card groups
         for group in sorted_package.parent_package.get_groups():
-            group_text = request.POST['card_ids_for_' + str(group.pk)]
 
             if SortedGroup.objects.filter(sorted_package=sorted_package, parent_group=group):
                 sorted_group = SortedGroup.objects.get(sorted_package=sorted_package, parent_group=group)
                 sorted_group.cards.clear()  # Remove all existing Cards in the ManyToMany relationship
+                group_text = request.POST['card_ids_for_' + str(sorted_group.pk)]
             else:
+                group_text = request.POST['card_ids_for_' + str(group.pk)]
                 sorted_group = SortedGroup(sorted_package=sorted_package,
                                            parent_group=group,
                                            title=group.title)
@@ -152,6 +148,10 @@ def cardsort_activity(request, package_id):
                 if not card_id == '':       # TODO - Deal more gracefully with blank values
                     card = Card.objects.get(pk=card_id)
                     sorted_group.cards.add(card)
+
+        # Save the comment if one is in the POST.
+        if 'comment' in request.POST:
+            sorted_package.comment = request.POST['comment']
 
         sorted_package.save()
         messages.success(request, "Changes to "+package.name+" Saved.")
@@ -165,7 +165,6 @@ def cardsort_activity(request, package_id):
 
         if SortedPackage.objects.filter(parent_package=package_id, user=request.user).exists():
             package = SortedPackage.objects.get(parent_package=package_id, user=request.user)
-
         else:
             package = Package.objects.get(pk=package_id)
 

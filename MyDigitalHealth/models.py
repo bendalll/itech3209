@@ -94,6 +94,11 @@ class SortedPackage(models.Model):
                    }
         return package
 
+    def get_groups(self):
+        groups = SortedGroup.objects.filter(sorted_package=self)
+        return groups
+
+
     class Meta:
         verbose_name_plural = 'Sorted_Packages'
 
