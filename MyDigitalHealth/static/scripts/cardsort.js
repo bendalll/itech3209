@@ -8,6 +8,14 @@ $( function()
 
 });
 
+// Function to make Group Headings editable.
+function editHeading(element) {
+
+    $(element).parent("li").children("#grouptitle").attr("contenteditable", "true").focusout(function() {
+        $(this).removeAttr("contenteditable").off("focusout");
+    });
+}
+
 
 // Function to change the color of the group headings based on the value in the color picker input
 function changeHeadingColor()
@@ -16,6 +24,7 @@ function changeHeadingColor()
     $(".active").css("background-color", new_color);
     $(".active").css("border-color", new_color);
 }
+
 
 
 function toggleGroupsInput()
@@ -49,7 +58,7 @@ function toggleGroupsInput()
             $(this).prop("readonly", false);
         });
     }
-    console.log("Function ran");
+
 }
 
 
@@ -173,7 +182,6 @@ function removeCard(card_element)
 function processCards()
 {
     // !For each </ul> get .contents() and add card #id to ul.input!
-
     // Get parent items for cards by class (.connection)
     let ULists = $(".connection");
 

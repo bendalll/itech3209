@@ -22,7 +22,7 @@
         </div>
         {% for group in groups %}
         <div class="cards">
-            <li class="list-group-item active">{{ group.title }}</li>
+            <li class="list-group-item active"><span id="grouptitle">{{ group.title }}</span> <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span></li>
             <ul class="list-group connection">
                 <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
                 {% for card in group.cards.all %}
