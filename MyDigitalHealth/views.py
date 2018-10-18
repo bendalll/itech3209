@@ -179,14 +179,11 @@ def cardsort_activity(request, package_id):
                 if not card_id == '':       # TODO - Deal more gracefully with blank values
                     card = Card.objects.get(pk=card_id)
                     sorted_group.cards.add(card)
-<<<<<<< HEAD
+
 
         # Save the comment if one is in the POST.
         if 'comment' in request.POST:
             sorted_package.comment = request.POST['comment']
-
-=======
->>>>>>> 173b18d6886bb043eb7c5a755aea3a70d2485740
         sorted_package.save()
         messages.success(request, "Changes to " + package.name + " saved.")
         context = package.to_dict()
