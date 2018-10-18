@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, PackageForm
 from .models import Package, SortedPackage, Card, SortedGroup, Permission
+from django.db.utils import DatabaseError, IntegrityError, DataError
 
 
 def index(request):
@@ -29,6 +30,7 @@ def register(request):
         else:
 
             formErrors = form.errors #assign the form errors or they will be overwritten with the new form.
+            messages.error(request,"Please fill out all the required fields correctly.")
             form = RegistrationForm()
             args = {'form': form, 'errormessage': formErrors}
             return render(
@@ -52,13 +54,14 @@ def create_package(request):
         form = PackageForm(request=request)
         if form.is_valid():
             form.save_data()
+            messages.success(request, "Package created Successfully.")
             return render(
                 request,
                 'index.html',
             )
         else:
-            print("Form failed validation: ", form.errors)
-            # TODO: Ensure this returns something meaningful to the user
+            print("INFO: Form failed validation: ", form.errors)
+            messages.error(request, "Error Saving. Please ensure you have filled out all of the required fields.")
             context = form.to_dict()
             return render(
                 request,
@@ -88,19 +91,20 @@ def package_administration(request):
 def edit_package(request, package_id):
     if request.method == 'POST':
         form = PackageForm(request=request)
-        #print(request.POST)
-        #print(form.cards_formset)
+
         if form.is_valid():
             form.save_data()
             packages = Package.objects.filter(owner=request.user)
             context = {'packages': packages}
+            messages.success(request, "Package changes saved.")
             return render(
                 request,
                 'administration.html',
                 context
             )
         else:
-            print("Form data is invalid:", form.errors)
+            print("INFO: Form data is invalid:", form.errors)
+            messages.error(request, "Error Saving. Please ensure you have filled out all of the required fields.")
             return redirect(
                 request.path_info
             )
@@ -118,7 +122,6 @@ def cardsort_activity(request, package_id):
     if request.method == 'POST':
 
         package = Package.objects.get(pk=package_id)
-        print(package)
 
         # Edit Existing Sorted_Packages Object if it exists
         if SortedPackage.objects.filter(parent_package=package, user=request.user).exists():
@@ -151,7 +154,7 @@ def cardsort_activity(request, package_id):
                     sorted_group.cards.add(card)
 
         sorted_package.save()
-
+        messages.success(request, "Changes to "+package.name+" Saved.")
         context = package.to_dict()
         return render(
             request,
@@ -179,12 +182,25 @@ def delete_package(request, package_id):
     # TODO: put this in a try/catch for db errors
     try:
         package = Package.objects.get(pk=package_id)
+        tempname = package.name
         package.delete()
+        messages.success(request, "Package \'"+tempname+"\' deleted Successfully.")
     except KeyError:
         messages.error(request, "Sorry, something went wrong and we couldn't find that package to delete it")
-    # TODO: return some indicator of success or failure
-    # TODO: Remove this 'all packages' context
-    packages = Package.objects.all()
+    except DatabaseError as e:
+        messages.error(request, "Sorry, something went wrong and we could not delete that package. ERROR:"
+                       + e.__cause__ )
+        print("ERROR: Database Error Deleting Package #" + package.id + "\n\r" + e.__cause__ )
+    except DataError as e:
+        messages.error(request, "Sorry, something went wrong and we could not delete that package. ERROR:"
+                       + e.__cause__)
+        print("ERROR: Data Error Deleting Package #" + package.id + "\n\r" + e.__cause__)
+    except IntegrityError as e:
+        messages.error(request, "Sorry, something went wrong and we could not delete that package. ERROR:"
+                       + e.__cause__ )
+        print("ERROR: Integrity Error Deleting Package #" + package.id + "\n\r" + e.__cause__)
+
+    packages = Package.objects.filter(owner=request.user)
     context = {'packages': packages}
     return render(
         request,

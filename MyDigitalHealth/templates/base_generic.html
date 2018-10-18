@@ -50,6 +50,11 @@
 	</div>
     <div class="container-fluid">
         <div>
+            {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == "error" %} alert-danger {% elif messages %} alert-{{message.tags}} {% endif %}">{{ message }}</div>
+                    {% endfor %}
+            {% endif %}
             {% block content %}{% endblock %}
         </div>
     </div>
