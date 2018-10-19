@@ -5,10 +5,14 @@
     <h2 class="form-signin-heading">Administration</h2>
     <h3 class="form-signin-heading">Assign Package "{{ package.name }}" to Users:</h3><br/>
     <div class="container-fluid">
-        <ul>
+        <table class="table table-striped" border=0 width="80%" >
+            <th>User Name</th>
+            <th>Assignment</th>
+            <th>Sorting Progress</th>
             {% for user in users %}
-                <li><h4 style="display: inline">{{ user.get_full_name }}</h4>
-                    <form class="form" style="display: inline" method="post"
+            <tr>
+                <td width="12%"><h4 style="display: inline">{{ user.get_full_name }}</h4> </td>
+                <td width="8%"><form class="form" style="display: inline" method="post"
                         {% if user.has_permission %}
                             action="{% url 'unassign' package.pk %}">
                             <input type="submit" value="Unassign" class="btn btn-default" />
@@ -19,9 +23,19 @@
                         <input type="hidden" value="{{ user.pk }}" name="user_id" />
                         {% csrf_token %}
                     </form>
-                </li>
+                </td>
+                <td>
+                    {% if user.has_permission %}
+                    Progress:
+                    <div class="progress" >
+                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                    </div>
+                    {% endif %}
+                </td>
+                    <div></div>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
     </div>
 </div>
 {% endblock %}
