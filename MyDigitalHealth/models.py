@@ -34,6 +34,7 @@ class Package(models.Model):
                    'comments_allowed': self.comments_allowed,
                    'groups': list_of_group_objects,
                    'cards': list_of_card_objects,
+                   'user_defined_groups' : self.user_defined_groups,
                    }
         return package
 
@@ -91,6 +92,7 @@ class SortedPackage(models.Model):
                    'comment': self.comment,
                    'groups': list_of_group_objects,
                    'cards': list(sorted_cards),
+                   'user_defined_groups': self.parent_package.user_defined_groups,
                    }
         return package
 

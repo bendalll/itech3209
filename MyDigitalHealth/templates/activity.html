@@ -22,9 +22,13 @@
         </div>
         {% for group in groups %}
         <div class="cards">
-            <li class="list-group-item active"><span id="grouptitle">{{ group.title }}</span> <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span></li>
+            <li class="list-group-item active"><span id="group-title">{{ group.title }}</span>
+                {% if user_defined_groups %} <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span> {% endif %}
+                <input type="hidden" id="id_group_title_{{ group.pk }}" name="group_title_{{ group.pk }}" value="{{ group.title }}"/>
+            </li>
             <ul class="list-group connection">
                 <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
+
                 {% for card in group.cards.all %}
 
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>

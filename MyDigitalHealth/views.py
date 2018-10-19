@@ -215,7 +215,6 @@ def cardsort_activity(request, package_id):
     """ Display the package for sorting, or save the sorted card arrangements and user comment on POST """
     if request.method == 'POST':
         package = Package.objects.get(pk=package_id)
-
         # Edit Existing Sorted_Packages Object if it exists
         if SortedPackage.objects.filter(parent_package=package, user=request.user).exists():
             sorted_package = SortedPackage.objects.get(parent_package=package, user=request.user)
@@ -228,13 +227,15 @@ def cardsort_activity(request, package_id):
             if SortedGroup.objects.filter(sorted_package=sorted_package, parent_group=group):
                 sorted_group = SortedGroup.objects.get(sorted_package=sorted_package, parent_group=group)
                 sorted_group.cards.clear()  # Remove all existing Cards in the ManyToMany relationship
+                sorted_group.title = request.POST['group_title_'+ str(sorted_group.pk)]
                 group_text = request.POST['card_ids_for_' + str(sorted_group.pk)]
             else:
                 group_text = request.POST['card_ids_for_' + str(group.pk)]
+                group_title = request.POST['group_title_'+ str(group.pk)]
                 sorted_group = SortedGroup(sorted_package=sorted_package,
                                            parent_group=group,
-                                           title=group.title)
-                sorted_group.save()
+                                           title=group_title)
+            sorted_group.save()
 
             # Iterate through each card pk and add it to the ManyToMany relationship.
             for card_id in group_text.split(','):

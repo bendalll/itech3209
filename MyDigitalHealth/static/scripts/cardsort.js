@@ -11,9 +11,12 @@ $( function()
 // Function to make Group Headings editable.
 function editHeading(element) {
 
-    $(element).parent("li").children("#grouptitle").attr("contenteditable", "true").focusout(function() {
+    $(element).parent("li").children("#group-title").attr("contenteditable", "true").focusout(function() {
         $(this).removeAttr("contenteditable").off("focusout");
     });
+    $(element).parent("li").children("#group-title").focus();
+
+    processCards();
 }
 
 
@@ -194,6 +197,16 @@ function processCards()
         {
             hiddenInput.value += (list_items[j].getAttribute("id") + ",");
         }
-        console.log(hiddenInput.id + " values: " + hiddenInput.value);
+    }
+
+    // Process Group Names and update hidden fields appropriately.
+    let groups = $("span#group-title");
+
+    for(i=0; i<groups.length; i++)
+    {
+        groupContainer = $(groups[i]).parent()[0];
+        groupTitle = $(groups[i]).text();   //Retrieve the current text from the span
+        hiddenInput = groupContainer.getElementsByTagName("input")[0];  // If we do this via Jquery objects it reports success, but doesn't work!
+        hiddenInput.value = groupTitle;
     }
 }
