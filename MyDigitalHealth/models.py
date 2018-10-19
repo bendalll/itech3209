@@ -72,11 +72,10 @@ class SortedPackage(models.Model):
     def __str__(self):
         return "Sorted package for " + self.user.username
 
-    def to_dict(self):
-        """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
-
-        list_of_group_objects = SortedGroup.objects.filter(sorted_package=self)
+    # Return a list of unassigned cards
+    def get_unassigned_cards(self):
         list_of_card_objects = Card.objects.filter(package=self.parent_package)
+        list_of_group_objects = SortedGroup.objects.filter(sorted_package=self)
 
         # Create a set from the list of all cards in the parent package.
         sorted_cards = set(list_of_card_objects.all())
@@ -84,6 +83,13 @@ class SortedPackage(models.Model):
         # Iterate through the sorted groups and remove any cards which are already assigned a group.
         for group in list_of_group_objects:
             sorted_cards = sorted_cards - set(group.cards.all())
+        return list(sorted_cards)
+
+    def to_dict(self):
+        """ Used to return a package object as a dict, with package name, list of categories, and list of cards """
+
+        list_of_group_objects = SortedGroup.objects.filter(sorted_package=self)
+
 
         package = {'package_id': self.parent_package.pk,
                    'name': self.parent_package.name,
@@ -91,14 +97,21 @@ class SortedPackage(models.Model):
                    'comments_allowed': self.parent_package.comments_allowed,
                    'comment': self.comment,
                    'groups': list_of_group_objects,
-                   'cards': list(sorted_cards),
+                   'cards': self.get_unassigned_cards(),
                    'user_defined_groups': self.parent_package.user_defined_groups,
                    }
         return package
 
+
     def get_groups(self):
         groups = SortedGroup.objects.filter(sorted_package=self)
         return groups
+
+    # Return the complete percentage for sorting cards.
+    def get_sort_progress(self):
+        total_cards = Card.objects.all(package=self.parent_package)
+        unsorted_cards = self.get_unassigned_cards()
+        return (unsorted_cards-total_cards)/total_cards
 
 
     class Meta:
