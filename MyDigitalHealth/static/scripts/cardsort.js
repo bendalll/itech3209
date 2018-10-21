@@ -62,6 +62,7 @@ function toggleGroupsInput()
         });
     }
 
+
 }
 
 
@@ -106,6 +107,8 @@ function cloneItem(type)
     $(id_total_forms).val(total);
 
     parent_list.append(new_item);
+
+    toggleGroupsInput();
 }
 
 
