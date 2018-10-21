@@ -14,6 +14,7 @@ def card_packages(request):
             own_packages = Package.objects.filter(owner=user)
             for package in own_packages:
                 packages.append(package)
+        packages = list(set(packages))  # Ensure results are unique. There may be a more elegant way.
         return {'card_packages': packages}
     return {'': ''}
 
