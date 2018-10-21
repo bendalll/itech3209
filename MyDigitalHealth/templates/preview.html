@@ -1,0 +1,48 @@
+{% block content %}
+	{% load static %}
+	{% load templatetags %}
+	<script src="{% static 'scripts/cardsort.js'%}"></script>
+    <link href="{% url 'css' package_id %}" rel="stylesheet">
+	<div class="container">
+    <h3>Please fill out the form below</h3>
+        <form class="form" method="post" action="{% url 'active' package_id %}" onsubmit="return processCards()">
+            {% csrf_token %}
+        <div class="cards">
+            <li class="list-group-item active">Cards</li>
+            <ul class="list-group connection">
+                <input type="hidden" id="group_unassigned" name="card_ids_for_unassigned"/>
+                {% for card in cards %}
+                    {% if card.group.pk is None %}
+                    <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% for group in groups %}
+        <div class="cards">
+            <li class="list-group-item active"><span id="group-title">{{ group.title }}</span>
+                {% if user_defined_groups %} <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span> {% endif %}
+                <input type="hidden" id="id_group_title_{{ group.pk }}" name="group_title_{{ group.pk }}" value="{{ group.title }}"/>
+            </li>
+            <ul class="list-group connection">
+                <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
+
+                {% for card in group.cards.all %}
+
+                    <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
+
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        <div class="container row form-group">
+            <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
+            {% if comments_allowed %}
+                <textarea class="form-control" id="id_comment_text" name="comment"
+                          placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
+            {% endif %}
+        </div>
+
+        </form>
+    </div>
+{% endblock %}

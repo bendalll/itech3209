@@ -55,9 +55,19 @@
             {% if package_id %}
                 <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
             {% endif %}
+
             <input type="submit" value="Save and Close" class="btn btn-default"/>
-            <input type="button" value="Save and Preview" class="btn btn-default" onclick=""/>
+            <input type="submit" value="Save and Preview" name="Preview" class="btn btn-default"/>
+
         </div>
         </form>
+
+            {% if preview %}
+            <hr>
+            <h2>Package Preview:</h2>
+                {% include 'preview.html' %}
+            <hr>
+            {% endif %}
+
     </div>
 {% endblock %}

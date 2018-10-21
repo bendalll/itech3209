@@ -54,8 +54,22 @@ def create_package(request):
     if request.method == 'POST':
         package_form = PackageForm(request=request)
         if package_form.is_valid():
-            package_form.save_data()
-            messages.success(request, "Package created successfully")
+            package = package_form.save_data()
+
+            if "Preview" in request.POST:
+                context_form = package_form.to_dict()
+                context_form["preview"] = True
+                context_package = package.to_dict()
+                context = {**context_form, **context_package}
+
+                return render(
+                    request,
+                    'create_edit_package.html',
+                    context
+                )
+            else:
+
+                messages.success(request, "Package " + package.name + " created successfully.")
             return render(
                 request,
                 'index.html',
@@ -91,27 +105,42 @@ def package_administration(request):
 
 def edit_package(request, package_id):
     if request.method == 'POST':
-        form = PackageForm(request=request)
-        if form.is_valid():
-            form.save_data()
-            own_packages = _admin_get_own_packages(request)
-            package_name = Package.objects.get(id=package_id).name
-            context = {'own_packages': own_packages}
-            messages.success(request, "Changes to "+package_name+" saved. All sorted cards have been reset.")
-            return render(
-                request,
-                'administration.html',
-                context
-            )
+        package_form = PackageForm(request=request)
+        if package_form.is_valid():
+            # Check if this is just a Tribute... err Preview.
+            package = package_form.save_data()
+            if "Preview" in request.POST:
+                context_form = package_form.to_dict()
+                context_form["preview"] = True
+                context_package = package.to_dict()
+                context = {**context_form, **context_package}
+
+                return render(
+                    request,
+                    'create_edit_package.html',
+                    context
+                )
+            else:
+                package_name = package.name
+                messages.success(request, "Changes to " + package_name + " saved. All sorted cards have been reset.")
+
+                own_packages = _admin_get_own_packages(request)
+                context = {'own_packages': own_packages}
+
+                return render(
+                    request,
+                    'administration.html',
+                    context
+                )
         else:
-            print("INFO: Form data is invalid:", form.errors)
+            print("INFO: Form data is invalid:", package_form.errors)
             messages.error(request, "Error Saving. Please ensure you have filled out all of the required fields.")
             return redirect(
                 request.path_info
             )
     else:
-        form = PackageForm(package_id=package_id)
-        context = form.to_dict()
+        package_form = PackageForm(package_id=package_id)
+        context = package_form.to_dict()
         return render(
             request,
             'create_edit_package.html',
