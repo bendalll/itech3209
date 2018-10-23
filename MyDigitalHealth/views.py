@@ -150,7 +150,7 @@ def edit_package(request, package_id):
 
 def package_permissions(request, package_id):
     package = Package.objects.get(pk=package_id)
-    users = User.objects.all()
+    users = User.objects.all().exclude(username=request.user.username)
     for user in users:
         if Permission.objects.filter(package=package, user=user):
             user.has_permission = True
@@ -168,7 +168,7 @@ def assign_package(request, package_id):
         package = Package.objects.get(pk=package_id)
         if Permission.objects.filter(package=package, user=user).exists():
             messages.error(request, "Package is already assigned to this user")
-            users = User.objects.all()
+            users = User.objects.all().exclude(username=request.user.username)
             for user in users:
                 if Permission.objects.filter(package=package, user=user):
                     user.has_permission = True
@@ -182,7 +182,7 @@ def assign_package(request, package_id):
             assignment = Permission(package=package, user=user)
             assignment.save()
             package = Package.objects.get(pk=package_id)
-            users = User.objects.all()
+            users = User.objects.all().exclude(username=request.user.username)
             for user in users:
                 if Permission.objects.filter(package=package, user=user):
                     user.has_permission = True
@@ -194,7 +194,7 @@ def assign_package(request, package_id):
             )
     else:
         package = Package.objects.get(pk=package_id)
-        users = User.objects.all()
+        users = User.objects.all().exclude(username=request.user.username)
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
@@ -216,7 +216,7 @@ def unassign_package(request, package_id):
         except KeyError:
             messages.error(request, "Unable to unassign package from this user")
             print("Well that didn't go to plan")
-        users = User.objects.all()
+        users = User.objects.all().exclude(username=request.user.username)
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
@@ -228,7 +228,7 @@ def unassign_package(request, package_id):
         )
     else:
         package = Package.objects.get(pk=package_id)
-        users = User.objects.all()
+        users = User.objects.all().exclude(username=request.user.username)
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
@@ -348,7 +348,6 @@ def _user_get_assigned_packages(request):
     for permission in permissions:
         permitted_package = Package.objects.get(id=permission.package_id)
         packages.append(permitted_package)
-    print(packages)
     return packages
 
 
