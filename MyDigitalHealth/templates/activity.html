@@ -22,7 +22,7 @@
         </div>
         {% for group in groups %}
         <div class="cards">
-            <li class="list-group-item active"><span id="group-title">{{ group.title }}</span>
+            <li class="list-group-item active "><span id="group-title" {% if user_defined_groups %} onclick="editHeading(this)" {% endif %} >{{ group.title }}</span>
                 {% if user_defined_groups %} <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span> {% endif %}
                 <input type="hidden" id="id_group_title_{{ group.pk }}" name="group_title_{{ group.pk }}" value="{{ group.title }}"/>
             </li>
