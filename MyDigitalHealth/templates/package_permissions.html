@@ -7,12 +7,12 @@
     <div class="container-fluid">
         <table class="table table-striped" border=0 width="80%" >
             <th>User Name</th>
-            <th>Assignment</th>
+            <th>Controls</th>
             <th>Sorting Progress</th>
             {% for user in users %}
             <tr>
-                <td width="12%"><h4 style="display: inline">{{ user.get_full_name }}</h4> </td>
-                <td width="8%"><form class="form" style="display: inline" method="post"
+                <td width="20%"><h4 style="display: inline">{{ user.get_full_name }}</h4> </td>
+                <td width="25%"><form class="form" style="display: inline" method="post"
                         {% if user.has_permission %}
                             action="{% url 'unassign' package.pk %}">
                             <input type="submit" value="Unassign" class="btn btn-default" />
@@ -23,12 +23,18 @@
                         <input type="hidden" value="{{ user.pk }}" name="user_id" />
                         {% csrf_token %}
                     </form>
+                        {% if user.sorted_package %}
+                    <form class="form" style="display: inline" method="post" action="{% url 'view' user.sorted_package %}">
+                         <input type="submit" value="View" id="view_{{ user.sorted_package }}" class="btn btn-default" />
+                        {% csrf_token %}
+                    </form>
+                        {% endif %}
                 </td>
                 <td>
-                    {% if user.has_permission %}
+                    {% if user.sorted_package %}
                     Progress:
                     <div class="progress" >
-                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                        <div class="progress-bar" role="progressbar" style="width: {{user.sorted_percent}}%" aria-valuenow="{{user.sorted_percent}}" aria-valuemin="0" aria-valuemax="100">{{user.sorted_percent}}%</div>
                     </div>
                     {% endif %}
                 </td>

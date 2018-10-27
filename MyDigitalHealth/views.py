@@ -151,9 +151,17 @@ def edit_package(request, package_id):
 def package_permissions(request, package_id):
     package = Package.objects.get(pk=package_id)
     users = User.objects.all().exclude(username=request.user.username)
+
     for user in users:
         if Permission.objects.filter(package=package, user=user):
             user.has_permission = True
+            if SortedPackage.objects.filter(parent_package=package, user=user).exists():
+                sorted_package =  SortedPackage.objects.get(user=user, parent_package=package)
+                user.sorted_package = sorted_package.pk
+                user.sorted_percent = sorted_package.get_sort_progress()
+
+    print(users)
+
     context = {'users': users, 'package': package}
     return render(
         request,
@@ -204,6 +212,20 @@ def assign_package(request, package_id):
             'package_permissions.html',
             context
         )
+
+
+def view_sorted_package(request, package_id):
+    # TODO - Check if the package exists and redirect to an error if it doesn't.
+    # TODO - 403 Forbidden error if the requestor is not authorised to view the page.
+    package = SortedPackage.objects.get(pk=package_id)
+
+    context = package.to_dict()
+    context['package_readonly'] = True
+    return render(
+        request,
+        'activity.html',
+        context
+    )
 
 
 def unassign_package(request, package_id):

@@ -12,6 +12,7 @@ urlpatterns = [
     path('active/<package_id>', views.cardsort_activity, name='active'),
     path('admin', views.package_administration, name='admin'),
     path('edit/<package_id>', views.edit_package, name='edit'),
+    path('view/<package_id>', views.view_sorted_package, name='view'),
     path('permissions/<package_id>', views.package_permissions, name='permissions'),
     path('assign_package/<package_id>', views.assign_package, name='assign'),
     path('unassign_package/<package_id>', views.unassign_package, name='unassign'),

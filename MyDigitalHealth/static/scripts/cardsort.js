@@ -1,22 +1,31 @@
-//Allow content to be reordered in a list, drag and droppable
+//Allow content to be reordered in a list, drag and droppable if editing is enabled.
+//Disables and hides comments and submit button if not.
 $( function()
 {
-    $( ".connection" ).sortable(
-        {
-            connectWith: ".connection"
-        });
+    if ( package_readonly == false) {
+        $( ".connection" ).sortable(
+            {
+                connectWith: ".connection"
+            });
+    } else {
 
+        $('#id_comment_text').prop("readonly", true);
+        $('#id_submit_button').hide()
+
+    }
 });
 
 // Function to make Group Headings editable.
 function editHeading(element) {
 
-    $(element).parent("li").children("#group-title").attr("contenteditable", "true").focusout(function() {
-        $(this).removeAttr("contenteditable").off("focusout");
-    });
-    $(element).parent("li").children("#group-title").focus();
+    if ( package_readonly == false) {
+        $(element).parent("li").children("#group-title").attr("contenteditable", "true").focusout(function() {
+            $(this).removeAttr("contenteditable").off("focusout");
+        });
+        $(element).parent("li").children("#group-title").focus();
 
-    processCards();
+        processCards();
+    }
 }
 
 

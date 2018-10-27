@@ -3,6 +3,13 @@
 {% block content %}
 	{% load static %}
 	{% load templatetags %}
+
+    {% if package_readonly %}
+        <script> let package_readonly = true; </script>
+    {% else %}
+        <script> let package_readonly = false;</script>
+    {% endif %}
+
 	<script src="{% static 'scripts/cardsort.js'%}"></script>
     <link href="{% url 'css' package_id %}" rel="stylesheet">
 	<div class="container">
@@ -45,7 +52,7 @@
             {% endif %}
         </div>
         <div>
-            <input type="submit" value="Save and Close" class="btn btn-default"/>
+            <input type="submit" value="Save and Close" id="id_submit_button" class="btn btn-default"/>
             <a href="{% url 'index' %}" class="btn btn-default">Close</a>
         </div>
         </form>
