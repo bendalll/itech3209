@@ -50,24 +50,19 @@
             //Run the toggleGroupsInput() as we load so the group field disable correctly.
             toggleGroupsInput()
         </script>
-
         <div class="float-bottom-right" id="buttons">
             {% if package_id %}
                 <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id }}"/>
             {% endif %}
-
-            <input type="submit" value="Save and Close" class="btn btn-default"/>
             <input type="submit" value="Preview" name="Preview" class="btn btn-default"/>
-
+            <input type="submit" value="Save and Close" class="btn btn-default"/>
         </div>
         </form>
-
             {% if preview %}
             <hr>
             <h2>Package Preview:</h2>
                 {% include 'preview.html' %}
             <hr>
             {% endif %}
-
     </div>
 {% endblock %}

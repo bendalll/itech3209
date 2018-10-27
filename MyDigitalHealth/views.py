@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, PackageForm
 from .models import Package, SortedPackage, Card, SortedGroup, Permission
@@ -114,7 +115,6 @@ def edit_package(request, package_id):
                 context_form["preview"] = True
                 context_package = package.to_dict()
                 context = {**context_form, **context_package}
-
                 return render(
                     request,
                     'create_edit_package.html',
@@ -123,10 +123,8 @@ def edit_package(request, package_id):
             else:
                 package_name = package.name
                 messages.success(request, "Changes to " + package_name + " saved. All sorted cards have been reset.")
-
                 own_packages = _admin_get_own_packages(request)
                 context = {'own_packages': own_packages}
-
                 return render(
                     request,
                     'administration.html',
@@ -159,9 +157,6 @@ def package_permissions(request, package_id):
                 sorted_package =  SortedPackage.objects.get(user=user, parent_package=package)
                 user.sorted_package = sorted_package.pk
                 user.sorted_percent = sorted_package.get_sort_progress()
-
-    print(users)
-
     context = {'users': users, 'package': package}
     return render(
         request,
@@ -180,6 +175,8 @@ def assign_package(request, package_id):
             for user in users:
                 if Permission.objects.filter(package=package, user=user):
                     user.has_permission = True
+                if SortedPackage.objects.filter(parent_package=package, user=user):
+                    user.has_sorted = True
             context = {'users': users, 'package': package}
             return render(
                 request,
@@ -194,6 +191,8 @@ def assign_package(request, package_id):
             for user in users:
                 if Permission.objects.filter(package=package, user=user):
                     user.has_permission = True
+                if SortedPackage.objects.filter(parent_package=package, user=user):
+                    user.has_sorted = True
             context = {'users': users, 'package': package}
             return render(
                 request,
@@ -206,6 +205,8 @@ def assign_package(request, package_id):
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
+            if SortedPackage.objects.filter(parent_package=package, user=user):
+                user.has_sorted = True
         context = {'users': users, 'package': package}
         return render(
             request,
@@ -235,13 +236,17 @@ def unassign_package(request, package_id):
         try:
             permission = Permission.objects.get(package=package, user=user)
             permission.delete()
-        except KeyError:
+        except ObjectDoesNotExist:
             messages.error(request, "Unable to unassign package from this user")
             print("Well that didn't go to plan")
+        if SortedPackage.objects.filter(parent_package=package, user=user).exists():
+            SortedPackage.objects.get(parent_package=package, user=user).delete()
         users = User.objects.all().exclude(username=request.user.username)
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
+            if SortedPackage.objects.filter(parent_package=package, user=user):
+                user.has_sorted = True
         context = {'users': users, 'package': package}
         return render(
             request,
@@ -254,6 +259,8 @@ def unassign_package(request, package_id):
         for user in users:
             if Permission.objects.filter(package=package, user=user):
                 user.has_permission = True
+            if SortedPackage.objects.filter(parent_package=package, user=user):
+                user.has_sorted = True
         context = {'users': users, 'package': package}
         return render(
             request,
@@ -317,6 +324,22 @@ def cardsort_activity(request, package_id):
             'activity.html',
             context
         )
+
+
+def admin_analysis(request, package_id, user_id):
+    user = User.objects.get(pk=user_id)
+    parent_package = Package.objects.get(pk=package_id)
+    if SortedPackage.objects.filter(parent_package=parent_package, user=user).exists():
+        package = SortedPackage.objects.get(parent_package=parent_package, user=user)
+    else:
+        package = Package.objects.get(pk=package_id)
+    context = package.to_dict()
+    context['admin_viewing'] = True
+    return render(
+        request,
+        'activity.html',
+        context
+    )
 
 
 def delete_package(request, package_id):

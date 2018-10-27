@@ -14,7 +14,9 @@
                 <td width="20%"><h4 style="display: inline">{{ user.get_full_name }}</h4> </td>
                 <td width="25%"><form class="form" style="display: inline" method="post"
                         {% if user.has_permission %}
-                            action="{% url 'unassign' package.pk %}">
+                            action="{% url 'unassign' package.pk %}"
+                            {% if user.sorted_package %}onsubmit="return confirm('This will delete the user\'s sorted' +
+                             ' package. Do you want to continue?');"{% endif %}>
                             <input type="submit" value="Unassign" class="btn btn-default" />
                         {% else %}
                             action="{% url 'assign' package.pk %}">
@@ -38,8 +40,7 @@
                     </div>
                     {% endif %}
                 </td>
-                    <div></div>
-                </tr>
+            </tr>
             {% endfor %}
         </table>
     </div>

@@ -26,11 +26,8 @@
             </li>
             <ul class="list-group connection">
                 <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
-
                 {% for card in group.cards.all %}
-
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
-
                 {% endfor %}
             </ul>
         </div>
@@ -42,7 +39,6 @@
                           placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
             {% endif %}
         </div>
-
         </form>
     </div>
 {% endblock %}

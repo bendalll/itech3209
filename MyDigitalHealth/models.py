@@ -105,11 +105,9 @@ class SortedPackage(models.Model):
         groups = SortedGroup.objects.filter(sorted_package=self)
         return groups
 
-    # Return the complete percentage for sorting cards.
     def get_sort_progress(self):
         total_cards = len(Card.objects.filter(package=self.parent_package))
         unsorted_cards = len(self.get_unassigned_cards())
-        print("Total Cards: " + str(total_cards) + " Unsorted: " + str(unsorted_cards))
         return int(((total_cards-unsorted_cards)/total_cards)*100)
 
     class Meta:

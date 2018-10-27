@@ -10,6 +10,7 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('create_package', views.create_package, name='create'),
     path('active/<package_id>', views.cardsort_activity, name='active'),
+    path('analysis/<package_id>/<user_id>', views.admin_analysis, name='analysis'),
     path('admin', views.package_administration, name='admin'),
     path('edit/<package_id>', views.edit_package, name='edit'),
     path('view/<package_id>', views.view_sorted_package, name='view'),

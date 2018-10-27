@@ -3,14 +3,7 @@
 {% block content %}
 	{% load static %}
 	{% load templatetags %}
-
-    {% if package_readonly %}
-        <script> let package_readonly = true; </script>
-    {% else %}
-        <script> let package_readonly = false;</script>
-    {% endif %}
-
-	<script src="{% static 'scripts/cardsort.js'%}"></script>
+	{% if not package_readonly %}<script src="{% static 'scripts/cardsort.js'%}"></script>{% endif %}
     <link href="{% url 'css' package_id %}" rel="stylesheet">
 	<div class="container">
     <h3>Please fill out the form below</h3>
@@ -29,17 +22,18 @@
         </div>
         {% for group in groups %}
         <div class="cards">
-            <li class="list-group-item active "><span id="group-title" {% if user_defined_groups %} onclick="editHeading(this)" {% endif %} >{{ group.title }}</span>
-                {% if user_defined_groups %} <span class="glyphicon glyphicon-pencil" onclick="editHeading(this)"></span> {% endif %}
-                <input type="hidden" id="id_group_title_{{ group.pk }}" name="group_title_{{ group.pk }}" value="{{ group.title }}"/>
+            <li class="list-group-item active"><span id="group-title"
+                    {% if user_defined_groups and not package_readonly %} onclick="editHeading(this)"
+                    {% endif %} >{{ group.title }}</span>
+                {% if user_defined_groups and not package_readonly %}<span class="glyphicon glyphicon-pencil"
+                                                                        onclick="editHeading(this)"></span>{% endif %}
+                <input type="hidden" id="id_group_title_{{ group.pk }}" name="group_title_{{ group.pk }}"
+                       value="{{ group.title }}"/>
             </li>
             <ul class="list-group connection">
                 <input type="hidden" id="group_{{ group.pk }}" name="card_ids_for_{{ group.pk }}"/>
-
                 {% for card in group.cards.all %}
-
                     <li class="list-group-item" id="{{ card.pk }}">{{ card.text }}</li>
-
                 {% endfor %}
             </ul>
         </div>
@@ -48,11 +42,14 @@
             <input id ="id_package_id" type="hidden" name="package_id" value="{{ package_id}}">
             {% if comments_allowed %}
                 <textarea class="form-control" id="id_comment_text" name="comment"
+                          {% if package_readonly %}readonly{% endif %}
                           placeholder="Feel free to add any comments">{{ comment }}</textarea><br>
             {% endif %}
         </div>
         <div>
+            {% if not package_readonly %}
             <input type="submit" value="Save and Close" id="id_submit_button" class="btn btn-default"/>
+            {% endif %}
             <a href="{% url 'index' %}" class="btn btn-default">Close</a>
         </div>
         </form>
