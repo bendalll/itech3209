@@ -13,8 +13,13 @@ function editHeading(element) {
 
     $(element).parent("li").children("#group-title").attr("contenteditable", "true").focusout(function() {
         $(this).removeAttr("contenteditable").off("focusout");
+        if ($(this).text() == "") {
+            $(element).parent("li").children("#group-title").text("Click to Name");
+        }
     });
     $(element).parent("li").children("#group-title").focus();
+
+    $(element).parent("li").children("#group-title").text("");
 
     processCards();
 }
